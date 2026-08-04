@@ -1,4 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+
+def login_page(request):
+    return render(request, "auth/login.html")
+
+
+def signup_page(request):
+    return render(request, "auth/signup.html")
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("/login/")
 
 # Phase 1 has no ticket models yet, so the dashboard is built from static
 # mock data. This will be replaced with real database queries once the
