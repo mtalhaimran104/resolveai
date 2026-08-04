@@ -1,0 +1,326 @@
+{% load static %}
+
+{% block title %}
+Register | ResolveAI
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card card-primary card-outline">
+
+                <!-- Card Header -->
+                <div class="card-header text-center">
+
+                    <h3 class="card-title float-none">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Create your ResolveAI account
+                    </h3>
+
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+
+                        {% csrf_token %}
+
+                        <!-- First + Last Name -->
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <div class="mb-3">
+
+                                    <label for="{{ form.first_name.id_for_label }}"
+                                           class="form-label">
+                                        First Name
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-person"></i>
+                                        </span>
+
+                                        {{ form.first_name }}
+
+                                    </div>
+
+                                    {% for error in form.first_name.errors %}
+                                        <div class="text-danger small">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="mb-3">
+
+                                    <label for="{{ form.last_name.id_for_label }}"
+                                           class="form-label">
+                                        Last Name
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-person"></i>
+                                        </span>
+
+                                        {{ form.last_name }}
+
+                                    </div>
+
+                                    {% for error in form.last_name.errors %}
+                                        <div class="text-danger small">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Username -->
+                        <div class="mb-3">
+
+                            <label for="{{ form.username.id_for_label }}"
+                                   class="form-label">
+                                Username
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-at"></i>
+                                </span>
+
+                                {{ form.username }}
+
+                            </div>
+
+                            {% for error in form.username.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="mb-3">
+
+                            <label for="{{ form.email.id_for_label }}"
+                                   class="form-label">
+                                Email
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+
+                                {{ form.email }}
+
+                            </div>
+
+                            {% for error in form.email.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Password -->
+                        <div class="mb-3">
+
+                            <label for="{{ form.password.id_for_label }}"
+                                   class="form-label">
+                                Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+
+                                {{ form.password }}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="togglePassword('{{ form.password.id_for_label }}', this)"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                            </div>
+
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+
+                            <label for="{{ form.confirm_password.id_for_label }}"
+                                   class="form-label">
+                                Confirm Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+
+                                {{ form.confirm_password }}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="togglePassword('{{ form.confirm_password.id_for_label }}', this)"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                            </div>
+
+                            {% for error in form.confirm_password.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Terms -->
+                        <div class="form-check mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="acceptTerms"
+                                required
+                            >
+
+                            <label
+                                class="form-check-label"
+                                for="acceptTerms"
+                            >
+                                I agree to the
+                                <a href="#">
+                                    Terms of Service
+                                </a>
+                                and
+                                <a href="#">
+                                    Privacy Policy
+                                </a>
+                            </label>
+
+                        </div>
+
+
+                        <!-- Register Button -->
+                        <div class="d-grid">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg"
+                            >
+
+                                <i class="bi bi-person-plus me-2"></i>
+
+                                Register
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- Login Link -->
+                    <div class="text-center mt-4">
+
+                        <span class="text-muted">
+                            Already have an account?
+                        </span>
+
+                        <a href="{% url 'login' %}">
+                            Sign in
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function togglePassword(fieldId, button) {
+
+    const field = document.getElementById(fieldId);
+    const icon = button.querySelector("i");
+
+    if (field.type === "password") {
+
+        field.type = "text";
+
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+
+    } else {
+
+        field.type = "password";
+
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

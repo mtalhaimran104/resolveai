@@ -1,15 +1,66 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+def home(request):
+    return render(request, "dashboard/index.html")
 
 def login_page(request):
     return render(request, "auth/login.html")
 
+def register_page(request):
 
-def signup_page(request):
-    return render(request, "auth/signup.html")
+    if request.method == "POST":
 
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
 
+        if password != confirm_password:
+
+            return render(
+                request,
+                "auth/register.html",
+                {
+                    "error": "Passwords do not match."
+                }
+            )
+
+        if User.objects.filter(username=username).exists():
+
+            return render(
+                request,
+                "auth/register.html",
+                {
+                    "error": "Username already exists."
+                }
+            )
+
+        if User.objects.filter(email=email).exists():
+
+            return render(
+                request,
+                "auth/register.html",
+                {
+                    "error": "Email already exists."
+                }
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+        )
+
+        login(request, user)
+
+        return redirect("home")
+
+    return render(request, "auth/register.html")
 def logout_view(request):
     logout(request)
     return redirect("/login/")

@@ -59,9 +59,11 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csrf",
             ],
         },
     },
+
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
@@ -75,10 +77,11 @@ DATABASES = {
         "NAME": os.getenv("MYSQL_DATABASE", "resolve_ai"),
         "USER": os.getenv("MYSQL_USER", "resolve_ai_user"),
         "PASSWORD": os.getenv("MYSQL_PASSWORD", "resolve_ai_password"),
-        "HOST": os.getenv("MYSQL_HOST", "db"),
+        "HOST": os.getenv("MYSQL_HOST", "localhost"),
         "PORT": os.getenv("MYSQL_PORT", "3306"),
     }
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
