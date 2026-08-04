@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: ./web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./web:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      # --protocol=tcp forces a real TCP check. Without it, "-h localhost"
+      # connects over the unix socket, which comes up before MySQL is
+      # actually listening on the network — reporting healthy too early
+      # for the web container, which connects over TCP.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--protocol=tcp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:

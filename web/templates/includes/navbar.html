@@ -1,0 +1,55 @@
+{% load static %}
+<!--begin::Header-->
+<nav class="app-header navbar navbar-expand bg-body">
+  <div class="container-fluid">
+    <!--begin::Start Navbar Links-->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar">
+          <i class="bi bi-list"></i>
+        </a>
+      </li>
+      <li class="nav-item d-none d-md-block">
+        <form class="d-flex" role="search" action="#" method="get" onsubmit="return false;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-body"><i class="bi bi-search"></i></span>
+            <input class="form-control" type="search" placeholder="Search tickets, articles, users&hellip;" aria-label="Search" disabled />
+          </div>
+        </form>
+      </li>
+    </ul>
+    <!--end::Start Navbar Links-->
+
+    <!--begin::End Navbar Links-->
+    <ul class="navbar-nav ms-auto align-items-center">
+      <!--begin::Notifications placeholder-->
+      <li class="nav-item">
+        <a class="nav-link" href="#" aria-label="Notifications">
+          <i class="bi bi-bell-fill"></i>
+          <span class="navbar-badge badge text-bg-warning">3</span>
+        </a>
+      </li>
+      <!--end::Notifications placeholder-->
+
+      <!--begin::User Menu placeholder-->
+      <li class="nav-item dropdown user-menu">
+        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+          <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="user-image rounded-circle shadow" alt="Current user" />
+          <span class="d-none d-md-inline">Admin User</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+          <li class="user-header text-bg-primary">
+            <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="rounded-circle shadow" alt="Current user" />
+            <p>Admin User<small>Authentication coming in a later phase</small></p>
+          </li>
+          <li class="user-footer">
+            <a href="/admin/" class="btn btn-outline-primary w-100">Django Admin</a>
+          </li>
+        </ul>
+      </li>
+      <!--end::User Menu placeholder-->
+    </ul>
+    <!--end::End Navbar Links-->
+  </div>
+</nav>
+<!--end::Header-->

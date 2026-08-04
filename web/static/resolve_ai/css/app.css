@@ -1,0 +1,127 @@
+/*!
+ * ResolveAI — custom theme layer on top of AdminLTE 4 + Bootstrap 5.
+ * This file only ADDS to AdminLTE — it never edits adminlte.css.
+ */
+
+/* ==========================================================================
+   1. Brand palette
+   ========================================================================== */
+:root {
+  --ra-primary: #0b3d91; /* dark blue */
+  --ra-primary-rgb: 11, 61, 145;
+  --ra-indigo: #4b2ed1; /* indigo accent */
+  --ra-indigo-rgb: 75, 46, 209;
+  --ra-success: #1b8a5a;
+  --ra-warning: #d98c00;
+  --ra-danger: #c0293e;
+  --ra-bg: #f3f5fa;
+
+  /* Re-point Bootstrap's primary onto the ResolveAI brand so every
+     text-bg-primary / btn-primary / .active nav item stays on-brand. */
+  --bs-primary: var(--ra-primary);
+  --bs-primary-rgb: var(--ra-primary-rgb);
+  --bs-link-color: var(--ra-primary);
+  --bs-link-color-rgb: var(--ra-primary-rgb);
+}
+
+[data-bs-theme="dark"] {
+  --ra-bg: #10141f;
+}
+
+body.bg-body-tertiary {
+  background-color: var(--ra-bg);
+}
+
+/* ==========================================================================
+   2. Brand lockup (sidebar)
+   ========================================================================== */
+.brand-link .brand-text {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.ra-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--ra-primary), var(--ra-indigo));
+  color: #fff;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   3. Status / priority badges
+   ========================================================================== */
+.badge-status-open {
+  background-color: var(--bs-primary);
+  color: #fff;
+}
+.badge-status-in-progress {
+  background-color: #0dcaf0;
+  color: #05262c;
+}
+.badge-status-waiting {
+  background-color: var(--ra-warning);
+  color: #fff;
+}
+.badge-status-resolved {
+  background-color: var(--ra-success);
+  color: #fff;
+}
+.badge-status-closed {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.badge-priority-low {
+  background-color: #6c757d;
+  color: #fff;
+}
+.badge-priority-medium {
+  background-color: #0dcaf0;
+  color: #05262c;
+}
+.badge-priority-high {
+  background-color: var(--ra-warning);
+  color: #fff;
+}
+.badge-priority-critical {
+  background-color: var(--ra-danger);
+  color: #fff;
+}
+
+/* ==========================================================================
+   4. Dashboard stat / summary cards
+   ========================================================================== */
+.ra-stat-card {
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   5. AI Service card
+   ========================================================================== */
+.ra-ai-card {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(var(--ra-indigo-rgb), 0.25);
+  background: linear-gradient(180deg, rgba(var(--ra-indigo-rgb), 0.06), rgba(var(--ra-indigo-rgb), 0.02));
+}
+.ra-ai-card .card-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(var(--ra-indigo-rgb), 0.2);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   6. Misc small adjustments
+   ========================================================================== */
+.fs-8 {
+  font-size: 0.7rem;
+}
+.nav-link.disabled {
+  cursor: not-allowed;
+}
