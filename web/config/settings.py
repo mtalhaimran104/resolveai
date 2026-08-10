@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "core",
     "accounts",
     "dashboard",
+    "organization",
 ]
 
 # ResolveAI uses its own user model instead of django.contrib.auth.User.
