@@ -2,13 +2,14 @@
 
 **ResolveAI** is an AI-powered help desk and support-ticket platform.
 
-This repository currently contains **Phase 1: Base Project Boilerplate and
-First Django Dashboard Page** — a clean, understandable foundation that the
-rest of the project will be built on top of.
+This repository currently contains:
+
+- **Phase 1: Base Project Boilerplate and First Django Dashboard Page** — a
+  clean, understandable foundation that the rest of the project is built on.
+- **Phase 2: Identity and RBAC Models** — the custom user model, roles,
+  permissions and their migrations, including a seeded superadmin account.
 
 ## Phase 1 Scope
-
-This phase only includes:
 
 - A Dockerized Django web application
 - A MySQL database container
@@ -17,8 +18,21 @@ This phase only includes:
 - One working dashboard page with static mock data
 - Django Admin enabled at `/admin/`
 
-It does **not** include authentication screens, ticket management, RBAC,
-or the FastAPI AI/ML service. Those arrive in later phases.
+## Phase 2 Scope
+
+- A custom user model (`accounts.User`, table `users`)
+- Role-based access control: `roles`, `permissions`, `user_roles`,
+  `role_permissions`
+- A data migration seeding the four roles (REQUESTER, AGENT, SUPERVISOR,
+  ADMIN) and the permission catalogue
+- A data migration creating the `superadmin` account
+- Model tests covering RBAC and the seed migrations
+
+It does **not** yet include signup/login screens, ticket management or the
+FastAPI AI/ML service. Those arrive in later phases.
+
+New models must follow the conventions in
+[`docs/phase-2-models-and-migrations.md`](docs/phase-2-models-and-migrations.md).
 
 ## Technology Stack (Phase 1)
 
@@ -64,10 +78,26 @@ In a second terminal, once the containers are up:
 docker compose exec web python manage.py migrate
 ```
 
-## Create a Superuser
+> **Upgrading from Phase 1?** Phase 2 introduces a custom user model, which
+> Django can only create on a database that has never been migrated. Reset
+> the volume once — `docker compose down -v`, then `up` and `migrate`
+> again. This deletes all local data.
+
+## Log In
+
+Migrations create a super administrator for you, so there is no
+`createsuperuser` step:
+
+| Username     | Password       |
+| ------------ | -------------- |
+| `superadmin` | `ChangeMe123!` |
+
+Both are read from `SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` in `.env` —
+change them there before the first `migrate` if you want different ones, or
+afterwards with:
 
 ```bash
-docker compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py changepassword superadmin
 ```
 
 ## URLs
@@ -93,6 +123,8 @@ resolve-ai/
 │   ├── manage.py
 │   │
 │   ├── config/            # Django project settings, URLs, WSGI/ASGI
+│   ├── core/              # Shared abstract models (no tables of its own)
+│   ├── accounts/          # User, Role, Permission + RBAC migrations
 │   ├── dashboard/         # The dashboard app (views, urls, tests)
 │   │
 │   ├── templates/
@@ -106,7 +138,8 @@ resolve-ai/
 │       └── resolve_ai/    # ResolveAI-specific CSS/JS
 │
 └── docs/
-    └── phase-1-setup.md
+    ├── phase-1-setup.md
+    └── phase-2-models-and-migrations.md
 ```
 
 ## Common Docker Commands
@@ -136,16 +169,25 @@ docker compose down -v
 
 ## Known Limitations
 
-- No authentication or login screens yet (only Django's default `/admin/` login)
-- No ticket, user or knowledge-base models — dashboard data is static mock data
+- No signup or login screens yet — users and roles exist in the database and
+  in Django Admin, but the public-facing auth pages are Phase 3
+- No ticket, department or knowledge-base models — dashboard data is still
+  static mock data
 - Sidebar links other than **Dashboard** are placeholders (`#`)
 - No AI/ML service — the dashboard shows a "not configured yet" card instead
 
 ## Next Planned Phase
 
-Phase 2 is expected to introduce the ticket-management data model and
-CRUD pages (create, list, view, update tickets), building on this
-boilerplate.
+Phase 3 adds the signup and login screens on top of the Phase 2 models
+(registration that grants the REQUESTER role, login, logout, and role-aware
+navigation), followed by the ticket-management data model and CRUD pages.
 
-See [`docs/phase-1-setup.md`](docs/phase-1-setup.md) for a walkthrough of
-how this phase was built and how to extend it.
+## Documentation
+
+- [`docs/phase-1-setup.md`](docs/phase-1-setup.md) — how the boilerplate,
+  Docker setup and templates fit together
+- [`docs/phase-2-models-and-migrations.md`](docs/phase-2-models-and-migrations.md)
+  — the identity/RBAC models, the migration workflow, and **the pattern to
+  follow when adding the remaining modules**
+- `docs/ResolveAI_Database_Schema_Design.pdf` — the full target schema
+- `docs/ResolveAI_Complete_Project_SRS_Proposal.pdf` — project requirements
