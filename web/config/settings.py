@@ -33,8 +33,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # ResolveAI apps — one per domain, see docs/phase-2-models-and-migrations.md
+    "core",
+    "accounts",
     "dashboard",
 ]
+
+# ResolveAI uses its own user model instead of django.contrib.auth.User.
+# This must be set before the first `migrate` on a fresh database; changing
+# it afterwards means recreating the database.
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
