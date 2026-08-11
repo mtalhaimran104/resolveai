@@ -1,0 +1,98 @@
+{% extends "auth-base.html" %}
+{% load static %}
+
+{% block content %}
+
+<main class="login-box">
+      <!--begin::Brand-->
+      <h1 class="login-logo">
+        <a href="{% url 'home' %}" class="d-inline-flex align-items-center">
+          <span class="ra-logo-icon"><i class="bi bi-headset"></i></span>
+          <span class="ra-logo">ResolveAI</span>
+        </a>
+      </h1>
+      <p class="text-center ra-tagline mb-4">Intelligent Help Desk and Support Platform</p>
+      <!--end::Brand-->
+
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Sign in to start your session</p>
+
+          {% include "includes/messages.html" %}
+
+          <!--begin::Login Form-->
+          <form action="{% url 'login' %}" method="post" novalidate data-ra-validate>
+          {% csrf_token %}
+            <label class="visually-hidden" for="loginUsername">Email or username</label>
+            <div class="input-group mb-3">
+              <div class="input-group-text"><span class="bi bi-person-fill"></span></div>
+              <input
+                id="loginUsername"
+                name="loginUsername"
+                type="text"
+                class="form-control"
+                placeholder="Email or username"
+                autocomplete="username"
+                required
+              />
+              <div class="invalid-feedback">Please enter your email or username.</div>
+            </div>
+
+            <label class="visually-hidden" for="loginPassword">Password</label>
+            <div class="input-group mb-3">
+              <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+              <input
+                id="loginPassword"
+                name="loginPassword"
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                data-ra-toggle-password="loginPassword"
+                aria-label="Show password"
+              >
+                <i class="bi bi-eye-fill"></i>
+              </button>
+              <div class="invalid-feedback">Please enter your password.</div>
+            </div>
+
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-7">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="loginRememberMe" />
+                  <label class="form-check-label" for="loginRememberMe"> Remember me </label>
+                </div>
+              </div>
+              <!-- /.col -->
+              <div class="col-5">
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!--end::Row-->
+          </form>
+          <!--end::Login Form-->
+
+          <p class="mb-1">
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+          </p>
+          <p class="mb-0">
+            <a href="{% url 'register' %}" class="text-center"> Register a new account </a>
+          </p>
+        </div>
+        <!-- /.login-card-body -->
+      </div>
+
+      
+    </main>
+    <!-- /.login-box -->
+
+{% endblock %}
