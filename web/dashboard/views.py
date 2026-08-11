@@ -1,69 +1,48 @@
-from django.shortcuts import render , redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
-def home(request):
-    return render(request, "dashboard/index.html")
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
+from django.shortcuts import render, redirect
+
+from accounts.forms import SignUpForm, LoginForm
+
+
+@login_required
+def dashboard(request):
+    context = {
+        "page_title": "Dashboard",
+        "summary_cards": SUMMARY_CARDS,
+        "recent_tickets": RECENT_TICKETS,
+        "status_summary": STATUS_SUMMARY,
+    }
+    return render(request, "dashboard/index.html", context)
+
 
 def login_page(request):
-    return render(request, "auth/login.html")
+    if request.method == "POST":
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect("dashboard")
+    else:
+        form = LoginForm()
+    return render(request, "auth/login.html", {"form": form})
+
 
 def register_page(request):
-
     if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("dashboard")
+    else:
+        form = SignUpForm()
+    return render(request, "auth/register.html", {"form": form})
 
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
 
-        if password != confirm_password:
-
-            return render(
-                request,
-                "auth/register.html",
-                {
-                    "error": "Passwords do not match."
-                }
-            )
-
-        if User.objects.filter(username=username).exists():
-
-            return render(
-                request,
-                "auth/register.html",
-                {
-                    "error": "Username already exists."
-                }
-            )
-
-        if User.objects.filter(email=email).exists():
-
-            return render(
-                request,
-                "auth/register.html",
-                {
-                    "error": "Email already exists."
-                }
-            )
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-        )
-
-        login(request, user)
-
-        return redirect("home")
-
-    return render(request, "auth/register.html")
 def logout_view(request):
     logout(request)
-    return redirect("/login/")
+    return redirect("login")
+
 
 # Phase 1 has no ticket models yet, so the dashboard is built from static
 # mock data. This will be replaced with real database queries once the
@@ -136,13 +115,3 @@ STATUS_SUMMARY = [
     {"label": "Resolved", "count": 18, "percent": 25, "color": "success"},
     {"label": "Closed", "count": 11, "percent": 15, "color": "secondary"},
 ]
-
-
-def dashboard(request):
-    context = {
-        "page_title": "Dashboard",
-        "summary_cards": SUMMARY_CARDS,
-        "recent_tickets": RECENT_TICKETS,
-        "status_summary": STATUS_SUMMARY,
-    }
-    return render(request, "dashboard/index.html", context)
