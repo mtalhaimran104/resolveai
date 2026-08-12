@@ -68,6 +68,7 @@ Register | ResolveAI
                 </div>
               </div>
             </div>
+            <div id="usernameFeedback" class="small mt-1"></div>
             <!--end::Name Row-->
 
             <label class="visually-hidden" for="regUsername">Username</label>
@@ -278,5 +279,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+const usernameInput = document.getElementById("regUsername");
+const usernameFeedback = document.getElementById("usernameFeedback");
+let debounceTimer;
+
+if (usernameInput) {
+  usernameInput.addEventListener("input", function () {
+    clearTimeout(debounceTimer);
+    const value = usernameInput.value.trim();
+
+    if (value.length < 3) {
+      usernameFeedback.textContent = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(function () {
+      fetch("{% url 'check_username' %}?username=" + encodeURIComponent(value))
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.available) {
+            usernameFeedback.textContent = "Username is available";
+            usernameFeedback.className = "small mt-1 text-success";
+          } else {
+            usernameFeedback.textContent = "Username already exists";
+            usernameFeedback.className = "small mt-1 text-danger";
+          }
+        });
+    }, 400); // waits 400ms after typing stops before checking
+  });
+}
 </script>
 {% endblock %}

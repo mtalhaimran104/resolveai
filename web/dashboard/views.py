@@ -4,7 +4,15 @@ from django.shortcuts import render, redirect
 
 from accounts.forms import SignUpForm, LoginForm
 
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
+
+def check_username(request):
+    username = request.GET.get("username", "").strip()
+    exists = User.objects.filter(username=username).exists()
+    return JsonResponse({"available": not exists})
 @login_required
 def dashboard(request):
     context = {

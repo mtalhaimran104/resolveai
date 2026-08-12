@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.password_validation import validate_password
-
+from .models import Role, UserRole
 User = get_user_model()
 
 
@@ -46,13 +46,17 @@ class SignUpForm(forms.Form):
 
     def save(self):
         data = self.cleaned_data
-        return User.objects.create_user(
+        user = User.objects.create_user(
             username=data["username"],
             email=data["email"],
             password=data["password"],
             first_name=data["first_name"],
             last_name=data["last_name"],
         )
+        default_role = Role.objects.get(code="REQUESTER")
+        UserRole.objects.create(user=user, role=default_role)
+        return user
+    
 
 
 class LoginForm(AuthenticationForm):

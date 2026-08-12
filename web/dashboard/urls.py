@@ -36,4 +36,5 @@ urlpatterns = [
              template_name='auth/password-reset-complete.html'
          ),
          name='password_reset_complete'),
+    path("check-username/", views.check_username, name="check_username"), 
 ]

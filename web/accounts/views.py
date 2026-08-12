@@ -1,13 +1,17 @@
 from django.contrib.auth import login
+from django.http import JsonResponse
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-
+from django.contrib.auth import get_user_model
 from .forms import LoginForm, SignUpForm
 from .models import Role, RoleCode, UserRole
-
-
+User = get_user_model()
+def check_username(request):
+    username = request.GET.get("username", "").strip()
+    exists = User.objects.filter(username=username).exists()
+    return JsonResponse({"available": not exists})
 class ResolveAILoginView(LoginView):
     template_name = "auth/login.html"
     authentication_form = LoginForm
