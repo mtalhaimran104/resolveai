@@ -27,3 +27,7 @@ htmlcov/
 
 # OS
 .DS_Store
+
+# Trained ML models
+ai_service/app/models/tfidf_vectorizer.pkl
+ai_service/app/models/ticket_classification_model.pkl

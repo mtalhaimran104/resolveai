@@ -34,6 +34,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+      
+  ai_service:
+    build:
+      context: ./ai_service
+    ports:
+      - "8001:8000"
 
 volumes:
   mysql_data:
