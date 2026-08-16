@@ -29,5 +29,8 @@ htmlcov/
 .DS_Store
 
 # Trained ML models
-ai_service/app/models/tfidf_vectorizer.pkl
-ai_service/app/models/ticket_classification_model.pkl
+
+ai_service/app/models/ticket_classification/tfidf_vectorizer.pkl
+ai_service/app/models/ticket_classification/ticket_classification_model.pkl
+ai_service/app/models/priority_prediction/priority_prediction_model.pkl
+ai_service/app/models/priority_prediction/tfidf_vectorizer.pkl
