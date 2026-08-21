@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "accounts",
     "dashboard",
     "organization",
+    "classification",
+    "tickets",
 ]
 
 # ResolveAI uses its own user model instead of django.contrib.auth.User.
@@ -70,6 +72,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csrf",
+                "accounts.context_processors.user_roles",
             ],
         },
     },
@@ -110,6 +113,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, images)
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# User-uploaded files (ticket attachments)
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"

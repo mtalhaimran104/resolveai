@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Users{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Filters-->
+            <div class="card mb-3">
+              <div class="card-header">
+                <h3 class="card-title"><i class="bi bi-funnel me-2"></i>Filters</h3>
+              </div>
+              <div class="card-body">
+                <form class="row g-3" action="#" method="get">
+                  <div class="col-md-3 col-sm-6">
+                    <label for="filterRole" class="form-label">Role</label>
+                    <select id="filterRole" name="role" class="form-select">
+                      <option value="" selected>All roles</option>
+                      <option value="requester">Requester</option>
+                      <option value="support_agent">Support Agent</option>
+                      <option value="support_supervisor">Support Supervisor</option>
+                      <option value="system_administrator">System Administrator</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3 col-sm-6">
+                    <label for="filterDepartment" class="form-label">Department</label>
+                    <select id="filterDepartment" name="department" class="form-select">
+                      <option value="" selected>All departments</option>
+                      <option value="its">IT Support</option>
+                      <option value="fin">Finance</option>
+                      <option value="adm">Admissions</option>
+                      <option value="exm">Examination</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2 col-sm-6">
+                    <label for="filterStatus" class="form-label">Status</label>
+                    <select id="filterStatus" name="status" class="form-select">
+                      <option value="" selected>Active &amp; Inactive</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3 col-sm-6">
+                    <label for="filterDateCreated" class="form-label">Date created</label>
+                    <input type="date" id="filterDateCreated" name="created_after" class="form-control" />
+                  </div>
+                  <div class="col-md-1 col-sm-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i></button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!--end::Filters-->
+
+            <!--begin::Users Table-->
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0"><i class="bi bi-people me-2"></i>All Users <span class="badge text-bg-secondary ms-1">12</span></h3>
+                <a href="user-create.html" class="btn btn-primary btn-sm"><i class="bi bi-person-plus me-1"></i>New User</a>
+              </div>
+              <div class="card-body p-0">
+                <div class="ra-bulk-toolbar mx-3 mt-3" data-ra-bulk-toolbar="[data-ra-row-check]">
+                  <span><strong data-ra-bulk-count>0</strong> selected</span>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-toggle-on me-1"></i>Activate</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-toggle-off me-1"></i>Deactivate</button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-ra-confirm="Delete the selected users? This cannot be undone."><i class="bi bi-trash me-1"></i>Delete</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th style="width: 2.5rem">
+                          <input type="checkbox" class="form-check-input" data-ra-select-all="[data-ra-row-check]" aria-label="Select all users" />
+                        </th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Last login</th>
+                        <th>Created</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Ayesha Khan" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user2-160x160.jpg" class="img-size-32 rounded-circle me-2" alt="Ayesha Khan" />Ayesha Khan</td>
+                        <td>ayesha.khan@resolveai.edu</td>
+                        <td>ayesha.khan</td>
+                        <td><span class="badge text-bg-secondary">Requester</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 29, 2026 &middot; 08:14</td>
+                        <td>Nov 3, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Ayesha Khan"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Ayesha Khan"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Talha Ahmed" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user1-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Talha Ahmed" />Talha Ahmed</td>
+                        <td>talha.ahmed@resolveai.edu</td>
+                        <td>talha.ahmed</td>
+                        <td><span class="badge text-bg-secondary">Requester</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 28, 2026 &middot; 16:40</td>
+                        <td>Dec 10, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Talha Ahmed"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Talha Ahmed"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Maryam Waseem" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user4-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Maryam Waseem" />Maryam Waseem</td>
+                        <td>maryam.waseem@resolveai.edu</td>
+                        <td>maryam.waseem</td>
+                        <td><span class="badge text-bg-secondary">Requester</span></td>
+                        <td>Finance</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 27, 2026 &middot; 11:02</td>
+                        <td>Jan 15, 2026</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Maryam Waseem"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Maryam Waseem"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Abdullah Asif" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user3-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Abdullah Asif" />Abdullah Asif</td>
+                        <td>abdullah.asif@resolveai.edu</td>
+                        <td>abdullah.asif</td>
+                        <td><span class="badge text-bg-secondary">Requester</span></td>
+                        <td>Admissions</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 25, 2026 &middot; 09:20</td>
+                        <td>Feb 2, 2026</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Abdullah Asif"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Abdullah Asif"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Bilal Hassan" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user7-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Bilal Hassan" />Bilal Hassan</td>
+                        <td>bilal.hassan@resolveai.edu</td>
+                        <td>bilal.hassan</td>
+                        <td><span class="badge text-bg-secondary">Requester</span></td>
+                        <td>Finance</td>
+                        <td><span class="badge text-bg-secondary">Inactive</span></td>
+                        <td>May 14, 2026 &middot; 14:55</td>
+                        <td>Sep 21, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Bilal Hassan"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Bilal Hassan"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Kamran Latif" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user6-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Kamran Latif" />Kamran Latif</td>
+                        <td>kamran.latif@resolveai.edu</td>
+                        <td>kamran.latif</td>
+                        <td><span class="badge text-bg-info">Support Agent</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 30, 2026 &middot; 07:45</td>
+                        <td>Mar 1, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Kamran Latif"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Kamran Latif"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr class="table-active">
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Faiza Tehreem" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user5-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Faiza Tehreem" />Faiza Tehreem</td>
+                        <td>faiza.tehreem@resolveai.edu</td>
+                        <td>faiza.tehreem</td>
+                        <td><span class="badge text-bg-info">Support Agent</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 30, 2026 &middot; 08:02</td>
+                        <td>Apr 18, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Faiza Tehreem"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Faiza Tehreem"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Hira Sultan" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user4-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Hira Sultan" />Hira Sultan</td>
+                        <td>hira.sultan@resolveai.edu</td>
+                        <td>hira.sultan</td>
+                        <td><span class="badge text-bg-info">Support Agent</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 29, 2026 &middot; 17:30</td>
+                        <td>Jun 9, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Hira Sultan"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Hira Sultan"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Sana Iqbal" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user2-160x160.jpg" class="img-size-32 rounded-circle me-2" alt="Sana Iqbal" />Sana Iqbal</td>
+                        <td>sana.iqbal@resolveai.edu</td>
+                        <td>sana.iqbal</td>
+                        <td><span class="badge text-bg-info">Support Agent</span></td>
+                        <td>Finance</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 29, 2026 &middot; 12:11</td>
+                        <td>May 27, 2025</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Sana Iqbal"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Sana Iqbal"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Usman Raza" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user5-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Usman Raza" />Usman Raza</td>
+                        <td>usman.raza@resolveai.edu</td>
+                        <td>usman.raza</td>
+                        <td><span class="badge text-bg-primary">Support Supervisor</span></td>
+                        <td>IT Support</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 30, 2026 &middot; 09:05</td>
+                        <td>Nov 12, 2024</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Usman Raza"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Usman Raza"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Nadia Farooq" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user7-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Nadia Farooq" />Nadia Farooq</td>
+                        <td>nadia.farooq@resolveai.edu</td>
+                        <td>nadia.farooq</td>
+                        <td><span class="badge text-bg-primary">Support Supervisor</span></td>
+                        <td>Finance</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 28, 2026 &middot; 13:47</td>
+                        <td>Dec 3, 2024</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Nadia Farooq"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Nadia Farooq"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" class="form-check-input" data-ra-row-check aria-label="Select Zainab Malik" /></td>
+                        <td class="d-flex align-items-center"><img src="../assets/img/user8-128x128.jpg" class="img-size-32 rounded-circle me-2" alt="Zainab Malik" />Zainab Malik</td>
+                        <td>zainab.malik@resolveai.edu</td>
+                        <td>zainab.malik</td>
+                        <td><span class="badge text-bg-dark">System Administrator</span></td>
+                        <td>&mdash;</td>
+                        <td><span class="badge text-bg-success">Active</span></td>
+                        <td>Jul 30, 2026 &middot; 06:58</td>
+                        <td>Jan 8, 2024</td>
+                        <td class="text-end">
+                          <a href="user-detail.html" class="btn btn-sm btn-outline-secondary" aria-label="View Zainab Malik"><i class="bi bi-eye"></i></a>
+                          <a href="user-edit.html" class="btn btn-sm btn-outline-secondary" aria-label="Edit Zainab Malik"><i class="bi bi-pencil"></i></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer">
+                <nav aria-label="User list pagination">
+                  <ul class="pagination pagination-sm justify-content-end mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <!--end::Users Table-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

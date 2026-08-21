@@ -1,0 +1,445 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}All Tickets | ResolveAI{% endblock %}
+{% block page_title %}All Tickets| ResolveAI{% endblock %}
+
+{% block content %}
+   
+
+    <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">All Tickets</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../tickets/ticket-list.html">Tickets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">All Tickets</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+
+            <!--begin::Advanced Filters-->
+            <div class="card mb-3">
+              <div class="card-header">
+                <h3 class="card-title fs-6 mb-0"><i class="bi bi-funnel me-1"></i>Advanced Filters</h3>
+              </div>
+              <div class="card-body">
+                <form class="row g-3" action="#" method="get">
+                  <div class="col-md-2">
+                    <label for="flTicketNumber" class="form-label">Ticket #</label>
+                    <input type="text" class="form-control" id="flTicketNumber" placeholder="RA-2026-000118" />
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flRequester" class="form-label">Requester</label>
+                    <select class="form-select" id="flRequester">
+                      <option value="" selected>All requesters</option>
+                      <option>Ayesha Khan</option>
+                      <option>Talha Ahmed</option>
+                      <option>Maryam Waseem</option>
+                      <option>Abdullah Asif</option>
+                      <option>Bilal Hassan</option>
+                      <option>Zara Malik</option>
+                      <option>Hamza Tariq</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flAgent" class="form-label">Assigned Agent</label>
+                    <select class="form-select" id="flAgent">
+                      <option value="" selected>All agents</option>
+                      <option>Kamran Latif</option>
+                      <option>Faiza Tehreem</option>
+                      <option>Hira Sultan</option>
+                      <option>Sana Iqbal</option>
+                      <option value="unassigned">Unassigned</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flDepartment" class="form-label">Department</label>
+                    <select class="form-select" id="flDepartment">
+                      <option value="" selected>All departments</option>
+                      <option>IT Support</option>
+                      <option>Finance</option>
+                      <option>Admissions</option>
+                      <option>Examination</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flCategory" class="form-label">Category</label>
+                    <select class="form-select" id="flCategory">
+                      <option value="" selected>All categories</option>
+                      <option>Account Access</option>
+                      <option>Password Reset</option>
+                      <option>Technical Error</option>
+                      <option>Payment Issue</option>
+                      <option>Refund Request</option>
+                      <option>Admission Inquiry</option>
+                      <option>Document Verification</option>
+                      <option>Grade Dispute</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flPriority" class="form-label">Priority</label>
+                    <select class="form-select" id="flPriority">
+                      <option value="" selected>All priorities</option>
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                      <option>Critical</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flStatus" class="form-label">Status</label>
+                    <select class="form-select" id="flStatus">
+                      <option value="" selected>All statuses</option>
+                      <option>Open</option>
+                      <option>In Progress</option>
+                      <option>Waiting for User</option>
+                      <option>Resolved</option>
+                      <option>Closed</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flCreatedDate" class="form-label">Created Date</label>
+                    <input type="date" class="form-control" id="flCreatedDate" />
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flUpdatedDate" class="form-label">Updated Date</label>
+                    <input type="date" class="form-control" id="flUpdatedDate" />
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flConfMin" class="form-label">AI Confidence Min %</label>
+                    <input type="number" class="form-control" id="flConfMin" min="0" max="100" placeholder="0" />
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flConfMax" class="form-label">AI Confidence Max %</label>
+                    <input type="number" class="form-control" id="flConfMax" min="0" max="100" placeholder="100" />
+                  </div>
+                  <div class="col-md-2">
+                    <label for="flSentiment" class="form-label">Sentiment</label>
+                    <select class="form-select" id="flSentiment">
+                      <option value="" selected>All sentiments</option>
+                      <option>Positive</option>
+                      <option>Neutral</option>
+                      <option>Negative</option>
+                    </select>
+                  </div>
+                  <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel me-1"></i>Apply Filters</button>
+                    <button type="reset" class="btn btn-outline-secondary btn-sm">Reset</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!--end::Advanced Filters-->
+
+            <!--begin::Bulk Actions Toolbar-->
+            <div class="ra-bulk-toolbar" data-ra-bulk-toolbar="[data-ra-row-check]">
+              <strong><span data-ra-bulk-count>0</span> selected</strong>
+              <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-person-plus me-1"></i>Assign</button>
+              <button type="button" class="btn btn-sm btn-outline-warning"><i class="bi bi-flag me-1"></i>Change Priority</button>
+              <button type="button" class="btn btn-sm btn-outline-info"><i class="bi bi-arrow-repeat me-1"></i>Change Status</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-download me-1"></i>Export</button>
+            </div>
+            <!--end::Bulk Actions Toolbar-->
+
+            <!--begin::All Tickets Table-->
+            <div class="card">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th><input type="checkbox" data-ra-select-all="[data-ra-row-check]" aria-label="Select all" /></th>
+                        <th>Ticket #</th>
+                        <th>Subject</th>
+                        <th>Requester</th>
+                        <th>Department</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Assigned Agent</th>
+                        <th>AI Confidence</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000118" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000118</a></td>
+                        <td>Unable to log into student portal</td>
+                        <td>Ayesha Khan</td>
+                        <td>IT Support</td>
+                        <td>Account Access</td>
+                        <td><span class="badge badge-priority-high">High</span></td>
+                        <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                        <td>Kamran Latif</td>
+                        <td><span class="ra-confidence ra-confidence-high">91%<span class="ra-confidence-bar"><span style="width:91%"></span></span></span></td>
+                        <td>2026-07-24</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000121" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000121</a></td>
+                        <td>Refund not received for cancelled course</td>
+                        <td>Maryam Waseem</td>
+                        <td>Finance</td>
+                        <td>Refund Request</td>
+                        <td><span class="badge badge-priority-medium">Medium</span></td>
+                        <td><span class="badge badge-status-waiting">Waiting for User</span></td>
+                        <td>Sana Iqbal</td>
+                        <td><span class="ra-confidence ra-confidence-medium">77%<span class="ra-confidence-bar"><span style="width:77%"></span></span></span></td>
+                        <td>2026-04-02</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000127" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000127</a></td>
+                        <td>Payment gateway declines valid card</td>
+                        <td>Talha Ahmed</td>
+                        <td>Finance</td>
+                        <td>Payment Issue</td>
+                        <td><span class="badge badge-priority-critical">Critical</span></td>
+                        <td><span class="badge badge-status-open">Open</span></td>
+                        <td><span class="text-secondary fst-italic">Unassigned</span></td>
+                        <td><span class="ra-confidence ra-confidence-low">54%<span class="ra-confidence-bar"><span style="width:54%"></span></span></span></td>
+                        <td>2026-04-18</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000133" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000133</a></td>
+                        <td>Admission document upload fails</td>
+                        <td>Abdullah Asif</td>
+                        <td>Admissions</td>
+                        <td>Document Verification</td>
+                        <td><span class="badge badge-priority-medium">Medium</span></td>
+                        <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                        <td>Faiza Tehreem</td>
+                        <td><span class="ra-confidence ra-confidence-high">88%<span class="ra-confidence-bar"><span style="width:88%"></span></span></span></td>
+                        <td>2026-05-01</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000139" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000139</a></td>
+                        <td>Portal down for entire campus</td>
+                        <td>Bilal Hassan</td>
+                        <td>IT Support</td>
+                        <td>Technical Error</td>
+                        <td><span class="badge badge-priority-critical">Critical</span></td>
+                        <td><span class="badge badge-status-open">Open</span></td>
+                        <td>Kamran Latif</td>
+                        <td><span class="ra-confidence ra-confidence-high">96%<span class="ra-confidence-bar"><span style="width:96%"></span></span></span></td>
+                        <td>2026-05-19</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000142" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000142</a></td>
+                        <td>Grade appears incorrect on transcript</td>
+                        <td>Zara Malik</td>
+                        <td>Examination</td>
+                        <td>Grade Dispute</td>
+                        <td><span class="badge badge-priority-high">High</span></td>
+                        <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                        <td>Hira Sultan</td>
+                        <td><span class="ra-confidence ra-confidence-high">82%<span class="ra-confidence-bar"><span style="width:82%"></span></span></span></td>
+                        <td>2026-05-27</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000145" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000145</a></td>
+                        <td>Password reset email never arrives</td>
+                        <td>Hamza Tariq</td>
+                        <td>IT Support</td>
+                        <td>Password Reset</td>
+                        <td><span class="badge badge-priority-low">Low</span></td>
+                        <td><span class="badge badge-status-resolved">Resolved</span></td>
+                        <td>Faiza Tehreem</td>
+                        <td><span class="ra-confidence ra-confidence-high">95%<span class="ra-confidence-bar"><span style="width:95%"></span></span></span></td>
+                        <td>2026-06-03</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000150" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000150</a></td>
+                        <td>Duplicate charge on tuition invoice</td>
+                        <td>Ayesha Khan</td>
+                        <td>Finance</td>
+                        <td>Payment Issue</td>
+                        <td><span class="badge badge-priority-high">High</span></td>
+                        <td><span class="badge badge-status-resolved">Resolved</span></td>
+                        <td>Sana Iqbal</td>
+                        <td><span class="ra-confidence ra-confidence-high">90%<span class="ra-confidence-bar"><span style="width:90%"></span></span></span></td>
+                        <td>2026-06-02</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000153" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000153</a></td>
+                        <td>How to apply for late admission</td>
+                        <td>Maryam Waseem</td>
+                        <td>Admissions</td>
+                        <td>Admission Inquiry</td>
+                        <td><span class="badge badge-priority-low">Low</span></td>
+                        <td><span class="badge badge-status-closed">Closed</span></td>
+                        <td>Faiza Tehreem</td>
+                        <td><span class="ra-confidence ra-confidence-high">93%<span class="ra-confidence-bar"><span style="width:93%"></span></span></span></td>
+                        <td>2026-06-20</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000101" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000101</a></td>
+                        <td>Two-factor authentication locked me out</td>
+                        <td>Talha Ahmed</td>
+                        <td>IT Support</td>
+                        <td>Account Access</td>
+                        <td><span class="badge badge-priority-high">High</span></td>
+                        <td><span class="badge badge-status-closed">Closed</span></td>
+                        <td>Kamran Latif</td>
+                        <td><span class="ra-confidence ra-confidence-high">89%<span class="ra-confidence-bar"><span style="width:89%"></span></span></span></td>
+                        <td>2026-01-14</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000157" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000157</a></td>
+                        <td>VPN access request for remote work</td>
+                        <td>Talha Ahmed</td>
+                        <td>IT Support</td>
+                        <td>Account Access</td>
+                        <td><span class="badge badge-priority-medium">Medium</span></td>
+                        <td><span class="badge badge-status-open">Open</span></td>
+                        <td>Faiza Tehreem</td>
+                        <td><span class="ra-confidence ra-confidence-medium">68%<span class="ra-confidence-bar"><span style="width:68%"></span></span></span></td>
+                        <td>2026-07-20</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" data-ra-row-check aria-label="Select RA-2026-000160" /></td>
+                        <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none fw-semibold">RA-2026-000160</a></td>
+                        <td>Exam result withheld incorrectly</td>
+                        <td>Hamza Tariq</td>
+                        <td>Examination</td>
+                        <td>Grade Dispute</td>
+                        <td><span class="badge badge-priority-critical">Critical</span></td>
+                        <td><span class="badge badge-status-open">Open</span></td>
+                        <td><span class="text-secondary fst-italic">Unassigned</span></td>
+                        <td><span class="ra-confidence ra-confidence-low">59%<span class="ra-confidence-bar"><span style="width:59%"></span></span></span></td>
+                        <td>2026-07-28</td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="../tickets/ticket-assign.html" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                            <a href="../tickets/ticket-escalate.html" class="btn btn-outline-danger" title="Escalate"><i class="bi bi-arrow-up-circle"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <nav aria-label="All tickets pagination" class="mt-3">
+              <ul class="pagination justify-content-end">
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
+                <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+              </ul>
+            </nav>
+            <!--end::All Tickets Table-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      {% endblock %}

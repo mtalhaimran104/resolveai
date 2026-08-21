@@ -1,0 +1,144 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Escalate Ticket| ResolveAI{% endblock %}
+{% block page_title %}Escalate Ticket | ResolveAI{% endblock %}
+
+{% block content %}
+    
+
+    <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Escalate Ticket</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../tickets/ticket-list.html">Tickets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Escalate RA-2026-000118</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+
+            <!--begin::Ticket Summary-->
+            <div class="card card-outline card-danger mb-4">
+              <div class="card-header"><h3 class="card-title mb-0"><span class="fw-bold">RA-2026-000118</span> &mdash; Unable to log into student portal</h3></div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Requester</div><span>Ayesha Khan</span></div>
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Department</div><span>IT Support</span></div>
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Category</div><span>Account Access</span></div>
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Current Priority</div><span class="badge badge-priority-high">High</span></div>
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Sentiment</div><span class="badge text-bg-danger">Negative</span></div>
+                  <div class="col-6 col-md-2"><div class="fs-7 text-secondary">Days Open</div><span>6 days</span></div>
+                </div>
+              </div>
+            </div>
+            <!--end::Ticket Summary-->
+
+            <div class="row">
+              <div class="col-lg-7">
+                <!--begin::Escalation Form-->
+                <div class="card card-outline card-danger">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-arrow-up-circle me-1"></i>Escalate Ticket</h3></div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="escalationLevel" class="form-label">Escalation Level <span class="text-danger">*</span></label>
+                      <select class="form-select" id="escalationLevel" name="escalationLevel" required>
+                        <option value="1">Level 1 &mdash; Team Lead</option>
+                        <option value="2" selected>Level 2 &mdash; Department Supervisor</option>
+                        <option value="3">Level 3 &mdash; System Administrator</option>
+                      </select>
+                    </div>
+                    <form novalidate data-ra-validate data-ra-loading-on-submit action="#" method="post">
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="escalateDepartment" class="form-label">Escalate to Department <span class="text-danger">*</span></label>
+                          <select class="form-select" id="escalateDepartment" name="escalateDepartment" required>
+                            <option value="it-support" selected>IT Support</option>
+                            <option value="finance">Finance</option>
+                            <option value="admissions">Admissions</option>
+                            <option value="examination">Examination</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a department.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="escalateSupervisor" class="form-label">Escalate to Supervisor <span class="text-danger">*</span></label>
+                          <select class="form-select" id="escalateSupervisor" name="escalateSupervisor" required>
+                            <option value="usman-raza" selected>Usman Raza (IT Support)</option>
+                            <option value="nadia-farooq">Nadia Farooq (Finance)</option>
+                            <option value="omar-sheikh">Omar Sheikh (Admissions)</option>
+                            <option value="rabia-chaudhry">Rabia Chaudhry (Examination)</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a supervisor.</div>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="escalateReason" class="form-label">Reason for Escalation <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="escalateReason" name="reason" rows="3" minlength="10" placeholder="Why does this ticket need to be escalated?" required>Issue persists 6 days after initial SSO sync fix; likely a broader infrastructure problem affecting more than one account. Requester sentiment has turned negative and a coursework deadline was missed.</textarea>
+                        <div class="invalid-feedback">Please provide a reason of at least 10 characters.</div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="escalateNotes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="escalateNotes" name="notes" rows="3" placeholder="Optional context for the receiving team&hellip;">See Internal Notes tab for full SSO sync investigation log from Faiza Tehreem.</textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="escalatePriority" class="form-label">Priority</label>
+                        <select class="form-select" id="escalatePriority" name="priority" style="max-width: 260px">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="critical" selected>Critical</option>
+                        </select>
+                      </div>
+                      <div class="mb-4 form-check">
+                        <input class="form-check-input" type="checkbox" id="notifyStakeholders" name="notifyStakeholders" checked />
+                        <label class="form-check-label" for="notifyStakeholders">Notify stakeholders (requester, supervisor, department)</label>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-arrow-up-circle me-1"></i>Escalate</button>
+                        <a href="../tickets/ticket-detail-agent.html" class="btn btn-outline-secondary">Cancel</a>
+                      </div>
+                      <div class="alert alert-success mt-3 d-none" data-ra-success-alert>
+                        <i class="bi bi-check-circle-fill me-1"></i> Ticket escalated successfully.
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <!--end::Escalation Form-->
+              </div>
+              <div class="col-lg-5">
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0">Escalation Guidelines</h3></div>
+                  <div class="card-body">
+                    <ul class="mb-0 ps-3">
+                      <li><strong>Level 1</strong> &mdash; loop in a senior teammate or team lead for a second opinion.</li>
+                      <li><strong>Level 2</strong> &mdash; hand off to the department supervisor when SLA is at risk or the issue spans multiple users.</li>
+                      <li><strong>Level 3</strong> &mdash; system administrator involvement for infrastructure-wide incidents.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      {% endblock %}

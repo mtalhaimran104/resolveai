@@ -1,0 +1,361 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Create Role{% endblock %}
+{% block page_title %}Create Role{% endblock %}
+
+{% block content %}
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Create Role</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="role-list.html">Roles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Role</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Create Role Form-->
+            <form novalidate data-ra-validate action="role-list.html" method="post">
+              <div class="row">
+                <div class="col-lg-8">
+                  <!--begin::Role Details-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title"><i class="bi bi-shield-plus me-2"></i>Role Details</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="roleName" class="form-label">Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="roleName" name="name" required minlength="3" placeholder="e.g. Billing Reviewer" />
+                          <div class="invalid-feedback">Please enter a role name.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="roleCode" class="form-label">Code <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="roleCode" name="code" required pattern="[a-z0-9_]{3,40}" placeholder="e.g. billing_reviewer" />
+                          <div class="invalid-feedback">Code must be lowercase letters, numbers and underscores only.</div>
+                        </div>
+                        <div class="col-12">
+                          <label for="roleDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="roleDescription" name="description" rows="2" required minlength="10" placeholder="What can users in this role do?"></textarea>
+                          <div class="invalid-feedback">Please enter a short description.</div>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="systemRole" name="is_system_role" />
+                            <label class="form-check-label" for="systemRole">System role</label>
+                          </div>
+                          <small class="text-secondary">System roles are built into ResolveAI and cannot be deleted. Leave unchecked for custom roles like this one.</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Role Details-->
+
+                  <!--begin::Permissions-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title"><i class="bi bi-key me-2"></i>Permissions</h3>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-secondary fs-7">Expand each module and select the actions this role is allowed to perform.</p>
+                      <div class="accordion" id="permissionsAccordion">
+
+                        <!--begin::Module: Tickets-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#modTickets" aria-expanded="true" aria-controls="modTickets">
+                              <i class="bi bi-ticket-detailed me-2"></i>Tickets
+                            </button>
+                          </h2>
+                          <div id="modTickets" class="accordion-collapse collapse show" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="ticketsView" name="perm_tickets_view"><label class="form-check-label" for="ticketsView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="ticketsCreate" name="perm_tickets_create"><label class="form-check-label" for="ticketsCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="ticketsEdit" name="perm_tickets_edit"><label class="form-check-label" for="ticketsEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="ticketsDelete" name="perm_tickets_delete"><label class="form-check-label" for="ticketsDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Tickets-->
+
+                        <!--begin::Module: Messages-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modMessages" aria-expanded="false" aria-controls="modMessages">
+                              <i class="bi bi-chat-text me-2"></i>Messages
+                            </button>
+                          </h2>
+                          <div id="modMessages" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="messagesView" name="perm_messages_view"><label class="form-check-label" for="messagesView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="messagesCreate" name="perm_messages_create"><label class="form-check-label" for="messagesCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="messagesEdit" name="perm_messages_edit"><label class="form-check-label" for="messagesEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="messagesDelete" name="perm_messages_delete"><label class="form-check-label" for="messagesDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Messages-->
+
+                        <!--begin::Module: Assignments-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modAssignments" aria-expanded="false" aria-controls="modAssignments">
+                              <i class="bi bi-person-check me-2"></i>Assignments
+                            </button>
+                          </h2>
+                          <div id="modAssignments" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentsView" name="perm_assignments_view"><label class="form-check-label" for="assignmentsView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentsCreate" name="perm_assignments_create"><label class="form-check-label" for="assignmentsCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentsEdit" name="perm_assignments_edit"><label class="form-check-label" for="assignmentsEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentsDelete" name="perm_assignments_delete"><label class="form-check-label" for="assignmentsDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Assignments-->
+
+                        <!--begin::Module: Users-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modUsers" aria-expanded="false" aria-controls="modUsers">
+                              <i class="bi bi-people me-2"></i>Users
+                            </button>
+                          </h2>
+                          <div id="modUsers" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="usersView" name="perm_users_view"><label class="form-check-label" for="usersView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="usersCreate" name="perm_users_create"><label class="form-check-label" for="usersCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="usersEdit" name="perm_users_edit"><label class="form-check-label" for="usersEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="usersDelete" name="perm_users_delete"><label class="form-check-label" for="usersDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Users-->
+
+                        <!--begin::Module: Roles-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modRoles" aria-expanded="false" aria-controls="modRoles">
+                              <i class="bi bi-shield-lock me-2"></i>Roles
+                            </button>
+                          </h2>
+                          <div id="modRoles" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="rolesView" name="perm_roles_view"><label class="form-check-label" for="rolesView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="rolesCreate" name="perm_roles_create"><label class="form-check-label" for="rolesCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="rolesEdit" name="perm_roles_edit"><label class="form-check-label" for="rolesEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="rolesDelete" name="perm_roles_delete"><label class="form-check-label" for="rolesDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Roles-->
+
+                        <!--begin::Module: Departments-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modDepartments" aria-expanded="false" aria-controls="modDepartments">
+                              <i class="bi bi-building me-2"></i>Departments
+                            </button>
+                          </h2>
+                          <div id="modDepartments" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="departmentsView" name="perm_departments_view"><label class="form-check-label" for="departmentsView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="departmentsCreate" name="perm_departments_create"><label class="form-check-label" for="departmentsCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="departmentsEdit" name="perm_departments_edit"><label class="form-check-label" for="departmentsEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="departmentsDelete" name="perm_departments_delete"><label class="form-check-label" for="departmentsDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Departments-->
+
+                        <!--begin::Module: Categories-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modCategories" aria-expanded="false" aria-controls="modCategories">
+                              <i class="bi bi-tags me-2"></i>Categories
+                            </button>
+                          </h2>
+                          <div id="modCategories" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="categoriesView" name="perm_categories_view"><label class="form-check-label" for="categoriesView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="categoriesCreate" name="perm_categories_create"><label class="form-check-label" for="categoriesCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="categoriesEdit" name="perm_categories_edit"><label class="form-check-label" for="categoriesEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="categoriesDelete" name="perm_categories_delete"><label class="form-check-label" for="categoriesDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Categories-->
+
+                        <!--begin::Module: Knowledge Base-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modKb" aria-expanded="false" aria-controls="modKb">
+                              <i class="bi bi-journal-text me-2"></i>Knowledge Base
+                            </button>
+                          </h2>
+                          <div id="modKb" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbView" name="perm_kb_view"><label class="form-check-label" for="kbView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbCreate" name="perm_kb_create"><label class="form-check-label" for="kbCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbEdit" name="perm_kb_edit"><label class="form-check-label" for="kbEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbDelete" name="perm_kb_delete"><label class="form-check-label" for="kbDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Knowledge Base-->
+
+                        <!--begin::Module: AI-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modAi" aria-expanded="false" aria-controls="modAi">
+                              <i class="bi bi-robot me-2"></i>AI
+                            </button>
+                          </h2>
+                          <div id="modAi" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiView" name="perm_ai_view"><label class="form-check-label" for="aiView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiCreate" name="perm_ai_create"><label class="form-check-label" for="aiCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiEdit" name="perm_ai_edit"><label class="form-check-label" for="aiEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiDelete" name="perm_ai_delete"><label class="form-check-label" for="aiDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: AI-->
+
+                        <!--begin::Module: Reports-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modReports" aria-expanded="false" aria-controls="modReports">
+                              <i class="bi bi-bar-chart-line me-2"></i>Reports
+                            </button>
+                          </h2>
+                          <div id="modReports" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="reportsView" name="perm_reports_view"><label class="form-check-label" for="reportsView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="reportsCreate" name="perm_reports_create"><label class="form-check-label" for="reportsCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="reportsEdit" name="perm_reports_edit"><label class="form-check-label" for="reportsEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="reportsDelete" name="perm_reports_delete"><label class="form-check-label" for="reportsDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Reports-->
+
+                        <!--begin::Module: Settings-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modSettings" aria-expanded="false" aria-controls="modSettings">
+                              <i class="bi bi-sliders me-2"></i>Settings
+                            </button>
+                          </h2>
+                          <div id="modSettings" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="settingsView" name="perm_settings_view"><label class="form-check-label" for="settingsView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="settingsCreate" name="perm_settings_create"><label class="form-check-label" for="settingsCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="settingsEdit" name="perm_settings_edit"><label class="form-check-label" for="settingsEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="settingsDelete" name="perm_settings_delete"><label class="form-check-label" for="settingsDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Settings-->
+
+                        <!--begin::Module: Audit Logs-->
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modAudit" aria-expanded="false" aria-controls="modAudit">
+                              <i class="bi bi-journal-check me-2"></i>Audit Logs
+                            </button>
+                          </h2>
+                          <div id="modAudit" class="accordion-collapse collapse" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                              <div class="row row-cols-2 row-cols-md-4 g-2">
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="auditView" name="perm_audit_view"><label class="form-check-label" for="auditView">View</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="auditCreate" name="perm_audit_create"><label class="form-check-label" for="auditCreate">Create</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="auditEdit" name="perm_audit_edit"><label class="form-check-label" for="auditEdit">Edit</label></div></div>
+                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="auditDelete" name="perm_audit_delete"><label class="form-check-label" for="auditDelete">Delete</label></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--end::Module: Audit Logs-->
+
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Permissions-->
+                </div>
+
+                <!--begin::Help Sidebar-->
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title fs-6"><i class="bi bi-info-circle me-2"></i>Tips</h3>
+                    </div>
+                    <div class="card-body fs-7">
+                      <p>Give a role only the permissions it needs &mdash; you can always grant more later.</p>
+                      <p class="mb-0">Compare against existing roles on the <a href="permission-matrix.html">Permission Matrix</a> before creating a new one.</p>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-body d-grid gap-2">
+                      <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Role</button>
+                      <a href="role-list.html" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Help Sidebar-->
+              </div>
+            </form>
+            <!--end::Create Role Form-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+
+      {% endblock %}

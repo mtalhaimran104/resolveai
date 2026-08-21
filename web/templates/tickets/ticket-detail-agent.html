@@ -1,0 +1,385 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Ticket RA-2026-000118 | ResolveAI{% endblock %}
+{% block page_title %}Ticket RA-2026-000118 | ResolveAI{% endblock %}
+
+{% block content %}
+<!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Ticket RA-2026-000118</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../tickets/ticket-list.html">Tickets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">RA-2026-000118</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+
+            <!--begin::Ticket Summary-->
+            <div class="card card-outline card-primary mb-4">
+              <div class="card-header">
+                <h3 class="card-title mb-0"><span class="fw-bold">RA-2026-000118</span> &mdash; Unable to log into student portal</h3>
+                <div class="card-tools">
+                  <a href="../tickets/ticket-print.html" class="btn btn-sm btn-outline-secondary"><i class="bi bi-printer me-1"></i>Print</a>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row g-3 mb-3">
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Status</div>
+                    <span class="badge badge-status-in-progress">In Progress</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Priority</div>
+                    <span class="badge badge-priority-high">High</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Category</div>
+                    <span>Account Access</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Department</div>
+                    <span>IT Support</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Requester</div>
+                    <span><img src="../assets/img/user2-160x160.jpg" class="img-size-25 rounded-circle me-1" alt="Ayesha Khan" />Ayesha Khan</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                    <div class="fs-7 text-secondary">Assigned Agent</div>
+                    <span><img src="../assets/img/user6-128x128.jpg" class="img-size-25 rounded-circle me-1" alt="Kamran Latif" />Kamran Latif (You)</span>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="fs-7 text-secondary">Created</div>
+                    <span>Jul 24, 2026 &middot; 9:58 AM</span>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="fs-7 text-secondary">Last Updated</div>
+                    <span>Jul 30, 2026 &middot; 9:48 AM</span>
+                  </div>
+                </div>
+
+                <!--begin::Agent Action Bar-->
+                <div class="d-flex flex-wrap gap-2 border-top pt-3">
+                  <a href="../tickets/ticket-assign.html" class="btn btn-sm btn-outline-primary"><i class="bi bi-person-plus me-1"></i>Assign / Reassign</a>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">Change Status</button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Open</a></li>
+                      <li><a class="dropdown-item active" href="#">In Progress</a></li>
+                      <li><a class="dropdown-item" href="#">Waiting for User</a></li>
+                      <li><a class="dropdown-item" href="#">Resolved</a></li>
+                      <li><a class="dropdown-item" href="#">Closed</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-warning dropdown-toggle" data-bs-toggle="dropdown">Change Priority</button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Low</a></li>
+                      <li><a class="dropdown-item" href="#">Medium</a></li>
+                      <li><a class="dropdown-item active" href="#">High</a></li>
+                      <li><a class="dropdown-item" href="#">Critical</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Change Category</button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item active" href="#">Account Access</a></li>
+                      <li><a class="dropdown-item" href="#">Password Reset</a></li>
+                      <li><a class="dropdown-item" href="#">Technical Error</a></li>
+                    </ul>
+                  </div>
+
+                  <a href="../tickets/ticket-escalate.html" class="btn btn-sm btn-outline-danger"><i class="bi bi-arrow-up-circle me-1"></i>Escalate</a>
+                  <button type="button" class="btn btn-sm btn-success" data-ra-confirm="Mark this ticket as Resolved?"><i class="bi bi-check-circle me-1"></i>Resolve Ticket</button>
+                </div>
+                <!--end::Agent Action Bar-->
+              </div>
+            </div>
+            <!--end::Ticket Summary-->
+
+            <div class="row">
+              <div class="col-lg-8">
+                <!--begin::Ticket Detail Tabs-->
+                <div class="card">
+                  <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="ticketTabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="conversation-tab" data-bs-toggle="tab" data-bs-target="#conversation-pane" type="button" role="tab" aria-controls="conversation-pane" aria-selected="true">Conversation</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes-pane" type="button" role="tab" aria-controls="notes-pane" aria-selected="false">Internal Notes</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ai-analysis-tab" data-bs-toggle="tab" data-bs-target="#ai-analysis-pane" type="button" role="tab" aria-controls="ai-analysis-pane" aria-selected="false">AI Analysis</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab" aria-controls="history-pane" aria-selected="false">Ticket History</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="attachments-tab" data-bs-toggle="tab" data-bs-target="#attachments-pane" type="button" role="tab" aria-controls="attachments-pane" aria-selected="false">Attachments</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit-pane" type="button" role="tab" aria-controls="audit-pane" aria-selected="false">Audit Log</button>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="card-body">
+                    <div class="tab-content" id="ticketTabsContent">
+
+                      <!--begin::Conversation Tab-->
+                      <div class="tab-pane fade show active" id="conversation-pane" role="tabpanel" aria-labelledby="conversation-tab" tabindex="0">
+                      <div class="ra-conversation">
+                        <div class="ra-message ra-message-requester">
+                          <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 24, 2026 &middot; 10:14 AM</span></div>
+                          <div class="ra-message-body">I am unable to log into the student portal since yesterday evening. Every time I enter my username and password I get an &ldquo;Invalid credentials&rdquo; error, even though I'm sure the password is correct. I tried the &ldquo;Forgot Password&rdquo; link but the reset email never arrives. I need access urgently &mdash; my assignment deadline is tomorrow at midnight.</div>
+                        </div>
+                        <div class="ra-message ra-message-agent">
+                          <div class="ra-message-meta"><span><strong>Kamran Latif</strong> (You)</span><span>Jul 24, 2026 &middot; 11:02 AM</span></div>
+                          <div class="ra-message-body">Hi Ayesha, thanks for the detailed report. I've started looking into this. Could you tell me which browser and device you're using, and whether you've checked your spam/junk folder for the password reset email?</div>
+                        </div>
+                        <div class="ra-message ra-message-requester">
+                          <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 24, 2026 &middot; 2:45 PM</span></div>
+                          <div class="ra-message-body">I'm using Chrome on Windows 11, and yes, I checked spam &mdash; nothing there either. I also tried on my phone with the same result.</div>
+                        </div>
+                        <div class="ra-message ra-message-agent">
+                          <div class="ra-message-meta"><span><strong>Kamran Latif</strong> (You)</span><span>Jul 25, 2026 &middot; 9:30 AM</span></div>
+                          <div class="ra-message-body">Update: we've traced this to a sync delay between the identity provider and the student portal's SSO service. Our team is applying a fix. I'll update you as soon as it's resolved &mdash; expecting this within a few hours.</div>
+                        </div>
+                        <div class="ra-message ra-message-requester">
+                          <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 30, 2026 &middot; 9:48 AM</span></div>
+                          <div class="ra-message-body">Hi, checking in again &mdash; I'm still unable to log in with the same &ldquo;Invalid credentials&rdquo; error. This has been going on for almost a week now and it's affecting my coursework. Please advise on next steps.</div>
+                        </div>
+                      </div>
+
+                        <hr />
+                        <form novalidate data-ra-validate data-ra-loading-on-submit action="#" method="post">
+                          <div class="mb-3">
+                            <label for="publicReplyQuick" class="form-label">Add Public Reply</label>
+                            <textarea class="form-control" id="publicReplyQuick" name="publicReply" rows="3" minlength="5" placeholder="Reply visible to the requester&hellip;" required></textarea>
+                            <div class="invalid-feedback">Please enter a reply.</div>
+                          </div>
+                          <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-send me-1"></i>Send Public Reply</button>
+                        </form>
+                      </div>
+                      <!--end::Conversation Tab-->
+
+                      <!--begin::Internal Notes Tab-->
+                      <div class="tab-pane fade" id="notes-pane" role="tabpanel" aria-labelledby="notes-tab" tabindex="0">
+                        <div class="d-flex flex-column gap-3 mb-4">
+                          <div class="ra-note">
+                            <div class="ra-message-meta"><span><strong>Kamran Latif</strong></span><span>Jul 25, 2026 &middot; 9:15 AM</span></div>
+                            <div class="ra-message-body">Checked auth logs &mdash; the SSO provider is returning stale tokens for this student's account. Looping in Faiza to confirm the sync job schedule before I message the requester.</div>
+                          </div>
+                          <div class="ra-note">
+                            <div class="ra-message-meta"><span><strong>Faiza Tehreem</strong></span><span>Jul 25, 2026 &middot; 9:22 AM</span></div>
+                            <div class="ra-message-body">Confirmed &mdash; the nightly SSO sync job failed silently on Jul 23. Re-running it manually now for affected accounts. Should resolve within the hour.</div>
+                          </div>
+                          <div class="ra-note">
+                            <div class="ra-message-meta"><span><strong>Kamran Latif</strong></span><span>Jul 30, 2026 &middot; 9:50 AM</span></div>
+                            <div class="ra-message-body">Requester says the issue is still happening after 6 days. Escalating to Level 2 to get infra involved &mdash; this looks bigger than a one-off sync failure.</div>
+                          </div>
+                        </div>
+                        <form novalidate data-ra-validate data-ra-loading-on-submit action="#" method="post">
+                          <div class="mb-3">
+                            <label for="internalNoteQuick" class="form-label">Add Internal Note</label>
+                            <textarea class="form-control" id="internalNoteQuick" name="internalNote" rows="3" minlength="5" placeholder="Note visible to agents only&hellip;" required></textarea>
+                            <div class="invalid-feedback">Please enter a note.</div>
+                          </div>
+                          <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-journal-plus me-1"></i>Add Internal Note</button>
+                        </form>
+                      </div>
+                      <!--end::Internal Notes Tab-->
+
+                      <!--begin::AI Analysis Tab-->
+                      <div class="tab-pane fade" id="ai-analysis-pane" role="tabpanel" aria-labelledby="ai-analysis-tab" tabindex="0">
+                        <div class="card ra-ai-card mb-3">
+                          <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-robot me-1"></i>AI Summary</span>
+                            <span class="ra-ai-badge"><i class="bi bi-cpu"></i>summarizer-v1.2</span>
+                          </div>
+                          <div class="card-body">
+                            <p class="mb-0">Requester Ayesha Khan cannot authenticate into the student portal since Jul 23. Root cause traced to a failed nightly SSO sync job; a manual re-sync was applied Jul 25 but the requester reports the issue persists as of Jul 30. Sentiment has shifted from neutral to negative over the thread, indicating rising frustration and urgency due to a missed coursework deadline.</p>
+                          </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <div class="fs-7 text-secondary mb-1">AI-Detected Sentiment</div>
+                                <span class="badge text-bg-danger fs-6">Negative</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <div class="fs-7 text-secondary mb-1">AI Category Prediction</div>
+                                <div class="fw-semibold mb-1">Account Access</div>
+                                <span class="ra-confidence ra-confidence-high">91% confidence<span class="ra-confidence-bar"><span style="width:91%"></span></span></span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="card h-100">
+                              <div class="card-body">
+                                <div class="fs-7 text-secondary mb-1">AI Priority Recommendation</div>
+                                <span class="badge badge-priority-high fs-6">High</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card ra-ai-card mb-3" data-ra-ai-suggestion>
+                          <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-magic me-1"></i>AI Suggested Response</span>
+                            <span class="ra-ai-badge"><i class="bi bi-cpu"></i>response-suggester-v2.0</span>
+                          </div>
+                          <div class="card-body">
+                            <textarea class="form-control mb-3" rows="5" readonly>Hi Ayesha, apologies for the continued trouble. I've escalated your case to our infrastructure team as this now looks like a broader SSO sync issue rather than an isolated account problem. I'll personally follow up with an update within 4 hours and will keep this ticket at High priority until you're able to log in again.</textarea>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                              <button type="button" class="btn btn-sm btn-success" data-ra-ai-accept><i class="bi bi-check-lg me-1"></i>Accept</button>
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-ra-ai-edit>Edit response</button>
+                              <button type="button" class="btn btn-sm btn-outline-danger" data-ra-ai-reject><i class="bi bi-x-lg me-1"></i>Reject</button>
+                              <span class="badge text-bg-secondary ms-auto" data-ra-ai-status>Pending review</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card">
+                          <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-journal-text me-1"></i>Knowledge Base Sources Used</h3></div>
+                          <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item">
+                                <a href="../knowledge-base/article-detail.html" class="text-decoration-none">Enabling Two-Factor Authentication</a>
+                                <div class="fs-7 text-secondary">Account Access &middot; Published &middot; v5</div>
+                              </li>
+                              <li class="list-group-item">
+                                <a href="../knowledge-base/article-detail.html" class="text-decoration-none">Fixing &ldquo;Portal Unreachable&rdquo; Errors</a>
+                                <div class="fs-7 text-secondary">Technical Error &middot; Published &middot; v2</div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <!--end::AI Analysis Tab-->
+
+                      <!--begin::Ticket History Tab-->
+                      <div class="tab-pane fade" id="history-pane" role="tabpanel" aria-labelledby="history-tab" tabindex="0">
+                        <div class="timeline ra-ticket-timeline">
+                          <div class="time-label"><span class="text-bg-primary">Jul 24, 2026</span></div>
+                          <div>
+                            <i class="timeline-icon bi bi-plus-circle text-bg-primary"></i>
+                            <div class="timeline-item">
+                              <span class="time"><i class="bi bi-clock-fill"></i> 9:58 AM</span>
+                              <h3 class="timeline-header no-border"><a href="#">Ayesha Khan</a> created this ticket</h3>
+                            </div>
+                          </div>
+                          <div>
+                            <i class="timeline-icon bi bi-arrow-repeat text-bg-info"></i>
+                            <div class="timeline-item">
+                              <span class="time"><i class="bi bi-clock-fill"></i> 11:02 AM</span>
+                              <h3 class="timeline-header no-border">Status changed <strong>Open &rarr; In Progress</strong> by Kamran Latif</h3>
+                            </div>
+                          </div>
+                          <div>
+                            <i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i>
+                          </div>
+                        </div>
+                        <p class="text-secondary fs-7 mb-0"><a href="../tickets/ticket-history.html">View the complete lifecycle timeline for this ticket &rarr;</a></p>
+                      </div>
+                      <!--end::Ticket History Tab-->
+
+                      <!--begin::Attachments Tab-->
+                      <div class="tab-pane fade" id="attachments-pane" role="tabpanel" aria-labelledby="attachments-tab" tabindex="0">
+                        <ul class="list-group">
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-file-earmark-image me-2"></i>portal-login-error-screenshot.png <span class="text-secondary fs-7">(uploaded by Ayesha Khan)</span></span>
+                            <span class="text-secondary fs-7">240 KB</span>
+                          </li>
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-file-earmark-pdf me-2"></i>password-reset-request-confirmation.pdf <span class="text-secondary fs-7">(uploaded by Ayesha Khan)</span></span>
+                            <span class="text-secondary fs-7">85 KB</span>
+                          </li>
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-file-earmark-text me-2"></i>sso-sync-job-log-excerpt.txt <span class="text-secondary fs-7">(uploaded by Faiza Tehreem)</span></span>
+                            <span class="text-secondary fs-7">12 KB</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <!--end::Attachments Tab-->
+
+                      <!--begin::Audit Log Tab-->
+                      <div class="tab-pane fade" id="audit-pane" role="tabpanel" aria-labelledby="audit-tab" tabindex="0">
+                        <div class="table-responsive">
+                          <table class="table table-sm table-hover align-middle mb-0">
+                            <thead>
+                              <tr>
+                                <th>Timestamp</th>
+                                <th>Field</th>
+                                <th>Old Value</th>
+                                <th>New Value</th>
+                                <th>Changed By</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr><td>Jul 24, 2026 9:59 AM</td><td>Category</td><td>&mdash;</td><td>Account Access</td><td>AI Classifier</td></tr>
+                              <tr><td>Jul 24, 2026 10:00 AM</td><td>Priority</td><td>Medium</td><td>High</td><td>AI Priority Recommender</td></tr>
+                              <tr><td>Jul 24, 2026 10:05 AM</td><td>Assigned Agent</td><td>Unassigned</td><td>Kamran Latif</td><td>Usman Raza</td></tr>
+                              <tr><td>Jul 24, 2026 11:02 AM</td><td>Status</td><td>Open</td><td>In Progress</td><td>Kamran Latif</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <!--end::Audit Log Tab-->
+
+                    </div>
+                  </div>
+                </div>
+                <!--end::Ticket Detail Tabs-->
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0">At a Glance</h3></div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-6">Sentiment</dt><dd class="col-6"><span class="badge text-bg-danger">Negative</span></dd>
+                      <dt class="col-6">AI Confidence</dt><dd class="col-6"><span class="ra-confidence ra-confidence-high">91%<span class="ra-confidence-bar"><span style="width:91%"></span></span></span></dd>
+                      <dt class="col-6">Replies</dt><dd class="col-6">5</dd>
+                      <dt class="col-6">Attachments</dt><dd class="col-6">3</dd>
+                      <dt class="col-6">SLA</dt><dd class="col-6"><span class="badge text-bg-warning">Due in 2h</span></dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      {% endblock %}
