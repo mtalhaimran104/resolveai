@@ -1,0 +1,120 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Edit Ticket| ResolveAI{% endblock %}
+{% block page_title %}Edit Ticket | ResolveAI{% endblock %}
+
+{% block content %}
+    
+
+     <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Edit Ticket</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../tickets/my-tickets.html">Tickets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit RA-2026-000136</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+
+            <!--begin::Edit Ticket-->
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="card card-primary card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><span class="fw-bold">RA-2026-000136</span> &mdash; Email notifications not being received
+                      <span class="badge badge-status-open ms-2">Open</span>
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="alert alert-info">
+                      <i class="bi bi-info-circle-fill me-1"></i>
+                      You can only edit a ticket while it is still <strong>Open</strong>. Once an agent begins work and the status changes to In&nbsp;Progress, use the reply thread on the ticket detail page instead.
+                    </div>
+                    <form novalidate data-ra-validate data-ra-loading-on-submit action="#" method="post">
+                      <div class="mb-3">
+                        <label for="editSubject" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editSubject" name="subject" value="Email notifications not being received" minlength="5" maxlength="150" required />
+                        <div class="invalid-feedback">Please enter a subject of at least 5 characters.</div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="6" minlength="20" required>I have not received any email notifications for ticket updates for the past week, even though the "Notify me by email" option is enabled on my account. I have checked my spam folder and confirmed my email address is correct in my profile settings.</textarea>
+                        <div class="invalid-feedback">Please provide at least 20 characters describing the issue.</div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Existing Attachments</label>
+                        <ul class="list-group mb-2">
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-file-earmark-image me-2"></i>notification-settings-screenshot.png</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                          </li>
+                        </ul>
+                        <label for="editAttachments" class="form-label">Add more attachments</label>
+                        <input type="file" class="form-control" id="editAttachments" name="attachments" multiple />
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="editPriority" class="form-label">Priority</label>
+                        <select class="form-select" id="editPriority" name="priority" disabled style="max-width: 260px">
+                          <option value="low" selected>Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="critical">Critical</option>
+                        </select>
+                        <div class="form-text">Priority can only be changed by support staff.</div>
+                      </div>
+
+                      <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
+                        <a href="../tickets/my-tickets.html" class="btn btn-outline-secondary">Cancel</a>
+                      </div>
+                      <div class="alert alert-success mt-3 d-none" data-ra-success-alert>
+                        <i class="bi bi-check-circle-fill me-1"></i> Changes saved successfully.
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0">Ticket Info</h3></div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-6">Category</dt><dd class="col-6">Technical Error</dd>
+                      <dt class="col-6">Department</dt><dd class="col-6">IT Support</dd>
+                      <dt class="col-6">Status</dt><dd class="col-6"><span class="badge badge-status-open">Open</span></dd>
+                      <dt class="col-6">Created</dt><dd class="col-6">May 14, 2026</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Edit Ticket-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      {% endblock %}

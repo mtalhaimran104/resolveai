@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Create Category {% endblock %}
+{% block page_title %}Create Category {% endblock %}
+
+{% block content %}
+
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Create Category</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="category-list.html">Categories</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Category</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Create Category Form-->
+            <form novalidate data-ra-validate action="#" method="post">
+              <div class="row">
+                <div class="col-lg-8">
+                  <!--begin::Category Details-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Category Details</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-md-8">
+                          <label for="catName" class="form-label">Category Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="catName" name="catName" placeholder="e.g. Account Access" required minlength="2" maxlength="80" />
+                          <div class="invalid-feedback">Please enter a category name.</div>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="catCode" class="form-label">Code <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control text-uppercase" id="catCode" name="catCode" placeholder="e.g. ACC-ACS" required pattern="[A-Za-z]{2,8}-[A-Za-z]{2,8}" maxlength="18" />
+                          <div class="invalid-feedback">Enter a code in the form ABC-DEF (e.g. ACC-ACS).</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="catDepartment" class="form-label">Department <span class="text-danger">*</span></label>
+                          <select class="form-select" id="catDepartment" name="catDepartment" required>
+                            <option value="" selected disabled>Select a department&hellip;</option>
+                            <option value="its">IT Support</option>
+                            <option value="fin">Finance</option>
+                            <option value="adm">Admissions</option>
+                            <option value="exm">Examination</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a department.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="catPriority" class="form-label">Default Priority <span class="text-danger">*</span></label>
+                          <select class="form-select" id="catPriority" name="catPriority" required>
+                            <option value="" selected disabled>Select a priority&hellip;</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a default priority.</div>
+                        </div>
+                        <div class="col-12">
+                          <label for="catDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="catDescription" name="catDescription" rows="3" placeholder="Briefly describe what this category covers" required minlength="10" maxlength="400"></textarea>
+                          <div class="invalid-feedback">Please provide a short description (at least 10 characters).</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label d-block">Active Status</label>
+                          <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="catActive" name="catActive" checked />
+                            <label class="form-check-label" for="catActive">Category is active</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label d-block">AI Classification</label>
+                          <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="catAiEnabled" name="catAiEnabled" checked />
+                            <label class="form-check-label" for="catAiEnabled">AI classification enabled</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Category Details-->
+                </div>
+
+                <div class="col-lg-4">
+                  <!--begin::Save Panel-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Save Category</h3>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-secondary fs-7">When AI classification is enabled, incoming tickets that match this category's patterns are auto-tagged and routed to the selected department for triage.</p>
+                      <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check-lg me-1"></i>Create Category</button>
+                      <a href="category-list.html" class="btn btn-outline-secondary w-100">Cancel</a>
+                    </div>
+                  </div>
+                  <!--end::Save Panel-->
+                </div>
+              </div>
+            </form>
+            <!--end::Create Category Form-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

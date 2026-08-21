@@ -1,0 +1,427 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Permission Matrix{% endblock %}
+{% block page_title %}Permission Matrix{% endblock %}
+
+{% block content %}
+
+     <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Permission Matrix</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="permissions.html">Permissions</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Permission Matrix</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Matrix Legend-->
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h3 class="card-title mb-0"><i class="bi bi-grid-3x3 me-2"></i>Permission Matrix</h3>
+                <a href="permissions.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-list-ul me-1"></i>View Catalog</a>
+              </div>
+              <div class="card-body">
+                <p class="text-secondary mb-0">
+                  Every permission in the catalog, cross-referenced against each role. Checked
+                  boxes indicate the role is granted that permission. Requester access is scoped
+                  to tickets they submitted themselves; Billing Reviewer access is scoped to
+                  Finance-department tickets.
+                </p>
+              </div>
+            </div>
+            <!--end::Matrix Legend-->
+
+            <!--begin::Matrix Table-->
+            <div class="card">
+              <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 75vh">
+                  <table class="table table-bordered table-hover align-middle mb-0">
+                    <thead class="table-light" style="position: sticky; top: 0; z-index: 2">
+                      <tr>
+                        <th style="min-width: 220px">Permission</th>
+                        <th class="text-center" style="min-width: 110px">Requester</th>
+                        <th class="text-center" style="min-width: 110px">Support Agent</th>
+                        <th class="text-center" style="min-width: 130px">Support Supervisor</th>
+                        <th class="text-center" style="min-width: 140px">System Administrator</th>
+                        <th class="text-center" style="min-width: 120px">Billing Reviewer</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!--begin::Module Group: Tickets-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-ticket-detailed me-2"></i>Tickets</th></tr>
+                      <tr>
+                        <td><code>tickets.view</code> <span class="text-secondary fs-7">&mdash; own tickets only for Requester</span></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Requester: tickets.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: tickets.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: tickets.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: tickets.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Billing Reviewer: tickets.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>tickets.create</code> <span class="text-secondary fs-7">&mdash; own tickets only for Requester</span></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Requester: tickets.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: tickets.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: tickets.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: tickets.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: tickets.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>tickets.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: tickets.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: tickets.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: tickets.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: tickets.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: tickets.edit"></td>
+                      </tr>
+                      <tr>
+                        <td><code>tickets.delete</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: tickets.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: tickets.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: tickets.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: tickets.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: tickets.delete"></td>
+                      </tr>
+                      <!--end::Module Group: Tickets-->
+
+                      <!--begin::Module Group: Messages-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-chat-text me-2"></i>Messages</th></tr>
+                      <tr>
+                        <td><code>messages.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: messages.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: messages.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: messages.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: messages.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: messages.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>messages.reply</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: messages.reply"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: messages.reply"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: messages.reply"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: messages.reply"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: messages.reply"></td>
+                      </tr>
+                      <tr>
+                        <td><code>messages.delete</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: messages.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: messages.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: messages.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: messages.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: messages.delete"></td>
+                      </tr>
+                      <!--end::Module Group: Messages-->
+
+                      <!--begin::Module Group: Assignments-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-person-check me-2"></i>Assignments</th></tr>
+                      <tr>
+                        <td><code>assignments.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: assignments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: assignments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: assignments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: assignments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: assignments.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>assignments.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: assignments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: assignments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: assignments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: assignments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: assignments.edit"></td>
+                      </tr>
+                      <tr>
+                        <td><code>assignments.reassign_bulk</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: assignments.reassign_bulk"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: assignments.reassign_bulk"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: assignments.reassign_bulk"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: assignments.reassign_bulk"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: assignments.reassign_bulk"></td>
+                      </tr>
+                      <!--end::Module Group: Assignments-->
+
+                      <!--begin::Module Group: Users-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-people me-2"></i>Users</th></tr>
+                      <tr>
+                        <td><code>users.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: users.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: users.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: users.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: users.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: users.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>users.create</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: users.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: users.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: users.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: users.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: users.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>users.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: users.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: users.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: users.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: users.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: users.edit"></td>
+                      </tr>
+                      <tr>
+                        <td><code>users.delete</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: users.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: users.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: users.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: users.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: users.delete"></td>
+                      </tr>
+                      <!--end::Module Group: Users-->
+
+                      <!--begin::Module Group: Roles-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-shield-lock me-2"></i>Roles</th></tr>
+                      <tr>
+                        <td><code>roles.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: roles.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: roles.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: roles.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: roles.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: roles.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>roles.create</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: roles.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: roles.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: roles.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: roles.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: roles.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>roles.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: roles.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: roles.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: roles.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: roles.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: roles.edit"></td>
+                      </tr>
+                      <tr>
+                        <td><code>roles.delete</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: roles.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: roles.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: roles.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: roles.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: roles.delete"></td>
+                      </tr>
+                      <!--end::Module Group: Roles-->
+
+                      <!--begin::Module Group: Departments-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-building me-2"></i>Departments</th></tr>
+                      <tr>
+                        <td><code>departments.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: departments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: departments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: departments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: departments.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: departments.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>departments.create</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: departments.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: departments.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: departments.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: departments.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: departments.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>departments.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: departments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: departments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: departments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: departments.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: departments.edit"></td>
+                      </tr>
+                      <!--end::Module Group: Departments-->
+
+                      <!--begin::Module Group: Categories-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-tags me-2"></i>Categories</th></tr>
+                      <tr>
+                        <td><code>categories.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: categories.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: categories.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: categories.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: categories.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: categories.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>categories.create</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: categories.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: categories.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: categories.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: categories.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: categories.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>categories.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: categories.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: categories.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: categories.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: categories.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: categories.edit"></td>
+                      </tr>
+                      <!--end::Module Group: Categories-->
+
+                      <!--begin::Module Group: Knowledge Base-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-journal-text me-2"></i>Knowledge Base</th></tr>
+                      <tr>
+                        <td><code>kb.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Requester: kb.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: kb.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: kb.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: kb.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: kb.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>kb.create</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: kb.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: kb.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: kb.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: kb.create"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: kb.create"></td>
+                      </tr>
+                      <tr>
+                        <td><code>kb.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: kb.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: kb.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: kb.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: kb.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: kb.edit"></td>
+                      </tr>
+                      <tr>
+                        <td><code>kb.delete</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: kb.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: kb.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: kb.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: kb.delete"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: kb.delete"></td>
+                      </tr>
+                      <!--end::Module Group: Knowledge Base-->
+
+                      <!--begin::Module Group: AI-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-robot me-2"></i>AI</th></tr>
+                      <tr>
+                        <td><code>ai.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: ai.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: ai.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: ai.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: ai.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: ai.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>ai.trigger_analysis</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: ai.trigger_analysis"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: ai.trigger_analysis"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: ai.trigger_analysis"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: ai.trigger_analysis"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: ai.trigger_analysis"></td>
+                      </tr>
+                      <tr>
+                        <td><code>ai.override_suggestion</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: ai.override_suggestion"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: ai.override_suggestion"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: ai.override_suggestion"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: ai.override_suggestion"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: ai.override_suggestion"></td>
+                      </tr>
+                      <!--end::Module Group: AI-->
+
+                      <!--begin::Module Group: Reports-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-bar-chart-line me-2"></i>Reports</th></tr>
+                      <tr>
+                        <td><code>reports.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: reports.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Agent: reports.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: reports.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: reports.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Billing Reviewer: reports.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>reports.export</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: reports.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: reports.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Support Supervisor: reports.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: reports.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="Billing Reviewer: reports.export"></td>
+                      </tr>
+                      <!--end::Module Group: Reports-->
+
+                      <!--begin::Module Group: Settings-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-sliders me-2"></i>Settings</th></tr>
+                      <tr>
+                        <td><code>settings.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: settings.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: settings.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: settings.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: settings.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: settings.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>settings.edit</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: settings.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: settings.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: settings.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: settings.edit"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: settings.edit"></td>
+                      </tr>
+                      <!--end::Module Group: Settings-->
+
+                      <!--begin::Module Group: Audit Logs-->
+                      <tr class="table-secondary"><th colspan="6"><i class="bi bi-journal-check me-2"></i>Audit Logs</th></tr>
+                      <tr>
+                        <td><code>audit.view</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: audit.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: audit.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: audit.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: audit.view"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: audit.view"></td>
+                      </tr>
+                      <tr>
+                        <td><code>audit.export</code></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Requester: audit.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Agent: audit.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Support Supervisor: audit.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" checked disabled aria-label="System Administrator: audit.export"></td>
+                        <td class="text-center"><input type="checkbox" class="form-check-input" disabled aria-label="Billing Reviewer: audit.export"></td>
+                      </tr>
+                      <!--end::Module Group: Audit Logs-->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--end::Matrix Table-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      {% endblock %}

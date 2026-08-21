@@ -32,7 +32,7 @@ class RolePermissionInline(admin.TabularInline):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("username", "email", "full_name", "role_list", "is_active", "is_staff", "last_login")
+    list_display = ("username", "email", "full_name", "role_list", "is_active", "is_verified", "is_staff", "last_login")
     list_filter = ("is_active", "is_staff", "is_superuser", "roles")
     search_fields = ("username", "email", "first_name", "last_name")
     readonly_fields = ("password", "last_login", "created_at", "updated_at")

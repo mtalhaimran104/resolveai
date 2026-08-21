@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}User Profile{% endblock %}
+{% block page_title %}User Profile{% endblock %}
+
+{% block content %}
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">User Profile</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="user-list.html">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Faiza Tehreem</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Profile Header-->
+            <div class="row">
+              <div class="col-lg-4">
+                <!--begin::Profile Card-->
+                <div class="card card-primary card-outline">
+                  <div class="card-body box-profile text-center">
+                    <img class="profile-user-img img-fluid img-circle" src="../assets/img/user5-128x128.jpg" alt="Faiza Tehreem" />
+                    <h3 class="profile-username text-center mb-0">Faiza Tehreem</h3>
+                    <p class="text-secondary text-center">faiza.tehreem@resolveai.edu</p>
+
+                    <div class="d-flex justify-content-center gap-1 flex-wrap mb-3">
+                      <span class="badge text-bg-info">Support Agent</span>
+                      <span class="badge text-bg-success">Active</span>
+                    </div>
+
+                    <ul class="list-group list-group-unbordered mb-3">
+                      <li class="list-group-item d-flex justify-content-between px-0">
+                        <span><i class="bi bi-at me-2"></i>Username</span>
+                        <strong>faiza.tehreem</strong>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between px-0">
+                        <span><i class="bi bi-building me-2"></i>Department</span>
+                        <strong>IT Support</strong>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between px-0">
+                        <span><i class="bi bi-calendar-check me-2"></i>Created</span>
+                        <strong>Apr 18, 2025</strong>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between px-0">
+                        <span><i class="bi bi-clock-history me-2"></i>Last login</span>
+                        <strong>Jul 30, 2026 &middot; 08:02</strong>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between px-0">
+                        <span><i class="bi bi-envelope-check me-2"></i>Email verified</span>
+                        <strong><i class="bi bi-check-circle-fill text-success"></i></strong>
+                      </li>
+                    </ul>
+
+                    <div class="d-grid gap-2">
+                      <a href="user-edit.html" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a>
+                      <a href="user-roles.html" class="btn btn-outline-secondary"><i class="bi bi-shield-lock me-1"></i>Manage Roles &amp; Permissions</a>
+                      <a href="user-activity.html" class="btn btn-outline-secondary"><i class="bi bi-clock-history me-1"></i>View Activity</a>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Profile Card-->
+
+                <!--begin::Permissions Summary-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title fs-6"><i class="bi bi-key me-2"></i>Permissions Summary</h3>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-secondary fs-7">Inherited from the <strong>Support Agent</strong> role:</p>
+                    <ul class="list-unstyled mb-0 fs-7">
+                      <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Tickets &mdash; view, create, edit, delete</li>
+                      <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Messages &mdash; view, reply, delete</li>
+                      <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Assignments &mdash; view, edit</li>
+                      <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Knowledge Base &mdash; view, create</li>
+                      <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>AI &mdash; view</li>
+                      <li class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Reports &mdash; view</li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Permissions Summary-->
+              </div>
+
+              <div class="col-lg-8">
+                <!--begin::Assigned Tickets-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-ticket-detailed me-2"></i>Assigned Tickets <span class="badge text-bg-secondary ms-1">4</span></h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>Ticket #</th>
+                            <th>Subject</th>
+                            <th>Requester</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Updated</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000133</a></td>
+                            <td>Admission document upload fails</td>
+                            <td>Abdullah Asif</td>
+                            <td><span class="badge badge-priority-medium">Medium</span></td>
+                            <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                            <td>Jul 24, 2026</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000145</a></td>
+                            <td>Password reset email never arrives</td>
+                            <td>Hamza Tariq</td>
+                            <td><span class="badge badge-priority-low">Low</span></td>
+                            <td><span class="badge badge-status-resolved">Resolved</span></td>
+                            <td>Jun 18, 2026</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000153</a></td>
+                            <td>How to apply for late admission</td>
+                            <td>Maryam Waseem</td>
+                            <td><span class="badge badge-priority-low">Low</span></td>
+                            <td><span class="badge badge-status-closed">Closed</span></td>
+                            <td>May 30, 2026</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000157</a></td>
+                            <td>Cannot upload transcript scan &mdash; file too large</td>
+                            <td>Zara Malik</td>
+                            <td><span class="badge badge-priority-medium">Medium</span></td>
+                            <td><span class="badge badge-status-waiting">Waiting for User</span></td>
+                            <td>Jul 22, 2026</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Assigned Tickets-->
+
+                <!--begin::Submitted Tickets-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-send me-2"></i>Submitted Tickets</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="ra-empty-state">
+                      <i class="bi bi-inbox d-block mb-2"></i>
+                      <p class="mb-0">Faiza Tehreem hasn't submitted any tickets. As a Support Agent she works tickets submitted by others rather than raising her own.</p>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Submitted Tickets-->
+
+                <!--begin::Activity Timeline-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-clock-history me-2"></i>Recent Activity</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="timeline ra-ticket-timeline">
+                      <div class="time-label">
+                        <span class="text-bg-secondary">Jul 30, 2026</span>
+                      </div>
+                      <div>
+                        <i class="timeline-icon bi bi-box-arrow-in-right text-bg-primary"></i>
+                        <div class="timeline-item">
+                          <span class="time"><i class="bi bi-clock-fill"></i> 08:02</span>
+                          <h3 class="timeline-header no-border">Logged in from Karachi, Pakistan</h3>
+                        </div>
+                      </div>
+                      <div class="time-label">
+                        <span class="text-bg-secondary">Jul 24, 2026</span>
+                      </div>
+                      <div>
+                        <i class="timeline-icon bi bi-arrow-repeat text-bg-warning"></i>
+                        <div class="timeline-item">
+                          <span class="time"><i class="bi bi-clock-fill"></i> 15:10</span>
+                          <h3 class="timeline-header no-border">Changed status of RA-2026-000133 to <em>In Progress</em></h3>
+                        </div>
+                      </div>
+                      <div class="time-label">
+                        <span class="text-bg-secondary">Jun 18, 2026</span>
+                      </div>
+                      <div>
+                        <i class="timeline-icon bi bi-check-circle text-bg-success"></i>
+                        <div class="timeline-item">
+                          <span class="time"><i class="bi bi-clock-fill"></i> 10:42</span>
+                          <h3 class="timeline-header no-border">Resolved RA-2026-000145 &mdash; Password reset email never arrives</h3>
+                        </div>
+                      </div>
+                      <div>
+                        <i class="timeline-icon bi bi-person-badge text-bg-secondary"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Activity Timeline-->
+              </div>
+            </div>
+            <!--end::Profile Header-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 
 from accounts.forms import SignUpForm, LoginForm
-
+from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 
@@ -17,6 +17,7 @@ def check_username(request):
 def dashboard(request):
     context = {
         "page_title": "Dashboard",
+        "welcome_name": request.user.get_full_name() or request.user.username,
         "summary_cards": SUMMARY_CARDS,
         "recent_tickets": RECENT_TICKETS,
         "status_summary": STATUS_SUMMARY,
@@ -35,17 +36,18 @@ def login_page(request):
     return render(request, "auth/login.html", {"form": form})
 
 
+
+
 def register_page(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("dashboard")
+            form.save()
+            messages.success(request, "Account created successfully! Please log in.")
+            return redirect("login")
     else:
         form = SignUpForm()
     return render(request, "auth/register.html", {"form": form})
-
 
 def logout_view(request):
     logout(request)

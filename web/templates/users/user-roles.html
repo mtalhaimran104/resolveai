@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}User Roles & Permissions{% endblock %}
+{% block page_title %}User Roles & Permissions{% endblock %}
+
+{% block content %}
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Roles &amp; Permissions</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="user-list.html">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Roles &amp; Permissions</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::User Context Banner-->
+            <div class="card">
+              <div class="card-body d-flex align-items-center flex-wrap gap-3">
+                <img src="../assets/img/user5-128x128.jpg" class="img-size-50 rounded-circle" alt="Faiza Tehreem" />
+                <div class="flex-grow-1">
+                  <h3 class="mb-0 fs-5">Faiza Tehreem</h3>
+                  <span class="text-secondary fs-7">faiza.tehreem@resolveai.edu &middot; IT Support</span>
+                </div>
+                <a href="user-detail.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Profile</a>
+              </div>
+            </div>
+            <!--end::User Context Banner-->
+
+            <div class="row">
+              <div class="col-lg-6">
+                <!--begin::Assigned Roles-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-shield-check me-2"></i>Assigned Roles</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                          <span class="badge text-bg-info me-2">Support Agent</span>
+                          <span class="text-secondary fs-7">Assigned Apr 18, 2025</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-ra-confirm="Remove the Support Agent role from Faiza Tehreem?">
+                          <i class="bi bi-x-circle me-1"></i>Remove
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Assigned Roles-->
+
+                <!--begin::Assign Roles-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-plus-square me-2"></i>Assign Roles</h3>
+                  </div>
+                  <form action="user-roles.html" method="post">
+                    <div class="card-body">
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="roleRequester" name="roles" value="requester" />
+                        <label class="form-check-label" for="roleRequester">Requester</label>
+                      </div>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="roleAgent" name="roles" value="support_agent" checked disabled />
+                        <label class="form-check-label" for="roleAgent">Support Agent <span class="badge text-bg-secondary ms-1">Already assigned</span></label>
+                      </div>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="roleSupervisor" name="roles" value="support_supervisor" />
+                        <label class="form-check-label" for="roleSupervisor">Support Supervisor</label>
+                      </div>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="roleAdmin" name="roles" value="system_administrator" />
+                        <label class="form-check-label" for="roleAdmin">System Administrator</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="roleBilling" name="roles" value="billing_reviewer" />
+                        <label class="form-check-label" for="roleBilling">Billing Reviewer</label>
+                      </div>
+                    </div>
+                    <div class="card-footer text-end">
+                      <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Save Role Assignment</button>
+                    </div>
+                  </form>
+                </div>
+                <!--end::Assign Roles-->
+              </div>
+
+              <div class="col-lg-6">
+                <!--begin::Inherited Permissions-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title mb-0">
+                      <button class="btn btn-link text-decoration-none p-0 fs-6 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#inheritedPermissions" aria-expanded="true" aria-controls="inheritedPermissions">
+                        <i class="bi bi-diagram-3 me-2"></i>Inherited Permissions <span class="badge text-bg-secondary ms-1">11</span>
+                      </button>
+                    </h3>
+                  </div>
+                  <div id="inheritedPermissions" class="collapse show">
+                    <div class="card-body">
+                      <p class="text-secondary fs-7">Granted via the <strong>Support Agent</strong> role.</p>
+                      <ul class="list-unstyled mb-0 fs-7">
+                        <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>tickets.view, tickets.create, tickets.edit, tickets.delete</li>
+                        <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>messages.view, messages.reply, messages.delete</li>
+                        <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>assignments.view, assignments.edit</li>
+                        <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>kb.view, kb.create</li>
+                        <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>ai.view</li>
+                        <li class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i>reports.view</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Inherited Permissions-->
+
+                <!--begin::Direct Permissions-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title mb-0">
+                      <button class="btn btn-link text-decoration-none p-0 fs-6 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#directPermissions" aria-expanded="false" aria-controls="directPermissions">
+                        <i class="bi bi-person-check me-2"></i>Direct Permissions <span class="badge text-bg-secondary ms-1">0</span>
+                      </button>
+                    </h3>
+                  </div>
+                  <div id="directPermissions" class="collapse">
+                    <div class="card-body">
+                      <div class="ra-empty-state py-4">
+                        <i class="bi bi-shield-slash d-block mb-2"></i>
+                        <p class="mb-0">No permissions have been granted directly to this user. All access comes from assigned roles.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Direct Permissions-->
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Permissions{% endblock %}
+{% block page_title %}Permissions{% endblock %}
+
+{% block content %}
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Permissions</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item active" aria-current="page">Permissions</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Permissions Toolbar-->
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h3 class="card-title mb-0"><i class="bi bi-key me-2"></i>Permission Catalog <span class="badge text-bg-secondary ms-1">38</span></h3>
+                <div class="d-flex gap-2">
+                  <a href="permission-matrix.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-grid-3x3 me-1"></i>View Matrix</a>
+                  <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New Permission</button>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Permission code</th>
+                        <th>Description</th>
+                        <th>Module</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!--begin::Module: Tickets-->
+                      <tr><td><code>tickets.view</code></td><td>View ticket details and lists</td><td>Tickets</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>tickets.create</code></td><td>Submit a new ticket</td><td>Tickets</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>tickets.edit</code></td><td>Update ticket fields, status and priority</td><td>Tickets</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>tickets.delete</code></td><td>Permanently remove a ticket</td><td>Tickets</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Tickets-->
+
+                      <!--begin::Module: Messages-->
+                      <tr><td><code>messages.view</code></td><td>View ticket replies and internal notes</td><td>Messages</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>messages.reply</code></td><td>Post a reply to a ticket</td><td>Messages</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>messages.delete</code></td><td>Delete a reply or internal note</td><td>Messages</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Messages-->
+
+                      <!--begin::Module: Assignments-->
+                      <tr><td><code>assignments.view</code></td><td>View who a ticket is assigned to</td><td>Assignments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>assignments.edit</code></td><td>Assign or reassign a ticket to an agent</td><td>Assignments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>assignments.reassign_bulk</code></td><td>Bulk reassign tickets across agents</td><td>Assignments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Assignments-->
+
+                      <!--begin::Module: Users-->
+                      <tr><td><code>users.view</code></td><td>View user profiles and account details</td><td>Users</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>users.create</code></td><td>Create a new user account</td><td>Users</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>users.edit</code></td><td>Edit user details, roles and status</td><td>Users</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>users.delete</code></td><td>Deactivate or delete a user account</td><td>Users</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Users-->
+
+                      <!--begin::Module: Roles-->
+                      <tr><td><code>roles.view</code></td><td>View roles and their permissions</td><td>Roles</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>roles.create</code></td><td>Create a new custom role</td><td>Roles</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>roles.edit</code></td><td>Edit a role's name, description or permissions</td><td>Roles</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>roles.delete</code></td><td>Delete a custom role</td><td>Roles</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Roles-->
+
+                      <!--begin::Module: Departments-->
+                      <tr><td><code>departments.view</code></td><td>View department list and details</td><td>Departments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>departments.create</code></td><td>Create a new department</td><td>Departments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>departments.edit</code></td><td>Edit department name, code or supervisor</td><td>Departments</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Departments-->
+
+                      <!--begin::Module: Categories-->
+                      <tr><td><code>categories.view</code></td><td>View ticket categories</td><td>Categories</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>categories.create</code></td><td>Create a new ticket category</td><td>Categories</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>categories.edit</code></td><td>Edit a category's default priority or AI settings</td><td>Categories</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Categories-->
+
+                      <!--begin::Module: Knowledge Base-->
+                      <tr><td><code>kb.view</code></td><td>View knowledge base articles</td><td>Knowledge Base</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>kb.create</code></td><td>Draft a new knowledge base article</td><td>Knowledge Base</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>kb.edit</code></td><td>Edit or publish an article and its versions</td><td>Knowledge Base</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>kb.delete</code></td><td>Delete a knowledge base article</td><td>Knowledge Base</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Knowledge Base-->
+
+                      <!--begin::Module: AI-->
+                      <tr><td><code>ai.view</code></td><td>View AI analyses, confidence scores and suggestions</td><td>AI</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>ai.trigger_analysis</code></td><td>Manually re-run AI classification on a ticket</td><td>AI</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>ai.override_suggestion</code></td><td>Override or reject an AI-suggested response</td><td>AI</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: AI-->
+
+                      <!--begin::Module: Reports-->
+                      <tr><td><code>reports.view</code></td><td>View dashboards and generated reports</td><td>Reports</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>reports.export</code></td><td>Export a report to CSV or PDF</td><td>Reports</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Reports-->
+
+                      <!--begin::Module: Settings-->
+                      <tr><td><code>settings.view</code></td><td>View general and AI service settings</td><td>Settings</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>settings.edit</code></td><td>Change system-wide configuration</td><td>Settings</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Settings-->
+
+                      <!--begin::Module: Audit Logs-->
+                      <tr><td><code>audit.view</code></td><td>View the system audit / activity log</td><td>Audit Logs</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <tr><td><code>audit.export</code></td><td>Export audit log entries</td><td>Audit Logs</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button> <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Built-in permission"><i class="bi bi-trash"></i></button></td></tr>
+                      <!--end::Module: Audit Logs-->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--end::Permissions Toolbar-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+{% endblock %}

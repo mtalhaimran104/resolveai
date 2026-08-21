@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Create Ticket{% endblock %}
+{% block page_title %}Create Ticket{% endblock %}
+
+{% block content %}
+
+<!--begin::Create Ticket Form-->
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="card card-primary card-outline mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-plus-square me-2"></i>Ticket Details</h3>
+                  </div>
+                  <div class="card-body">
+                    <form method="POST" action="/tickets/create/">
+    
+                      {% csrf_token %}
+                      <div class="mb-3">
+                        <label for="ticketSubject" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ticketSubject" name="subject" placeholder="Briefly describe your issue" minlength="5" maxlength="150" required />
+                        <div class="invalid-feedback">Please enter a subject of at least 5 characters.</div>
+                      </div>
+
+                     
+
+                      <div class="mb-3">
+                        <label for="ticketDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="ticketDescription" name="description" rows="6" minlength="20" placeholder="Explain what happened, when it started, and any error messages you saw." required></textarea>
+                        <div class="invalid-feedback">Please provide at least 20 characters describing the issue.</div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="ticketAttachments" class="form-label">File attachments</label>
+                        <input type="file" class="form-control" id="ticketAttachments" name="attachments" multiple />
+                        <div class="form-text">Screenshots, error logs or documents (max 10&nbsp;MB each).</div>
+                      </div>
+
+                      
+                      <div class="mb-4">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="notifyEmailUpdates" name="notifyEmailUpdates" checked />
+                          <label class="form-check-label" for="notifyEmailUpdates">Notify me by email on updates</label>
+                        </div>
+                      </div>
+
+                      <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i>Submit Ticket</button>
+                        <button type="button" class="btn btn-outline-secondary"><i class="bi bi-save me-1"></i>Save Draft</button>
+                      <a href="{% url 'my_tickets' %}" class="btn btn-link text-decoration-none">Cancel</a>
+                      </div>
+                      <div class="alert alert-success mt-3 d-none" data-ra-success-alert>
+                        <i class="bi bi-check-circle-fill me-1"></i> Ticket submitted successfully. Redirecting to My Tickets&hellip;
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <!--begin::AI Category Suggestion-->
+                <div class="card ra-ai-card mb-4" data-ra-ai-suggestion>
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-robot me-1"></i> AI-Powered Category Suggestion</span>
+                    <span class="ra-ai-badge"><i class="bi bi-stars"></i>Beta</span>
+                  </div>
+                  <div class="card-body">
+                    <p class="mb-2">Based on your subject and description, ResolveAI suggests:</p>
+                    <p class="mb-2 fs-5"><strong>Account Access</strong></p>
+                    <p class="mb-3">
+                      <span class="ra-confidence ra-confidence-high">91% confidence
+                        <span class="ra-confidence-bar"><span style="width: 91%"></span></span>
+                      </span>
+                    </p>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm btn-success" data-ra-ai-accept>Accept</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary">Change category</button>
+                    </div>
+                    <span class="badge text-bg-secondary mt-3 d-inline-block" data-ra-ai-status>Awaiting your review</span>
+                  </div>
+                </div>
+                <!--end::AI Category Suggestion-->
+
+                <!--begin::Similar Knowledge Articles-->
+                <div class="card mb-4">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-journal-text me-1"></i>Similar Knowledge Articles</h3></div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">
+                        <a href="../knowledge-base/article-detail.html" class="text-decoration-none">Enabling Two-Factor Authentication</a>
+                        <div class="fs-7 text-secondary">Account Access &middot; Published &middot; v5</div>
+                      </li>
+                      <li class="list-group-item">
+                        <a href="../knowledge-base/article-detail.html" class="text-decoration-none">How to Reset Your Account Password</a>
+                        <div class="fs-7 text-secondary">Password Reset &middot; Published &middot; v3</div>
+                      </li>
+                      <li class="list-group-item">
+                        <a href="../knowledge-base/article-detail.html" class="text-decoration-none">Fixing &ldquo;Portal Unreachable&rdquo; Errors</a>
+                        <div class="fs-7 text-secondary">Technical Error &middot; Published &middot; v2</div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Similar Knowledge Articles-->
+
+                <!--begin::Tips Card-->
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-lightbulb me-1"></i>Tips for Writing a Useful Ticket</h3></div>
+                  <div class="card-body">
+                    <ul class="mb-0 ps-3">
+                      <li>Include the exact error message you see, word for word.</li>
+                      <li>Mention when the problem started and how often it happens.</li>
+                      <li>Attach a screenshot or screen recording if possible.</li>
+                      <li>Note your device, browser and operating system.</li>
+                      <li>Keep one issue per ticket &mdash; submit separate tickets for unrelated problems.</li>
+                      <li>Check the knowledge base first &mdash; your answer may already exist.</li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Tips Card-->
+              </div>
+            </div>
+            <!--end::Create Ticket Form-->
+
+{% endblock %}

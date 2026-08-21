@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Create User{% endblock %}
+{% block page_title %}Create User{% endblock %}
+
+{% block content %}
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Create User</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="user-list.html">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create User</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Create User Form-->
+            <div class="row">
+              <div class="col-lg-9">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-person-plus me-2"></i>New User</h3>
+                  </div>
+                  <form novalidate data-ra-validate action="user-list.html" method="post">
+                    <div class="card-body">
+                      <!--begin::Identity Fields-->
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="firstName" class="form-label">First name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="firstName" name="first_name" required minlength="2" placeholder="e.g. Faiza" />
+                          <div class="invalid-feedback">Please enter a first name.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="lastName" class="form-label">Last name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="lastName" name="last_name" required minlength="2" placeholder="e.g. Tehreem" />
+                          <div class="invalid-feedback">Please enter a last name.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-at"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" required pattern="[a-z0-9.]{3,30}" placeholder="e.g. faiza.tehreem" />
+                            <div class="invalid-feedback">Username must be 3&ndash;30 characters, lowercase letters, numbers and periods only.</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="name@resolveai.edu" />
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <!--end::Identity Fields-->
+
+                      <hr class="my-4" />
+
+                      <!--begin::Password Fields-->
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required minlength="8" data-ra-strength-input="passwordMeter" placeholder="Create a password" />
+                            <button class="btn btn-outline-secondary" type="button" data-ra-toggle-password="password" aria-label="Show password">
+                              <i class="bi bi-eye-fill"></i>
+                            </button>
+                            <div class="invalid-feedback">Password must be at least 8 characters.</div>
+                          </div>
+                          <div class="ra-strength-meter" id="passwordMeter"><span></span></div>
+                          <small class="text-secondary" data-ra-strength-label="passwordMeter"></small>
+                          <ul class="ra-password-rules list-unstyled mt-2 mb-0">
+                            <li data-ra-rule-for="passwordMeter" data-ra-rule="length"><i class="bi bi-circle me-1"></i>At least 8 characters</li>
+                            <li data-ra-rule-for="passwordMeter" data-ra-rule="uppercase"><i class="bi bi-circle me-1"></i>One uppercase letter</li>
+                            <li data-ra-rule-for="passwordMeter" data-ra-rule="number"><i class="bi bi-circle me-1"></i>One number</li>
+                            <li data-ra-rule-for="passwordMeter" data-ra-rule="special"><i class="bi bi-circle me-1"></i>One special character</li>
+                          </ul>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="confirmPassword" class="form-label">Confirm password <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required minlength="8" placeholder="Re-enter the password" />
+                            <button class="btn btn-outline-secondary" type="button" data-ra-toggle-password="confirmPassword" aria-label="Show password">
+                              <i class="bi bi-eye-fill"></i>
+                            </button>
+                            <div class="invalid-feedback">Passwords must match.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <!--end::Password Fields-->
+
+                      <hr class="my-4" />
+
+                      <!--begin::Role & Department Fields-->
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                          <select id="role" name="role" class="form-select" required>
+                            <option value="" selected disabled>Choose a role&hellip;</option>
+                            <option value="requester">Requester</option>
+                            <option value="support_agent">Agent</option>
+                            <option value="support_supervisor">Supervisor</option>
+                            <option value="system_administrator">Administrator</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a role.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                          <select id="department" name="department" class="form-select" required>
+                            <option value="" selected disabled>Choose a department&hellip;</option>
+                            <option value="its">IT Support</option>
+                            <option value="fin">Finance</option>
+                            <option value="adm">Admissions</option>
+                            <option value="exm">Examination</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a department.</div>
+                        </div>
+                      </div>
+                      <!--end::Role & Department Fields-->
+
+                      <hr class="my-4" />
+
+                      <!--begin::Status Toggles-->
+                      <div class="row g-3">
+                        <div class="col-md-4">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="activeStatus" name="is_active" checked />
+                            <label class="form-check-label" for="activeStatus">Active status</label>
+                          </div>
+                          <small class="text-secondary">Inactive users cannot sign in.</small>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="staffStatus" name="is_staff" />
+                            <label class="form-check-label" for="staffStatus">Staff status</label>
+                          </div>
+                          <small class="text-secondary">Grants access to internal-only tooling.</small>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="emailVerified" name="email_verified" />
+                            <label class="form-check-label" for="emailVerified">Email verified</label>
+                          </div>
+                          <small class="text-secondary">Skips the verification email step.</small>
+                        </div>
+                      </div>
+                      <!--end::Status Toggles-->
+
+                      <hr class="my-4" />
+
+                      <!--begin::Welcome Email-->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" name="send_welcome_email" checked />
+                        <label class="form-check-label" for="sendWelcomeEmail">
+                          Send welcome email with account setup instructions
+                        </label>
+                      </div>
+                      <!--end::Welcome Email-->
+                    </div>
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                      <a href="user-list.html" class="btn btn-outline-secondary">Cancel</a>
+                      <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create User</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!--begin::Help Sidebar-->
+              <div class="col-lg-3">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title fs-6"><i class="bi bi-info-circle me-2"></i>About user roles</h3>
+                  </div>
+                  <div class="card-body fs-7">
+                    <p><strong>Requester</strong> &mdash; submits and tracks their own tickets.</p>
+                    <p><strong>Agent</strong> &mdash; works assigned tickets within a department.</p>
+                    <p><strong>Supervisor</strong> &mdash; oversees a department's queue and agents.</p>
+                    <p class="mb-0"><strong>Administrator</strong> &mdash; full system access, including users, roles and settings.</p>
+                  </div>
+                </div>
+              </div>
+              <!--end::Help Sidebar-->
+            </div>
+            <!--end::Create User Form-->
+
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+     {% endblock %}

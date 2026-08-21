@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Account Access &mdash; Category Detail {% endblock %}
+{% block page_title %}Account Access &mdash; Category Detail {% endblock %}
+
+{% block content %}
+
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Account Access</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="category-list.html">Categories</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Account Access</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Category Description Card-->
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <span class="ra-logo-icon" style="width: 3.25rem; height: 3.25rem; font-size: 1.5rem; border-radius: 0.75rem;">
+                      <i class="bi bi-tags"></i>
+                    </span>
+                    <div>
+                      <h3 class="mb-1">Account Access <span class="badge text-bg-success ms-1">Active</span></h3>
+                      <p class="text-secondary mb-2"><code>ACC-ACS</code> &middot; Login, account lockout, MFA, and single sign-on issues affecting access to campus systems.</p>
+                      <p class="mb-0 fs-7">
+                        <i class="bi bi-building me-1"></i>Department: <a href="../departments/department-detail.html" class="text-decoration-none">IT Support</a>
+                        &nbsp;&middot;&nbsp;
+                        <i class="bi bi-flag me-1"></i>Default Priority: <span class="badge badge-priority-medium">Medium</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <a href="category-edit.html" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <a href="category-list.html" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+                  </div>
+                </div>
+                <hr />
+                <div class="row text-center g-3">
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">6</div>
+                    <div class="ra-stat-label">Open Tickets</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">19</div>
+                    <div class="ra-stat-label">Resolved This Month</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">87%</div>
+                    <div class="ra-stat-label">AI Auto-Classified</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value"><span class="badge text-bg-indigo">Enabled</span></div>
+                    <div class="ra-stat-label">AI Classification</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Category Description Card-->
+
+            <div class="row">
+              <div class="col-lg-7">
+                <!--begin::Ticket Volume Chart-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Ticket Volume &mdash; Last 8 Weeks</h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="volumeChart" style="height: 280px; max-width: 100%; overflow: hidden"></div>
+                  </div>
+                </div>
+                <!--end::Ticket Volume Chart-->
+
+                <!--begin::Common Issues-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Common Issues</h3>
+                  </div>
+                  <div class="card-body">
+                    <ul class="mb-0">
+                      <li>Forgotten password / account lockout after repeated failed attempts</li>
+                      <li>Multi-factor authentication (MFA) lockout after phone replacement</li>
+                      <li>Single sign-on (SSO) login failure when redirecting from the student portal</li>
+                      <li>New employee account not provisioned before start date</li>
+                      <li>Account access revoked incorrectly after role change</li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Common Issues-->
+              </div>
+
+              <div class="col-lg-5">
+                <!--begin::Knowledge Articles-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Knowledge Articles</h3>
+                    <div class="card-tools">
+                      <a href="../knowledge-base/article-list.html" class="btn btn-sm btn-outline-secondary">View All</a>
+                    </div>
+                  </div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="../knowledge-base/article-detail.html" class="text-decoration-none">Enabling Two-Factor Authentication</a>
+                        <span class="badge text-bg-success">Published</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="../knowledge-base/article-detail.html" class="text-decoration-none">How to Reset Your Account Password</a>
+                        <span class="badge text-bg-success">Published</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Knowledge Articles-->
+
+                <!--begin::AI Classification Statistics-->
+                <div class="card ra-ai-card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-robot me-1"></i>AI Classification Statistics</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="row text-center g-3 mb-2">
+                      <div class="col-4">
+                        <div class="ra-stat-value">87%</div>
+                        <div class="ra-stat-label">Accuracy</div>
+                      </div>
+                      <div class="col-4">
+                        <div class="ra-stat-value">142</div>
+                        <div class="ra-stat-label">Auto-Classified</div>
+                      </div>
+                      <div class="col-4">
+                        <div class="ra-stat-value">18</div>
+                        <div class="ra-stat-label">Manually Corrected</div>
+                      </div>
+                    </div>
+                    <hr />
+                    <p class="fs-7 text-secondary mb-0">
+                      Based on <code>ticket-classifier-v2.3</code> predictions over the last 30 days. Tickets below the
+                      60% confidence threshold are routed to <a href="../ai/low-confidence-results.html">Low Confidence Results</a>
+                      for manual review.
+                    </p>
+                  </div>
+                </div>
+                <!--end::AI Classification Statistics-->
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

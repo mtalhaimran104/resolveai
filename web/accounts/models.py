@@ -162,6 +162,11 @@ class User(AbstractBaseUser, TimeStampedModel):
         default=False,
         help_text="Allows access to Django Admin at /admin/",
     )
+    is_verified = models.BooleanField(
+         default=False,
+         help_text="Set automatically the first time this user logs in successfully. "
+         "Not the same as is_active — a user can be active but never verified.",
+    )
     is_superuser = models.BooleanField(
         default=False,
         help_text="Bypasses every permission check",
@@ -217,6 +222,13 @@ class User(AbstractBaseUser, TimeStampedModel):
     def has_role(self, code):
         """`user.has_role(RoleCode.SUPERVISOR)`"""
         return str(code) in self.role_codes
+    @property
+    def has_role_agent(self):
+        return self.has_role(RoleCode.AGENT)
+
+    @property
+    def has_role_supervisor(self):
+        return self.has_role(RoleCode.SUPERVISOR)
 
     @property
     def permission_codes(self):
