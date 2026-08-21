@@ -1,25 +1,21 @@
-from fastapi import APIRouter
-
+﻿from fastapi import APIRouter
 from app.schemas.classification import (
     ClassificationRequest,
     ClassificationResponse,
 )
 from app.services.classification_service import classify_ticket
-
-
 router = APIRouter(
     prefix="/api/v1/classification",
     tags=["Classification"],
 )
-
-
 @router.post(
     "/predict",
     response_model=ClassificationResponse,
 )
-def predict_classification(request: ClassificationRequest):
+def predict_classification(
+    request: ClassificationRequest,
+) -> ClassificationResponse:
     category = classify_ticket(request.text)
-
     return ClassificationResponse(
-        category=category
+        category=category,
     )
