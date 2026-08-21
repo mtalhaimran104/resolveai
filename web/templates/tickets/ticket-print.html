@@ -1,0 +1,117 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Print Ticket RA-2026-000118 | ResolveAI{% endblock %}
+{% block page_title %}Print Ticket RA-2026-000118| ResolveAI{% endblock %}
+
+{% block content %}
+ 
+    
+
+        <!--begin::Print Header-->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+          <div class="d-flex align-items-center">
+            <span class="ra-logo-icon"><i class="bi bi-headset"></i></span>
+            <div class="ms-2">
+              <div class="fw-bold fs-4 ra-logo">ResolveAI</div>
+              <div class="ra-tagline">Intelligent Help Desk and Support Platform</div>
+            </div>
+          </div>
+          <div class="text-end">
+            <h1 class="fs-3 mb-0">Ticket Summary</h1>
+            <div class="text-secondary fs-7">Printed on Jul 30, 2026</div>
+          </div>
+        </div>
+        <!--end::Print Header-->
+
+        <!--begin::Ticket Meta-->
+        <div class="mb-4">
+          <h2 class="fs-4 mb-3">RA-2026-000118 &mdash; Unable to log into student portal</h2>
+          <table class="table table-sm table-bordered mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 20%">Status</th>
+                <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                <th style="width: 20%">Priority</th>
+                <td><span class="badge badge-priority-high">High</span></td>
+              </tr>
+              <tr>
+                <th>Department</th>
+                <td>IT Support</td>
+                <th>Category</th>
+                <td>Account Access</td>
+              </tr>
+              <tr>
+                <th>Requester</th>
+                <td>Ayesha Khan</td>
+                <th>Assigned Agent</th>
+                <td>Kamran Latif</td>
+              </tr>
+              <tr>
+                <th>Created</th>
+                <td>Jul 24, 2026 &middot; 9:58 AM</td>
+                <th>Last Updated</th>
+                <td>Jul 30, 2026 &middot; 9:48 AM</td>
+              </tr>
+              <tr>
+                <th>AI Confidence</th>
+                <td>91% (Account Access)</td>
+                <th>Sentiment</th>
+                <td><span class="badge text-bg-danger">Negative</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!--end::Ticket Meta-->
+
+        <!--begin::Description-->
+        <div class="mb-4">
+          <h3 class="fs-5 border-bottom pb-2 mb-3">Description</h3>
+          <p class="mb-0">I am unable to log into the student portal since yesterday evening. Every time I enter my username and password I get an &ldquo;Invalid credentials&rdquo; error even though I'm sure the password is correct. I tried resetting my password using the &ldquo;Forgot Password&rdquo; link but I never receive the reset email. I need access urgently since my assignment submission deadline is tomorrow at midnight.</p>
+        </div>
+        <!--end::Description-->
+
+        <!--begin::Conversation-->
+        <div class="mb-4">
+          <h3 class="fs-5 border-bottom pb-2 mb-3">Full Conversation</h3>
+          <div class="ra-conversation">
+            <div class="ra-message ra-message-requester">
+              <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 24, 2026 &middot; 10:14 AM</span></div>
+              <div class="ra-message-body">I am unable to log into the student portal since yesterday evening. Every time I enter my username and password I get an &ldquo;Invalid credentials&rdquo; error, even though I'm sure the password is correct. I tried the &ldquo;Forgot Password&rdquo; link but the reset email never arrives. I need access urgently &mdash; my assignment deadline is tomorrow at midnight.</div>
+            </div>
+            <div class="ra-message ra-message-agent">
+              <div class="ra-message-meta"><span><strong>Kamran Latif</strong> &middot; Support Agent</span><span>Jul 24, 2026 &middot; 11:02 AM</span></div>
+              <div class="ra-message-body">Hi Ayesha, thanks for the detailed report. I've started looking into this. Could you tell me which browser and device you're using, and whether you've checked your spam/junk folder for the password reset email?</div>
+            </div>
+            <div class="ra-message ra-message-requester">
+              <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 24, 2026 &middot; 2:45 PM</span></div>
+              <div class="ra-message-body">I'm using Chrome on Windows 11, and yes, I checked spam &mdash; nothing there either. I also tried on my phone with the same result.</div>
+            </div>
+            <div class="ra-message ra-message-agent">
+              <div class="ra-message-meta"><span><strong>Kamran Latif</strong> &middot; Support Agent</span><span>Jul 25, 2026 &middot; 9:30 AM</span></div>
+              <div class="ra-message-body">Update: we've traced this to a sync delay between the identity provider and the student portal's SSO service. Our team is applying a fix. I'll update you as soon as it's resolved &mdash; expecting this within a few hours.</div>
+            </div>
+            <div class="ra-message ra-message-requester">
+              <div class="ra-message-meta"><span><strong>Ayesha Khan</strong> &middot; Requester</span><span>Jul 30, 2026 &middot; 9:48 AM</span></div>
+              <div class="ra-message-body">Hi, checking in again &mdash; I'm still unable to log in with the same &ldquo;Invalid credentials&rdquo; error. This has been going on for almost a week now and it's affecting my coursework. Please advise on next steps.</div>
+            </div>
+          </div>
+        </div>
+        <!--end::Conversation-->
+
+        <!--begin::Resolution-->
+        <div class="mb-4">
+          <h3 class="fs-5 border-bottom pb-2 mb-3">Resolution</h3>
+          <p class="mb-0 text-secondary fst-italic">Not yet resolved &mdash; this ticket is still <span class="badge badge-status-in-progress">In Progress</span> as of Jul 30, 2026. It has been escalated to Level 2 (IT Support Supervisor) for further investigation into a suspected SSO infrastructure issue.</p>
+        </div>
+        <!--end::Resolution-->
+
+        <div class="text-center text-secondary fs-7 border-top pt-3 mt-4">
+          ResolveAI &middot; Ticket Summary &middot; RA-2026-000118 &middot; Generated Jul 30, 2026
+        </div>
+      </div>
+    </div>
+  
+  <!--end::Body-->
+{% endblock content %}

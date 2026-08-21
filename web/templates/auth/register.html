@@ -20,12 +20,12 @@ Register | ResolveAI
         <div class="card-body register-card-body">
           <p class="register-box-msg">Create your ResolveAI account</p>
 
-          {% if form.errors %}
+          {% include "includes/messages.html" %}
+
+          {% if form.non_field_errors %}
             <div class="alert alert-danger">
-              {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                  <div>{{ error }}</div>
-                {% endfor %}
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
               {% endfor %}
             </div>
           {% endif %}
@@ -33,38 +33,44 @@ Register | ResolveAI
           <!--begin::Register Form-->
           <form action="{% url 'register' %}" method="post" novalidate data-ra-validate>
             {% csrf_token %}
-           
+
             <!--begin::Name Row-->
             <div class="row">
               <div class="col-6">
                 <label class="visually-hidden" for="regFirstName">First name</label>
-                <div class="input-group mb-3">
+                <div class="input-group mb-1">
                   <div class="input-group-text"><span class="bi bi-person"></span></div>
                   <input
                     id="regFirstName"
                     name="first_name"
                     type="text"
-                    class="form-control"
+                    class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
                     placeholder="First name"
                     autocomplete="given-name"
+                    value="{{ request.POST.first_name|default:'' }}"
                     required
                   />
-                  <div class="invalid-feedback">Required.</div>
+                  <div class="invalid-feedback {% if form.first_name.errors %}d-block{% endif %}">
+                    {{ form.first_name.errors.0 }}
+                  </div>
                 </div>
               </div>
               <div class="col-6">
                 <label class="visually-hidden" for="regLastName">Last name</label>
-                <div class="input-group mb-3">
+                <div class="input-group mb-1">
                   <input
                     id="regLastName"
                     name="last_name"
                     type="text"
-                    class="form-control"
+                    class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
                     placeholder="Last name"
                     autocomplete="family-name"
+                    value="{{ request.POST.last_name|default:'' }}"
                     required
                   />
-                  <div class="invalid-feedback">Required.</div>
+                  <div class="invalid-feedback {% if form.last_name.errors %}d-block{% endif %}">
+                    {{ form.last_name.errors.0 }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -72,34 +78,41 @@ Register | ResolveAI
             <!--end::Name Row-->
 
             <label class="visually-hidden" for="regUsername">Username</label>
-            <div class="input-group mb-3">
+            <div class="input-group mb-1">
               <div class="input-group-text"><span class="bi bi-at"></span></div>
               <input
                 id="regUsername"
                 name="username"
                 type="text"
-                class="form-control"
+                class="form-control {% if form.username.errors %}is-invalid{% endif %}"
                 placeholder="Username"
                 autocomplete="username"
                 minlength="3"
+                pattern="[a-zA-Z0-9\-]+"
+                value="{{ request.POST.username|default:'' }}"
                 required
               />
-              <div class="invalid-feedback">Choose a username with at least 3 characters.</div>
+              <div class="invalid-feedback {% if form.username.errors %}d-block{% endif %}">
+                {{ form.username.errors.0 }}
+              </div>
             </div>
 
             <label class="visually-hidden" for="regEmail">Email</label>
-            <div class="input-group mb-3">
+            <div class="input-group mb-1">
               <div class="input-group-text"><span class="bi bi-envelope-fill"></span></div>
               <input
                 id="regEmail"
                 name="email"
                 type="email"
-                class="form-control"
+                class="form-control {% if form.email.errors %}is-invalid{% endif %}"
                 placeholder="Enter your email"
                 autocomplete="email"
+                value="{{ request.POST.email|default:'' }}"
                 required
               />
-              <div class="invalid-feedback">Please enter a valid email address.</div>
+              <div class="invalid-feedback {% if form.email.errors %}d-block{% endif %}">
+                {{ form.email.errors.0 }}
+              </div>
             </div>
 
             <label class="visually-hidden" for="regPassword">Password</label>
@@ -109,7 +122,7 @@ Register | ResolveAI
                 id="regPassword"
                 name="password"
                 type="password"
-                class="form-control"
+                class="form-control {% if form.password.errors %}is-invalid{% endif %}"
                 placeholder="Password"
                 autocomplete="new-password"
                 minlength="8"
@@ -124,7 +137,9 @@ Register | ResolveAI
               >
                 <i class="bi bi-eye-fill"></i>
               </button>
-              <div class="invalid-feedback">Password must be at least 8 characters.</div>
+              <div class="invalid-feedback {% if form.password.errors %}d-block{% endif %}">
+                {{ form.password.errors.0 }}
+              </div>
             </div>
             <div class="ra-strength-meter" id="regPasswordMeter"><span></span></div>
             <p class="fs-7 text-secondary mb-2" data-ra-strength-label="regPasswordMeter"></p>
@@ -145,13 +160,13 @@ Register | ResolveAI
             </ul>
 
             <label class="visually-hidden" for="regConfirmPassword">Confirm password</label>
-            <div class="input-group mb-3">
+            <div class="input-group mb-1">
               <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
               <input
                 id="regConfirmPassword"
                 name="confirm_password"
                 type="password"
-                class="form-control"
+                class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
                 placeholder="Confirm password"
                 autocomplete="new-password"
                 required
@@ -164,7 +179,9 @@ Register | ResolveAI
               >
                 <i class="bi bi-eye-fill"></i>
               </button>
-              <div class="invalid-feedback">Passwords do not match.</div>
+              <div class="invalid-feedback {% if form.confirm_password.errors %}d-block{% endif %}">
+                {{ form.confirm_password.errors.0 }}
+              </div>
             </div>
 
             <!--begin::Row-->
@@ -207,6 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const fieldId = btn.getAttribute("data-ra-toggle-password");
       const field = document.getElementById(fieldId);
       const icon = btn.querySelector("i");
+
       if (field.type === "password") {
         field.type = "text";
         icon.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
@@ -222,8 +240,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const meterId = input.getAttribute("data-ra-strength-input");
     const meter = document.getElementById(meterId);
     const meterBar = meter ? meter.querySelector("span") : null;
-    const label = document.querySelector('[data-ra-strength-label="' + meterId + '"]');
-    const rules = document.querySelectorAll('[data-ra-rule-for="' + meterId + '"]');
+    const label = document.querySelector(
+      '[data-ra-strength-label="' + meterId + '"]'
+    );
+    const rules = document.querySelectorAll(
+      '[data-ra-rule-for="' + meterId + '"]'
+    );
 
     input.addEventListener("input", function () {
       const value = input.value;
@@ -235,9 +257,11 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       let passed = 0;
+
       rules.forEach(function (rule) {
         const type = rule.getAttribute("data-ra-rule");
         const icon = rule.querySelector("i");
+
         if (checks[type]) {
           icon.classList.replace("bi-circle", "bi-check-circle-fill");
           rule.classList.add("text-success");
@@ -252,6 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       let strengthText = "Weak";
       let color = "bg-danger";
+
       if (passed === 4) {
         strengthText = "Strong";
         color = "bg-success";
@@ -264,7 +289,10 @@ document.addEventListener("DOMContentLoaded", function () {
         meterBar.className = color;
         meterBar.style.width = percent + "%";
       }
-      if (label) label.textContent = value ? strengthText + " password" : "";
+
+      if (label) {
+        label.textContent = value ? strengthText + " password" : "";
+      }
     });
   });
 
@@ -275,38 +303,55 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         e.stopPropagation();
       }
+
       form.classList.add("was-validated");
     });
   });
+
+  // Live username availability check
+  const usernameInput = document.getElementById("regUsername");
+  const usernameFeedback = document.getElementById("usernameFeedback");
+  let debounceTimer;
+  const usernamePattern = /^[a-zA-Z0-9-]+$/;
+
+  if (usernameInput) {
+    usernameInput.addEventListener("input", function () {
+      clearTimeout(debounceTimer);
+
+      const value = usernameInput.value;
+
+      if (value.length === 0) {
+        usernameFeedback.textContent = "";
+        return;
+      }
+
+      if (!usernamePattern.test(value)) {
+        usernameFeedback.textContent =
+          "Username can only contain letters, numbers, and dashes.";
+        usernameFeedback.className = "small mt-1 text-danger";
+        return;
+      }
+
+      if (value.length < 3) {
+        usernameFeedback.textContent = "";
+        return;
+      }
+
+      debounceTimer = setTimeout(function () {
+        fetch("/check-username/?username=" + encodeURIComponent(value))
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.available) {
+              usernameFeedback.textContent = "Username is available";
+              usernameFeedback.className = "small mt-1 text-success";
+            } else {
+              usernameFeedback.textContent = "Username already exists";
+              usernameFeedback.className = "small mt-1 text-danger";
+            }
+          });
+      }, 400);
+    });
+  }
 });
-const usernameInput = document.getElementById("regUsername");
-const usernameFeedback = document.getElementById("usernameFeedback");
-let debounceTimer;
-
-if (usernameInput) {
-  usernameInput.addEventListener("input", function () {
-    clearTimeout(debounceTimer);
-    const value = usernameInput.value.trim();
-
-    if (value.length < 3) {
-      usernameFeedback.textContent = "";
-      return;
-    }
-
-    debounceTimer = setTimeout(function () {
-      fetch("{% url 'check_username' %}?username=" + encodeURIComponent(value))
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.available) {
-            usernameFeedback.textContent = "Username is available";
-            usernameFeedback.className = "small mt-1 text-success";
-          } else {
-            usernameFeedback.textContent = "Username already exists";
-            usernameFeedback.className = "small mt-1 text-danger";
-          }
-        });
-    }, 400); // waits 400ms after typing stops before checking
-  });
-}
 </script>
 {% endblock %}

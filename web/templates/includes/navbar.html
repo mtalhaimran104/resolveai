@@ -32,21 +32,31 @@
       <!--end::Notifications placeholder-->
 
       <!--begin::User Menu placeholder-->
+      
       <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-          <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="user-image rounded-circle shadow" alt="Current user" />
-          <span class="d-none d-md-inline">Admin User</span>
+          <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="user-image rounded-circle shadow" alt="{{ request.user.get_full_name|default:request.user.username }}" />
+          <span class="d-none d-md-inline">{{ request.user.get_full_name|default:request.user.username }}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
           <li class="user-header text-bg-primary">
-            <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="rounded-circle shadow" alt="Current user" />
-            <p>Admin User<small>Authentication coming in a later phase</small></p>
+            <img src="{% static 'adminlte/img/user-avatar.jpg' %}" class="rounded-circle shadow" alt="{{ request.user.get_full_name|default:request.user.username }}" />
+            <p>
+              {{ request.user.get_full_name|default:request.user.username }}
+              <small>{{ user_role_codes|join:", "|default:"No role assigned" }}</small>
+            </p>
           </li>
           <li class="user-footer">
-            <a href="/admin/" class="btn btn-outline-primary w-100">Django Admin</a>
+            <form action="{% url 'logout' %}" method="post" class="w-100">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger w-100">
+                <i class="bi bi-box-arrow-right me-1"></i>Logout
+              </button>
+            </form>
           </li>
         </ul>
       </li>
+      
       <!--end::User Menu placeholder-->
     </ul>
     <!--end::End Navbar Links-->

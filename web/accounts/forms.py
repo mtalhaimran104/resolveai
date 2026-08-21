@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -21,8 +22,15 @@ class SignUpForm(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        if not re.fullmatch(r"[a-zA-Z0-9-]+", username):
+         raise forms.ValidationError(
+            "Username can only contain letters, numbers, and dashes."
+        )
+
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exists.")
+
         return username
 
     def clean_email(self):
@@ -41,7 +49,7 @@ class SignUpForm(forms.Form):
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
         if password and confirm_password and password != confirm_password:
-            raise forms.ValidationError("Passwords do not match.")
+            self.add_error("confirm_password", "Passwords do not match.")
         return cleaned_data
 
     def save(self):
@@ -56,7 +64,6 @@ class SignUpForm(forms.Form):
         default_role = Role.objects.get(code="REQUESTER")
         UserRole.objects.create(user=user, role=default_role)
         return user
-    
 
 
 class LoginForm(AuthenticationForm):

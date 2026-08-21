@@ -3,12 +3,14 @@ from django.urls import path
 
 from . import views
 
-app_name = "accounts"
+
 
 urlpatterns = [
     path("signup/", views.signup_view, name="signup"),
     path("login/", views.ResolveAILoginView.as_view(), name="login"),
     path("logout/", views.ResolveAILogoutView.as_view(), name="logout"),
+    path("users/", views.user_list, name="user_list"),
+    path("users/<int:pk>/toggle/", views.toggle_user_active, name="toggle_user_active"),
 
     path(
         "forgot-password/",

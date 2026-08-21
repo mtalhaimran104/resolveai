@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Edit Department{% endblock %}
+{% block page_title %}Edit Department {% endblock %}
+
+{% block content %}
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Edit Department</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="department-list.html">Departments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit Department</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Edit Department Form-->
+            <form novalidate data-ra-validate action="#" method="post">
+              <div class="row">
+                <div class="col-lg-8">
+                  <!--begin::Department Details-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Department Details</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-md-8">
+                          <label for="deptName" class="form-label">Department Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="deptName" name="deptName" value="IT Support" required minlength="2" maxlength="80" />
+                          <div class="invalid-feedback">Please enter a department name.</div>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="deptCode" class="form-label">Code <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control text-uppercase" id="deptCode" name="deptCode" value="ITS" required pattern="[A-Za-z]{2,6}" maxlength="6" />
+                          <div class="invalid-feedback">Enter a 2&ndash;6 letter code (e.g. ITS).</div>
+                        </div>
+                        <div class="col-12">
+                          <label for="deptDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="deptDescription" name="deptDescription" rows="3" required minlength="10" maxlength="400">Handles account access, hardware, network, and technical error tickets across the organization.</textarea>
+                          <div class="invalid-feedback">Please provide a short description (at least 10 characters).</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="deptSupervisor" class="form-label">Department Supervisor <span class="text-danger">*</span></label>
+                          <select class="form-select" id="deptSupervisor" name="deptSupervisor" required>
+                            <option value="">Select a supervisor&hellip;</option>
+                            <option value="usman-raza" selected>Usman Raza &mdash; Support Supervisor</option>
+                            <option value="nadia-farooq">Nadia Farooq &mdash; Finance Supervisor</option>
+                            <option value="omar-sheikh">Omar Sheikh &mdash; Admissions Supervisor</option>
+                            <option value="rabia-chaudhry">Rabia Chaudhry &mdash; Examination Supervisor</option>
+                          </select>
+                          <div class="invalid-feedback">Please select a department supervisor.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label d-block">Active Status</label>
+                          <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="deptActive" name="deptActive" checked />
+                            <label class="form-check-label" for="deptActive">Department is active</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Department Details-->
+
+                  <!--begin::Assigned Agents-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Assigned Agents</h3>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-secondary fs-7">Select the support agents who will handle tickets routed to this department.</p>
+                      <div class="row g-2">
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentKamran" name="assignedAgents" value="kamran-latif" checked />
+                            <label class="form-check-label" for="agentKamran">Kamran Latif <span class="text-secondary fs-7">&mdash; IT Support</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentFaiza" name="assignedAgents" value="faiza-tehreem" checked />
+                            <label class="form-check-label" for="agentFaiza">Faiza Tehreem <span class="text-secondary fs-7">&mdash; IT Support</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentHira" name="assignedAgents" value="hira-sultan" checked />
+                            <label class="form-check-label" for="agentHira">Hira Sultan <span class="text-secondary fs-7">&mdash; IT Support</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentBilal" name="assignedAgents" value="bilal-hassan" />
+                            <label class="form-check-label" for="agentBilal">Bilal Hassan <span class="text-secondary fs-7">&mdash; Finance</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentSana" name="assignedAgents" value="sana-iqbal" />
+                            <label class="form-check-label" for="agentSana">Sana Iqbal <span class="text-secondary fs-7">&mdash; Finance</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentZara" name="assignedAgents" value="zara-malik" />
+                            <label class="form-check-label" for="agentZara">Zara Malik <span class="text-secondary fs-7">&mdash; Admissions</span></label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agentHamza" name="assignedAgents" value="hamza-tariq" />
+                            <label class="form-check-label" for="agentHamza">Hamza Tariq <span class="text-secondary fs-7">&mdash; Examination</span></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Assigned Agents-->
+                </div>
+
+                <div class="col-lg-4">
+                  <!--begin::Save Panel-->
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Save Changes</h3>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-secondary fs-7">Last updated by Zainab Malik on Jul 18, 2026.</p>
+                      <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+                      <a href="department-detail.html" class="btn btn-outline-secondary w-100">Cancel</a>
+                    </div>
+                  </div>
+                  <!--end::Save Panel-->
+                </div>
+              </div>
+            </form>
+            <!--end::Edit Department Form-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Suggested FAQs | ResolveAI{% endblock %}
+{% block page_title %}Suggested FAQs{% endblock %}
+
+{% block content %}
+<div class="alert alert-info">
+  AI-suggested FAQ answers will appear here once the AI integration is connected.
+</div>
+{% for faq in faqs %}
+  <div class="card mb-2">
+    <div class="card-body">
+      <h6>{{ faq.question }}</h6>
+      <p class="mb-0 text-secondary">{{ faq.suggested_answer }}</p>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

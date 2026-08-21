@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Categories {% endblock %}
+{% block page_title %}Categories {% endblock %}
+
+{% block content %}
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Categories</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item active" aria-current="page">Categories</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end mb-3">
+              <a href="category-create.html" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>New Category
+              </a>
+            </div>
+            <!--end::Toolbar-->
+
+            <!--begin::Categories Table-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">All Categories</h3>
+                <div class="card-tools">
+                  <span class="text-secondary fs-7">8 categories</span>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Department</th>
+                        <th class="text-center">Open Tickets</th>
+                        <th>AI Usage</th>
+                        <th class="text-center">Active</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Account Access</a></td>
+                        <td><code>ACC-ACS</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">IT Support</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">6</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">87% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Password Reset</a></td>
+                        <td><code>PWD-RST</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">IT Support</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">3</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">94% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Technical Error</a></td>
+                        <td><code>TECH-ERR</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">IT Support</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">5</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">79% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Payment Issue</a></td>
+                        <td><code>PAY-ISS</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">Finance</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">5</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">81% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Refund Request</a></td>
+                        <td><code>REF-REQ</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">Finance</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">4</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">88% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Admission Inquiry</a></td>
+                        <td><code>ADM-INQ</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">Admissions</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">4</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">92% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Document Verification</a></td>
+                        <td><code>DOC-VER</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">Admissions</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">3</span></td>
+                        <td><span class="badge text-bg-secondary">Disabled</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><a href="category-detail.html" class="fw-semibold text-decoration-none">Grade Dispute</a></td>
+                        <td><code>GRD-DSP</code></td>
+                        <td><a href="../departments/department-detail.html" class="text-decoration-none">Examination</a></td>
+                        <td class="text-center"><span class="badge text-bg-primary">4</span></td>
+                        <td><span class="badge text-bg-indigo">Enabled</span> <span class="text-secondary fs-7">73% auto</span></td>
+                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
+                        <td class="text-end">
+                          <a href="category-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          <a href="category-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer">
+                <nav aria-label="Categories pagination">
+                  <ul class="pagination pagination-sm justify-content-end mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a></li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <!--end::Categories Table-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

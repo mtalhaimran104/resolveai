@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}IT Support &mdash; Department Detail  {% endblock %}
+{% block page_title %}IT Support &mdash; Department Detail  {% endblock %}
+
+{% block content %}
+
+
+
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">IT Support</h1>
+              </div>
+              <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
+                    <li class="breadcrumb-item">Administration</li>
+                    <li class="breadcrumb-item"><a href="department-list.html">Departments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">IT Support</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+
+            <!--begin::Department Summary Card-->
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <span class="ra-logo-icon" style="width: 3.25rem; height: 3.25rem; font-size: 1.5rem; border-radius: 0.75rem;">
+                      <i class="bi bi-building"></i>
+                    </span>
+                    <div>
+                      <h3 class="mb-1">IT Support <span class="badge text-bg-success ms-1">Active</span></h3>
+                      <p class="text-secondary mb-2"><code>ITS</code> &middot; Handles account access, hardware, network, and technical error tickets across the organization.</p>
+                      <p class="mb-0 fs-7">
+                        <i class="bi bi-person-badge me-1"></i>Supervisor: <a href="../users/user-list.html" class="text-decoration-none">Usman Raza</a>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <a href="department-edit.html" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <a href="department-list.html" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+                  </div>
+                </div>
+                <hr />
+                <div class="row text-center g-3">
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">3</div>
+                    <div class="ra-stat-label">Agents</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">14</div>
+                    <div class="ra-stat-label">Open Tickets</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">3</div>
+                    <div class="ra-stat-label">Categories</div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="ra-stat-value">27</div>
+                    <div class="ra-stat-label">Resolved This Month</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Department Summary Card-->
+
+            <div class="row">
+              <div class="col-lg-7">
+                <!--begin::Agents-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Agents</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>Agent</th>
+                            <th class="text-center">Open Tickets</th>
+                            <th class="text-center">Resolved (30d)</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="d-flex align-items-center gap-2">
+                              <img src="../assets/img/user6-128x128.jpg" class="img-size-32 rounded-circle" alt="Kamran Latif" />
+                              Kamran Latif
+                            </td>
+                            <td class="text-center">6</td>
+                            <td class="text-center">11</td>
+                            <td class="text-end"><a href="../users/user-list.html" class="btn btn-sm btn-outline-secondary">View</a></td>
+                          </tr>
+                          <tr>
+                            <td class="d-flex align-items-center gap-2">
+                              <img src="../assets/img/user4-128x128.jpg" class="img-size-32 rounded-circle" alt="Faiza Tehreem" />
+                              Faiza Tehreem
+                            </td>
+                            <td class="text-center">4</td>
+                            <td class="text-center">9</td>
+                            <td class="text-end"><a href="../users/user-list.html" class="btn btn-sm btn-outline-secondary">View</a></td>
+                          </tr>
+                          <tr>
+                            <td class="d-flex align-items-center gap-2">
+                              <img src="../assets/img/user7-128x128.jpg" class="img-size-32 rounded-circle" alt="Hira Sultan" />
+                              Hira Sultan
+                            </td>
+                            <td class="text-center">4</td>
+                            <td class="text-center">7</td>
+                            <td class="text-end"><a href="../users/user-list.html" class="btn btn-sm btn-outline-secondary">View</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Agents-->
+
+                <!--begin::Open Queue-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Open Queue</h3>
+                    <div class="card-tools">
+                      <a href="../queue/department-queue.html" class="btn btn-sm btn-outline-secondary">View Full Queue</a>
+                    </div>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>Ticket #</th>
+                            <th>Subject</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Agent</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none">RA-2026-000139</a></td>
+                            <td>Portal down for entire campus</td>
+                            <td><span class="badge badge-priority-critical">Critical</span></td>
+                            <td><span class="badge badge-status-open">Open</span></td>
+                            <td>Kamran Latif</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none">RA-2026-000118</a></td>
+                            <td>Unable to log into student portal</td>
+                            <td><span class="badge badge-priority-high">High</span></td>
+                            <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                            <td>Kamran Latif</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none">RA-2026-000156</a></td>
+                            <td>MFA lockout after phone replacement</td>
+                            <td><span class="badge badge-priority-medium">Medium</span></td>
+                            <td><span class="badge badge-status-open">Open</span></td>
+                            <td>Hira Sultan</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none">RA-2026-000158</a></td>
+                            <td>VPN client fails to connect from campus wifi</td>
+                            <td><span class="badge badge-priority-high">High</span></td>
+                            <td><span class="badge badge-status-in-progress">In Progress</span></td>
+                            <td>Faiza Tehreem</td>
+                          </tr>
+                          <tr>
+                            <td><a href="../tickets/ticket-detail-agent.html" class="text-decoration-none">RA-2026-000160</a></td>
+                            <td>Password reset link expired immediately</td>
+                            <td><span class="badge badge-priority-low">Low</span></td>
+                            <td><span class="badge badge-status-waiting">Waiting for User</span></td>
+                            <td>Faiza Tehreem</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Open Queue-->
+              </div>
+
+              <div class="col-lg-5">
+                <!--begin::Ticket Categories-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Ticket Categories</h3>
+                    <div class="card-tools">
+                      <a href="../categories/category-list.html" class="btn btn-sm btn-outline-secondary">Manage</a>
+                    </div>
+                  </div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="../categories/category-detail.html" class="text-decoration-none">Account Access</a>
+                        <span class="badge text-bg-primary rounded-pill">6</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="../categories/category-detail.html" class="text-decoration-none">Password Reset</a>
+                        <span class="badge text-bg-primary rounded-pill">3</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="../categories/category-detail.html" class="text-decoration-none">Technical Error</a>
+                        <span class="badge text-bg-primary rounded-pill">5</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Ticket Categories-->
+
+                <!--begin::Workload Chart-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Agent Workload</h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="workloadChart" style="height: 260px; max-width: 100%; overflow: hidden"></div>
+                  </div>
+                </div>
+                <!--end::Workload Chart-->
+
+                <!--begin::Resolution Statistics-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Resolution Statistics</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="row text-center g-3">
+                      <div class="col-6">
+                        <div class="ra-stat-value">4.2h</div>
+                        <div class="ra-stat-label">Avg. Resolution Time</div>
+                      </div>
+                      <div class="col-6">
+                        <div class="ra-stat-value">27</div>
+                        <div class="ra-stat-label">Resolved This Month</div>
+                      </div>
+                    </div>
+                    <hr />
+                    <ul class="list-unstyled mb-0 fs-7">
+                      <li class="d-flex justify-content-between py-1"><span>First response (avg.)</span><span class="fw-semibold">18 min</span></li>
+                      <li class="d-flex justify-content-between py-1"><span>SLA compliance</span><span class="fw-semibold text-success">96%</span></li>
+                      <li class="d-flex justify-content-between py-1"><span>Reopened tickets (30d)</span><span class="fw-semibold">2</span></li>
+                    </ul>
+                  </div>
+                </div>
+                <!--end::Resolution Statistics-->
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      {% endblock %}

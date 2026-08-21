@@ -1,0 +1,118 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}All Tickets{% endblock %}
+{% block page_title %}All Tickets{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+
+  {% include "includes/messages.html" %}
+
+  <!--begin::Ticket Summary-->
+  <div class="card card-outline card-primary mb-4">
+    <div class="card-header">
+      <h3 class="card-title mb-0">
+        <span class="fw-bold">{{ ticket.ticket_number }}</span> &mdash; {{ ticket.subject }}
+      </h3>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Requester</div>
+          <span>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</span>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Department</div>
+          <span>{{ ticket.department.name|default:"—" }}</span>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Category</div>
+          <span>{{ ticket.category.name|default:"—" }}</span>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Priority</div>
+          <span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Status</div>
+          <span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Created</div>
+          <span>{{ ticket.created_at|date:"M d, Y" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Ticket Summary-->
+
+  <div class="row">
+    <div class="col-lg-7">
+      <!--begin::Assignment Form-->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title fs-6 mb-0"><i class="bi bi-person-plus me-1"></i>Assign / Reassign Ticket</h3>
+        </div>
+        <div class="card-body">
+
+          {% if ticket.assigned_to %}
+          <div class="alert alert-secondary d-flex align-items-center">
+            <div>
+              <div class="fs-7 text-secondary">Current Agent</div>
+              <strong>{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}</strong>
+            </div>
+          </div>
+          {% endif %}
+
+          <form novalidate action="{% url 'ticket_assign' ticket.pk %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="assignAgent" class="form-label">Select Agent <span class="text-danger">*</span></label>
+              <select class="form-select" id="assignAgent" name="agent" required>
+                <option value="" disabled selected>Choose agent&hellip;</option>
+                {% for agent in agents %}
+                  <option value="{{ agent.id }}" {% if ticket.assigned_to_id == agent.id %}selected{% endif %}>
+                    {{ agent.get_full_name|default:agent.username }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="assignReason" class="form-label">Assignment Reason</label>
+              <textarea class="form-control" id="assignReason" name="reason" rows="3" placeholder="Optional note explaining this assignment&hellip;"></textarea>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Assign</button>
+              <a href="{% url 'admin_ticket_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+      <!--end::Assignment Form-->
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-header"><h3 class="card-title fs-6 mb-0">Team Load</h3></div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for agent in agents %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ agent.get_full_name|default:agent.username }}</span>
+                <span class="badge text-bg-secondary">{{ agent.tickets_assigned.count }} open</span>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">No agents found.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

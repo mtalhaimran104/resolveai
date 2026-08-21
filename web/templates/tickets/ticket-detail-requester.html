@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ ticket.ticket_number }} | ResolveAI{% endblock %}
+{% block page_title %}{{ ticket.ticket_number }} | ResolveAI{% endblock %}
+
+{% block content %}
+<!--begin::Ticket Summary-->
+<div class="card card-outline card-primary mb-4">
+  <div class="card-header">
+    <h3 class="card-title mb-0">
+      <span class="fw-bold">{{ ticket.ticket_number }}</span> &mdash; {{ ticket.subject }}
+    </h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Status</div>
+        <span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Priority</div>
+        <span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Category</div>
+        <span>{{ ticket.category.name|default:"—" }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Department</div>
+        <span>{{ ticket.department.name|default:"—" }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Assigned Agent</div>
+        <span>
+          {% if ticket.assigned_to %}
+            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+          {% else %}
+            <span class="text-secondary fst-italic">Unassigned</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Created</div>
+        <span>{{ ticket.created_at|date:"M d, Y" }} &middot; {{ ticket.created_at|date:"g:i A" }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Last Updated</div>
+        <span>{{ ticket.updated_at|date:"M d, Y" }} &middot; {{ ticket.updated_at|date:"g:i A" }}</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fs-7 text-secondary">Ticket History</div>
+        <span>{{ history|length }} event{{ history|length|pluralize }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Ticket Summary-->
+
+<div class="row">
+  <div class="col-lg-8">
+    <!--begin::Description-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0">Description</h3></div>
+      <div class="card-body">
+        <p class="mb-0">{{ ticket.description|linebreaksbr }}</p>
+      </div>
+    </div>
+    <!--end::Description-->
+
+    <!--begin::Attachments-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-paperclip me-1"></i>Attachments</h3></div>
+      <div class="card-body">
+        {% if attachments %}
+          <ul class="list-group list-group-flush mb-3">
+            {% for att in attachments %}
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span>
+                  <i class="bi bi-file-earmark me-1"></i>
+                  <a href="{{ att.file.url }}" target="_blank" rel="noopener">{{ att.original_filename }}</a>
+                  <span class="text-secondary fs-7">&middot; {{ att.size_bytes|filesizeformat }} &middot; by {{ att.uploaded_by.get_full_name|default:att.uploaded_by.username }} &middot; {{ att.created_at|date:"M d, Y g:i A" }}</span>
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-secondary">No attachments yet.</p>
+        {% endif %}
+        <form method="POST" action="{% url 'ticket_add_attachment' ticket.pk %}" enctype="multipart/form-data" class="d-flex gap-2 align-items-start">
+          {% csrf_token %}
+          {{ attachment_form.file }}
+          <button type="submit" class="btn btn-outline-primary flex-shrink-0"><i class="bi bi-upload me-1"></i>Upload</button>
+        </form>
+        {% if attachment_form.file.errors %}
+          <div class="text-danger small mt-1">{{ attachment_form.file.errors|striptags }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <!--end::Attachments-->
+
+    <!--begin::Conversation-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-chat-dots me-1"></i>Conversation</h3></div>
+      <div class="card-body">
+        {% if comments %}
+          {% for comment in comments %}
+            <div class="d-flex mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+              <div class="flex-shrink-0">
+                <i class="bi bi-person-circle fs-4 text-secondary"></i>
+              </div>
+              <div class="ms-3 flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-semibold">{{ comment.author.get_full_name|default:comment.author.username }}</span>
+                  <span class="text-secondary fs-7">{{ comment.created_at|date:"M d, Y g:i A" }}</span>
+                </div>
+                <p class="mb-0">{{ comment.message|linebreaksbr }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-secondary mb-0">No replies yet.</p>
+        {% endif %}
+      </div>
+    </div>
+    <!--end::Conversation-->
+
+    <!--begin::Reply Form-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0">Add a Reply</h3></div>
+      <div class="card-body">
+        <form method="POST" action="{% url 'ticket_add_comment' ticket.pk %}">
+          {% csrf_token %}
+          {{ comment_form.message }}
+          {% if comment_form.message.errors %}
+            <div class="text-danger small mt-1">{{ comment_form.message.errors|striptags }}</div>
+          {% endif %}
+          <div class="mt-2 text-end">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i>Reply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--end::Reply Form-->
+
+    <!--begin::Ticket History-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-clock-history me-1"></i>Ticket History</h3></div>
+      <div class="card-body">
+        {% if history %}
+          <ul class="list-group list-group-flush">
+            {% for entry in history %}
+              <li class="list-group-item px-0">
+                <div class="d-flex justify-content-between">
+                  <span>{{ entry.description }}</span>
+                  <span class="text-secondary fs-7 flex-shrink-0 ms-3">{{ entry.created_at|date:"M d, Y g:i A" }}</span>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-secondary mb-0">No history recorded yet.</p>
+        {% endif %}
+      </div>
+    </div>
+    <!--end::Ticket History-->
+  </div>
+
+  <div class="col-lg-4">
+    <!--begin::Ticket Actions-->
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0">Ticket Actions</h3></div>
+      <div class="card-body d-grid gap-2">
+        <button type="button" class="btn btn-outline-danger" disabled title="Coming soon">
+          <i class="bi bi-check-circle me-1"></i>Close Ticket
+        </button>
+        <button type="button" class="btn btn-outline-secondary" disabled title="Available once the ticket is Resolved or Closed">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Reopen Ticket
+        </button>
+        <div class="form-text">Reopen becomes available once an agent marks this ticket Resolved or Closed.</div>
+      </div>
+    </div>
+    <!--end::Ticket Actions-->
+
+    <!--begin::Related Knowledge Articles-->
+    <div class="card">
+      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-journal-text me-1"></i>Related Knowledge Articles</h3></div>
+      <div class="card-body">
+        <p class="text-secondary mb-0">Knowledge base articles aren't wired up yet — coming soon.</p>
+      </div>
+    </div>
+    <!--end::Related Knowledge Articles-->
+  </div>
+</div>
+{% endblock %}

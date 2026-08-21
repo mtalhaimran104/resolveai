@@ -33,19 +33,21 @@
           <!--begin::Login Form-->
           <form action="{% url 'login' %}" method="post" novalidate data-ra-validate>
           {% csrf_token %}
-            <label class="visually-hidden" for="loginUsername">Email or username</label>
-            <div class="input-group mb-3">
+            <label class="visually-hidden" for="loginUsername">Username</label>
+            <div class="input-group mb-1">
               <div class="input-group-text"><span class="bi bi-person-fill"></span></div>
               <input
                 id="loginUsername"
                 name="username"
                 type="text"
                 class="form-control"
-                placeholder="Email or username"
+                placeholder="Username"
                 autocomplete="username"
+                pattern="^[a-zA-Z0-9-]+$"
+                title="Only letters, numbers, and dashes are allowed — no spaces."
                 required
               />
-              <div class="invalid-feedback">Please enter your email or username.</div>
+              <div class="invalid-feedback">Only letters, numbers, and dashes are allowed — no spaces.</div>
             </div>
 
             <label class="visually-hidden" for="loginPassword">Password</label>

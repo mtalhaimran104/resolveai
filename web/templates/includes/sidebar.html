@@ -10,30 +10,89 @@
   <div class="sidebar-wrapper">
     <nav class="mt-2" aria-label="Main navigation">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false">
-        <li class="nav-item">
-          <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-            <i class="nav-icon bi bi-speedometer2"></i>
-            <p>Dashboard</p>
-          </a>
+
+        {% if user.is_superuser %}
+
+          <!-- ADMIN SIDEBAR -->
+          <li class="nav-item">
+            <a href="{% url 'user_list' %}" class="nav-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-people"></i>
+              <p>All Users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'admin_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-ticket-detailed"></i>
+              <p>All Tickets</p>
+            </a>
+          </li>
+
+        {% elif user.has_role_supervisor %}
+
+          <!-- SUPERVISOR SIDEBAR -->
+          <li class="nav-item">
+            <a href="{% url 'supervisor_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'supervisor_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-kanban"></i>
+              <p>Ticket Management</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'unassigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-inbox"></i>
+              <p>Unassigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'assigned_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'assigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-person-check"></i>
+              <p>Assigned Tickets</p>
+            </a>
+          </li>
+
+        {% elif user.has_role_agent %}
+
+          <!-- AGENT SIDEBAR -->
+          <li class="nav-item">
+            <a href="{% url 'agent_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'agent_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-ticket-detailed"></i>
+              <p>My Assigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'agent_faq_list' %}" class="nav-link {% if request.resolver_match.url_name == 'agent_faq_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-robot"></i>
+              <p>Suggested FAQs</p>
+            </a>
+          </li>
+
+        {% else %}
+
+          <!-- REQUESTER SIDEBAR -->
+          <li class="nav-item">
+            <a href="{% url 'create_ticket' %}" class="nav-link {% if request.resolver_match.url_name == 'create_ticket' %}active{% endif %}">
+              <i class="nav-icon bi bi-plus-square"></i>
+              <p>Create Ticket</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'my_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'my_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-ticket-detailed"></i>
+              <p>My Tickets</p>
+            </a>
+          </li>
+
+        {% endif %}
+
+        <li class="nav-item mt-auto">
+          <form action="{% url 'logout' %}" method="post" class="px-3">
+            {% csrf_token %}
+            <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start p-0">
+              <i class="nav-icon bi bi-box-arrow-right"></i>
+              <p>Logout</p>
+            </button>
+          </form>
         </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link disabled" aria-disabled="true">
-            <i class="nav-icon bi bi-ticket-detailed"></i>
-            <p>Tickets <span class="badge text-bg-secondary fs-8 ms-1">Coming soon</span></p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link disabled" aria-disabled="true">
-            <i class="nav-icon bi bi-journal-text"></i>
-            <p>Knowledge Base <span class="badge text-bg-secondary fs-8 ms-1">Coming soon</span></p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link disabled" aria-disabled="true">
-            <i class="nav-icon bi bi-shield-lock"></i>
-            <p>Administration <span class="badge text-bg-secondary fs-8 ms-1">Coming soon</span></p>
-          </a>
-        </li>
+
       </ul>
     </nav>
   </div>
