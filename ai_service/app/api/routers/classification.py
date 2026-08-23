@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter
+from fastapi import APIRouter
 from app.schemas.classification import (
     ClassificationRequest,
     ClassificationResponse,
@@ -15,7 +15,9 @@ router = APIRouter(
 def predict_classification(
     request: ClassificationRequest,
 ) -> ClassificationResponse:
-    category = classify_ticket(request.text)
+    category, confidence = classify_ticket(request.text)
     return ClassificationResponse(
+        ticket_id=request.ticket_id,
         category=category,
+        confidence=confidence,
     )

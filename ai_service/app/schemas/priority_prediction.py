@@ -1,6 +1,13 @@
-﻿from typing import Annotated
+from typing import Annotated
 from pydantic import BaseModel, Field, field_validator
 class PriorityPredictionRequest(BaseModel):
+    ticket_id: Annotated[
+        int,
+        Field(
+            gt=0,
+            description="Existing Django ticket database ID.",
+        ),
+    ]
     text: Annotated[
         str,
         Field(
@@ -19,4 +26,6 @@ class PriorityPredictionRequest(BaseModel):
             )
         return value
 class PriorityPredictionResponse(BaseModel):
+    ticket_id: int
     priority: str
+    confidence: float
