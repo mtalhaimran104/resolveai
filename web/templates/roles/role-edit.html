@@ -1,42 +1,14 @@
-
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-
 {% block title %}Edit Role{% endblock %}
 {% block page_title %}Edit Role{% endblock %}
-
-{% block content %}<!doctype html>
-
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Edit Role</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item"><a href="role-list.html">Roles</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit Role</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Edit Role</li>{% endblock %}
+{% block content %}
+<div class="app-content"><div class="container-fluid">
 
             <!--begin::Edit Role Form-->
-            <form novalidate data-ra-validate action="role-list.html" method="post">
+            <form novalidate data-ra-validate action="{% url 'role_edit' pk=role.pk %}" method="post">
+{% csrf_token %}
               <div class="row">
                 <div class="col-lg-8">
                   <!--begin::Role Details-->
@@ -222,46 +194,6 @@
                         </div>
                         <!--end::Module: Categories-->
 
-                        <!--begin::Module: Knowledge Base (view+create)-->
-                        <div class="accordion-item">
-                          <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#modKb" aria-expanded="true" aria-controls="modKb">
-                              <i class="bi bi-journal-text me-2"></i>Knowledge Base <span class="badge text-bg-warning ms-2">2/4</span>
-                            </button>
-                          </h2>
-                          <div id="modKb" class="accordion-collapse collapse show" data-bs-parent="#permissionsAccordion">
-                            <div class="accordion-body">
-                              <div class="row row-cols-2 row-cols-md-4 g-2">
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbView" name="perm_kb_view" checked><label class="form-check-label" for="kbView">View</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbCreate" name="perm_kb_create" checked><label class="form-check-label" for="kbCreate">Create</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbEdit" name="perm_kb_edit"><label class="form-check-label" for="kbEdit">Edit</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="kbDelete" name="perm_kb_delete"><label class="form-check-label" for="kbDelete">Delete</label></div></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <!--end::Module: Knowledge Base-->
-
-                        <!--begin::Module: AI (view)-->
-                        <div class="accordion-item">
-                          <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#modAi" aria-expanded="true" aria-controls="modAi">
-                              <i class="bi bi-robot me-2"></i>AI <span class="badge text-bg-warning ms-2">1/4</span>
-                            </button>
-                          </h2>
-                          <div id="modAi" class="accordion-collapse collapse show" data-bs-parent="#permissionsAccordion">
-                            <div class="accordion-body">
-                              <div class="row row-cols-2 row-cols-md-4 g-2">
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiView" name="perm_ai_view" checked><label class="form-check-label" for="aiView">View</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiCreate" name="perm_ai_create"><label class="form-check-label" for="aiCreate">Create</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiEdit" name="perm_ai_edit"><label class="form-check-label" for="aiEdit">Edit</label></div></div>
-                                <div class="col"><div class="form-check"><input class="form-check-input" type="checkbox" id="aiDelete" name="perm_ai_delete"><label class="form-check-label" for="aiDelete">Delete</label></div></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <!--end::Module: AI-->
-
                         <!--begin::Module: Reports (view)-->
                         <div class="accordion-item">
                           <h2 class="accordion-header">
@@ -336,13 +268,13 @@
                     </div>
                     <div class="card-body fs-7">
                       <p><strong>6</strong> users currently hold this role, including Kamran Latif, Faiza Tehreem, Hira Sultan and Sana Iqbal.</p>
-                      <p class="mb-0">See the full breakdown on the <a href="permission-matrix.html">Permission Matrix</a>.</p>
+                      <p class="mb-0">See the full breakdown on the <a href="{% url 'permission_matrix' %}">Permission Matrix</a>.</p>
                     </div>
                   </div>
                   <div class="card">
                     <div class="card-body d-grid gap-2">
                       <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
-                      <a href="role-list.html" class="btn btn-outline-secondary">Cancel</a>
+                      <a href="{% url 'role_list' %}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                   </div>
                 </div>
@@ -352,10 +284,5 @@
             <!--end::Edit Role Form-->
 
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-
-      {% endblock %}
+          </div></div>
+{% endblock %}

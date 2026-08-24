@@ -153,6 +153,13 @@ class User(AbstractBaseUser, TimeStampedModel):
     email = models.EmailField(max_length=254, unique=True, help_text="Stored lowercase")
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
+    department = models.ForeignKey("organization.Department",
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="users",
+    help_text="Department this user belongs to",
+)
 
     is_active = models.BooleanField(
         default=True,
@@ -229,6 +236,22 @@ class User(AbstractBaseUser, TimeStampedModel):
     @property
     def has_role_supervisor(self):
         return self.has_role(RoleCode.SUPERVISOR)
+
+    @property
+    def has_role_admin(self):
+        return self.has_role(RoleCode.ADMIN)
+
+    @property
+    def has_role_requester(self):
+        return self.has_role(RoleCode.REQUESTER)
+
+    @property
+    def is_admin(self):
+        """True for the seeded superuser AND for anyone granted the ADMIN
+        role through the RBAC tables. Use this (not `is_superuser` alone)
+        anywhere "is this person an admin" is being decided, so granting
+        the ADMIN role through the UI actually has an effect."""
+        return self.is_superuser or self.has_role_admin
 
     @property
     def permission_codes(self):

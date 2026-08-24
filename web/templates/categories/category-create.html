@@ -1,42 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-
-{% block title %}Create Category {% endblock %}
-{% block page_title %}Create Category {% endblock %}
-
+{% block title %}New Category{% endblock %}
+{% block page_title %}New Category{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">New Category</li>{% endblock %}
 {% block content %}
-
-
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Create Category</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item"><a href="category-list.html">Categories</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Create Category</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+<div class="app-content"><div class="container-fluid">
 
             <!--begin::Create Category Form-->
-            <form novalidate data-ra-validate action="#" method="post">
+            <form novalidate data-ra-validate action="{% url 'category_create' %}" method="post">
+{% csrf_token %}
               <div class="row">
                 <div class="col-lg-8">
                   <!--begin::Category Details-->
@@ -112,7 +84,7 @@
                     <div class="card-body">
                       <p class="text-secondary fs-7">When AI classification is enabled, incoming tickets that match this category's patterns are auto-tagged and routed to the selected department for triage.</p>
                       <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check-lg me-1"></i>Create Category</button>
-                      <a href="category-list.html" class="btn btn-outline-secondary w-100">Cancel</a>
+                      <a href="{% url 'category_list' %}" class="btn btn-outline-secondary w-100">Cancel</a>
                     </div>
                   </div>
                   <!--end::Save Panel-->
@@ -121,10 +93,5 @@
             </form>
             <!--end::Create Category Form-->
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-
-      {% endblock %}
+          </div></div>
+{% endblock %}

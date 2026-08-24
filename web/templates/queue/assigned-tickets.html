@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Assigned Tickets{% endblock %}
+{% block page_title %}Assigned Tickets{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+  <li class="breadcrumb-item">Ticket Management</li>
+  <li class="breadcrumb-item active" aria-current="page">Assigned Tickets</li>
+{% endblock %}
+
+{% block content %}
+
+    <!--begin::Stat Cards-->
+    <div class="row mb-3">
+      <div class="col-sm-6 col-lg-4">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <span class="ra-stat-icon bg-primary-subtle text-primary"><i class="bi bi-person-check"></i></span>
+            <div>
+              <div class="ra-stat-value">{{ total_assigned }}</div>
+              <div class="ra-stat-label">Total Assigned</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <span class="ra-stat-icon bg-warning-subtle text-warning"><i class="bi bi-envelope-open"></i></span>
+            <div>
+              <div class="ra-stat-value">{{ open_among_assigned }}</div>
+              <div class="ra-stat-label">Open Among Assigned</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <span class="ra-stat-icon bg-danger-subtle text-danger"><i class="bi bi-exclamation-octagon"></i></span>
+            <div>
+              <div class="ra-stat-value">{{ critical_assigned }}</div>
+              <div class="ra-stat-label">Critical Assigned</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Stat Cards-->
+
+    {% include "tickets/_queue_table.html" with queue_title="Assigned Tickets" show_priority_filter=True %}
+    {% include "includes/pagination.html" %}
+
+{% endblock %}

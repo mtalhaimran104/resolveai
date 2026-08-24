@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+  <!--begin::Welcome Banner-->
+  <div class="mb-4">
+    <h4 class="mb-1">Welcome back, {{ welcome_name }}</h4>
+    <p class="text-secondary mb-0">Here's your ticket queue overview.</p>
+  </div>
+  <!--end::Welcome Banner-->
+
+  <!--begin::Stat Cards-->
+  <div class="row">
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-person-check-fill"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Assigned to Me</span>
+          <span class="info-box-number">{{ assigned_to_me_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-info shadow-sm"><i class="bi bi-envelope-open-fill"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Open Tickets</span>
+          <span class="info-box-number">{{ open_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-danger shadow-sm"><i class="bi bi-exclamation-octagon-fill"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Critical Tickets</span>
+          <span class="info-box-number">{{ critical_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-warning shadow-sm"><i class="bi bi-hourglass-split"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Waiting for User</span>
+          <span class="info-box-number">{{ waiting_count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Stat Cards-->
+
+  <!--begin::Assigned Tickets Table-->
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3 class="card-title mb-0">My Assigned Tickets</h3>
+      <a href="{% url 'agent_ticket_list' %}" class="fs-7">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Ticket #</th>
+              <th>Subject</th>
+              <th>Requester</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Priority</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in my_tickets %}
+              <tr>
+                <td><a href="{% url 'ticket_detail_requester' ticket.pk %}">{{ ticket.ticket_number }}</a></td>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
+                <td>{{ ticket.department.name|default:"—" }}</td>
+                <td>{{ ticket.category.name|default:"—" }}</td>
+                <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
+                <td><span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="7" class="text-center text-secondary py-4">No tickets assigned to you yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!--end::Assigned Tickets Table-->
+
+  <div class="row">
+    <!--begin::Priority Distribution Chart-->
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-header"><h3 class="card-title mb-0">Priority Distribution</h3></div>
+        <div class="card-body">
+          <div id="agentPriorityChart" style="height: 260px;"></div>
+        </div>
+      </div>
+    </div>
+    <!--end::Priority Distribution Chart-->
+
+    <!--begin::Ticket Category Chart-->
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-header"><h3 class="card-title mb-0">Tickets by Category</h3></div>
+        <div class="card-body">
+          <div id="agentCategoryChart" style="height: 260px;"></div>
+        </div>
+      </div>
+    </div>
+    <!--end::Ticket Category Chart-->
+  </div>
+
+  <div class="row">
+    <!--begin::Recent Internal Activity-->
+    <div class="col-lg-7">
+      <div class="card mb-4">
+        <div class="card-header"><h3 class="card-title mb-0">Recent Activity</h3></div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for entry in recent_activity %}
+              <li class="list-group-item">
+                {{ entry.description }}
+                <span class="d-block text-secondary fs-7">{{ entry.created_at|date:"M d, Y g:i A" }} &middot; <a href="{% url 'ticket_detail_requester' entry.ticket_id %}">{{ entry.ticket.ticket_number }}</a></span>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-secondary">No recent activity yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--end::Recent Internal Activity-->
+
+    <!--begin::AI Service Card-->
+    <div class="col-lg-5">
+      <div class="card mb-4 ra-ai-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="card-title mb-0"><i class="bi bi-robot me-1"></i>AI Suggested Responses</h3>
+          <span class="badge text-bg-secondary">Not configured</span>
+        </div>
+        <div class="card-body">
+          <p class="mb-0 text-secondary">The AI/ML service will be added in a later phase. Once connected, ResolveAI will suggest replies for your open tickets here.</p>
+        </div>
+      </div>
+    </div>
+    <!--end::AI Service Card-->
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" crossorigin="anonymous"></script>
+<script>
+  const agentPriorityChartEl = document.querySelector('#agentPriorityChart');
+  if (agentPriorityChartEl) {
+    new ApexCharts(agentPriorityChartEl, {
+      chart: { type: 'donut', height: 260 },
+      series: {{ priority_values|safe }},
+      labels: {{ priority_labels|safe }},
+      colors: ['#6c757d', '#0dcaf0', '#d98c00', '#c0293e'],
+      legend: { position: 'bottom', fontSize: '12px' },
+      dataLabels: { enabled: true },
+    }).render();
+  }
+
+  const agentCategoryChartEl = document.querySelector('#agentCategoryChart');
+  if (agentCategoryChartEl) {
+    new ApexCharts(agentCategoryChartEl, {
+      chart: { type: 'bar', height: 260, toolbar: { show: false } },
+      series: [{ name: 'Tickets', data: {{ category_values|safe }} }],
+      xaxis: { categories: {{ category_labels|safe }} },
+      colors: ['#0b3d91'],
+      plotOptions: { bar: { borderRadius: 4, horizontal: true } },
+      dataLabels: { enabled: true },
+    }).render();
+  }
+</script>
+{% endblock %}

@@ -7,9 +7,9 @@
 
 {% block content %}
 
-{% if request.user.is_staff %}
-
-  <!-- YOUR EXISTING ADMIN DASHBOARD CODE STARTS HERE -->
+  {% comment %} {ashboard.views.dashboard() only ever renders this template for admins
+     (is_superuser or the ADMIN role), so no is_staff branch is needed here
+     any more — every other role gets its own template. } {% endcomment %}
 
   <!--begin::Welcome Banner-->
   <div class="mb-4">
@@ -238,23 +238,5 @@
 
   </div>
   <!--end::Quick Actions-->
-
-  <!-- YOUR EXISTING ADMIN DASHBOARD CODE ENDS HERE -->
-
-
-{% else %}
-
-  <!--begin::Requester Welcome-->
-  <div class="d-flex justify-content-center align-items-center"
-       style="min-height: 60vh;">
-
-    <h4 class="mb-1">
-      Welcome, {{ request.user.username }}!
-    </h4>
-
-  </div>
-  <!--end::Requester Welcome-->
-
-{% endif %}
 
 {% endblock %}

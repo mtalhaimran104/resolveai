@@ -1,217 +1,58 @@
- {% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
-
-{% block title %}Ticket History| ResolveAI{% endblock %}
-{% block page_title %}Ticket History| ResolveAI{% endblock %}
+{% block title %}History — {{ ticket.ticket_number }} | ResolveAI{% endblock %}
+{% block page_title %}Ticket History{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url back_url_name ticket.pk %}">{{ ticket.ticket_number }}</a></li>
+  <li class="breadcrumb-item active">History</li>
+{% endblock %}
 
 {% block content %}
- <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Ticket History</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
-                    <li class="breadcrumb-item"><a href="../tickets/my-tickets.html">Tickets</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Ticket History &mdash; RA-2026-000118</li>
-                  </ol>
-                </nav>
+
+<!--begin::Ticket History Header-->
+<div class="card card-outline card-primary mb-4">
+  <div class="card-header">
+    <h3 class="card-title mb-0"><span class="fw-bold">{{ ticket.ticket_number }}</span> &mdash; {{ ticket.subject }}</h3>
+    <div class="card-tools">
+      <a href="{% url back_url_name ticket.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Ticket</a>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="mb-0">Complete lifecycle timeline of every action taken on this ticket, from creation through to its current status.</p>
+  </div>
+</div>
+<!--end::Ticket History Header-->
+
+<!--begin::Full Lifecycle Timeline-->
+<div class="card mb-4">
+  <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-clock-history me-1"></i>{{ ticket.ticket_number }} &mdash; Full Timeline</h3></div>
+  <div class="card-body">
+    {% if events %}
+      <div class="timeline ra-ticket-timeline">
+        {% regroup events by date as day_list %}
+        {% for day in day_list %}
+          <div class="time-label"><span class="text-bg-primary">{{ day.grouper|date:"M d, Y" }}</span></div>
+          {% for event in day.list %}
+            <div>
+              <i class="timeline-icon bi {{ event.icon }}"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="bi bi-clock-fill"></i> {{ event.time|date:"g:i A" }}</span>
+                <h3 class="timeline-header no-border">{{ event.description }}</h3>
               </div>
             </div>
-          </div>
+          {% endfor %}
+        {% endfor %}
+        <div>
+          <i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i>
         </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+      </div>
+    {% else %}
+      <p class="text-secondary mb-0">No history recorded yet.</p>
+    {% endif %}
+  </div>
+</div>
+<!--end::Full Lifecycle Timeline-->
 
-
-            <!--begin::Ticket History Header-->
-            <div class="card card-outline card-primary mb-4">
-              <div class="card-header">
-                <h3 class="card-title mb-0"><span class="fw-bold">RA-2026-000118</span> &mdash; Unable to log into student portal</h3>
-                <div class="card-tools">
-                  <a href="../tickets/ticket-detail-requester.html" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Ticket</a>
-                </div>
-              </div>
-              <div class="card-body">
-                <p class="mb-0">Complete lifecycle timeline of every automated and human action taken on this ticket, from creation through to its current status.</p>
-              </div>
-            </div>
-            <!--end::Ticket History Header-->
-
-            <!--begin::Full Lifecycle Timeline-->
-            <div class="card mb-4">
-              <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-clock-history me-1"></i>RA-2026-000118 &mdash; Full Timeline</h3></div>
-              <div class="card-body">
-                <div class="timeline ra-ticket-timeline">
-
-                  <div class="time-label"><span class="text-bg-primary">Jul 24, 2026</span></div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-plus-circle text-bg-primary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 9:58 AM</span>
-                      <h3 class="timeline-header no-border"><a href="#">Ayesha Khan</a> created this ticket</h3>
-                      <div class="timeline-body">Subject: &ldquo;Unable to log into student portal&rdquo; &middot; Department: IT Support</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-robot text-bg-indigo"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 9:59 AM</span>
-                      <h3 class="timeline-header no-border">AI classification completed</h3>
-                      <div class="timeline-body">Category predicted as <strong>Account Access</strong> with <span class="ra-confidence ra-confidence-high">91% confidence<span class="ra-confidence-bar"><span style="width:91%"></span></span></span>. Sentiment detected: <span class="badge text-bg-danger">Negative</span>.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-arrow-up-square text-bg-warning"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 10:00 AM</span>
-                      <h3 class="timeline-header no-border">Priority changed <strong>Medium &rarr; High</strong></h3>
-                      <div class="timeline-body">Changed by AI Priority Recommender (priority-recommender-v1.8), based on negative sentiment and urgency keywords.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-person-check text-bg-primary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 10:05 AM</span>
-                      <h3 class="timeline-header no-border">Assigned to agent <a href="#">Kamran Latif</a></h3>
-                      <div class="timeline-body">Auto-routed to IT Support queue and assigned by supervisor Usman Raza.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-arrow-repeat text-bg-info"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 11:02 AM</span>
-                      <h3 class="timeline-header no-border">Status changed <strong>Open &rarr; In Progress</strong> by Kamran Latif</h3>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-chat-left-text text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 11:02 AM</span>
-                      <h3 class="timeline-header no-border">Reply added by <a href="#">Kamran Latif</a></h3>
-                      <div class="timeline-body">&ldquo;Could you tell me which browser and device you're using&hellip;&rdquo;</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-chat-left-text text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 2:45 PM</span>
-                      <h3 class="timeline-header no-border">Reply added by <a href="#">Ayesha Khan</a></h3>
-                      <div class="timeline-body">&ldquo;I'm using Chrome on Windows 11&hellip;&rdquo;</div>
-                    </div>
-                  </div>
-
-                  <div class="time-label"><span class="text-bg-primary">Jul 25, 2026</span></div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-chat-left-text text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 9:30 AM</span>
-                      <h3 class="timeline-header no-border">Reply added by <a href="#">Kamran Latif</a></h3>
-                      <div class="timeline-body">&ldquo;We've traced this to a sync delay between the identity provider and the SSO service&hellip;&rdquo;</div>
-                    </div>
-                  </div>
-
-                  <div class="time-label"><span class="text-bg-primary">Jul 30, 2026</span></div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-chat-left-text text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> 9:48 AM</span>
-                      <h3 class="timeline-header no-border">Reply added by <a href="#">Ayesha Khan</a></h3>
-                      <div class="timeline-body">&ldquo;I'm still unable to log in with the same error&hellip;&rdquo;</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> now</span>
-                      <h3 class="timeline-header no-border text-secondary">Ticket currently <span class="badge badge-status-in-progress">In Progress</span> &mdash; awaiting escalation follow-up</h3>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-            <!--end::Full Lifecycle Timeline-->
-
-            <!--begin::Example Event Types-->
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title fs-6 mb-0"><i class="bi bi-signpost-split me-1"></i>Example Event Types &mdash; Full Lifecycle Reference</h3>
-              </div>
-              <div class="card-body">
-                <p class="text-secondary">RA-2026-000118 hasn't reached escalation, resolution, closure or reopening yet. The events below are illustrative examples of those event types, drawn from ticket <strong>RA-2026-000101</strong> (&ldquo;Two-factor authentication locked me out&rdquo;), which completed its full lifecycle.</p>
-                <div class="timeline ra-ticket-timeline">
-
-                  <div class="time-label"><span class="text-bg-secondary">Jan 14&ndash;20, 2026 &middot; RA-2026-000101</span></div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-arrow-up-circle text-bg-danger"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> Jan 15</span>
-                      <h3 class="timeline-header no-border">Escalated to <strong>Level 2 &mdash; IT Support Supervisor</strong></h3>
-                      <div class="timeline-body">Escalated by Kamran Latif to supervisor Usman Raza after repeated 2FA lockout attempts across two days.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-check-circle text-bg-success"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> Jan 17</span>
-                      <h3 class="timeline-header no-border">Marked <strong>Resolved</strong> by Kamran Latif</h3>
-                      <div class="timeline-body">2FA device re-registered for the requester; login access restored and confirmed by requester.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-archive text-bg-secondary"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> Jan 20</span>
-                      <h3 class="timeline-header no-border">Automatically <strong>Closed</strong></h3>
-                      <div class="timeline-body">Closed automatically after 3 days with no further activity from the requester.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-arrow-counterclockwise text-bg-warning"></i>
-                    <div class="timeline-item">
-                      <span class="time"><i class="bi bi-clock-fill"></i> example</span>
-                      <h3 class="timeline-header no-border">Reopened by requester</h3>
-                      <div class="timeline-body">Example: a requester can reopen a Resolved/Closed ticket if the issue recurs, restarting the workflow at status Open.</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--end::Example Event Types-->
-
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-      {% endblock %}
-
-    
+{% endblock %}

@@ -53,15 +53,38 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="fs-7 text-secondary">Ticket History</div>
-        <span>{{ history|length }} event{{ history|length|pluralize }}</span>
+        <a href="{% url 'ticket_history' ticket.pk %}">{{ history|length }} event{{ history|length|pluralize }} &middot; View full history <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
   </div>
+
+  <!--begin::Assigned Agent-->
+  <div class="card-footer d-flex align-items-center gap-3">
+    {% if ticket.assigned_to %}
+      <img src="{% static 'adminlte/img/user-avatar.jpg' %}"
+           class="rounded-circle shadow-sm" alt="{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}"
+           style="width: 48px; height: 48px; object-fit: cover;" />
+      <div>
+        <div class="fw-semibold">{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}</div>
+        <div class="text-secondary fs-7">Assigned Agent</div>
+      </div>
+    {% else %}
+      <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-body-secondary text-secondary"
+            style="width: 48px; height: 48px;">
+        <i class="bi bi-person fs-4"></i>
+      </span>
+      <div>
+        <div class="fw-semibold text-secondary fst-italic">Not yet assigned</div>
+        <div class="text-secondary fs-7">A supervisor will assign an agent shortly</div>
+      </div>
+    {% endif %}
+  </div>
+  <!--end::Assigned Agent-->
 </div>
 <!--end::Ticket Summary-->
 
 <div class="row">
-  <div class="col-lg-8">
+  <div class="col-12">
     <!--begin::Description-->
     <div class="card mb-4">
       <div class="card-header"><h3 class="card-title fs-6 mb-0">Description</h3></div>
@@ -110,7 +133,9 @@
           {% for comment in comments %}
             <div class="d-flex mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
               <div class="flex-shrink-0">
-                <i class="bi bi-person-circle fs-4 text-secondary"></i>
+                <img src="{% static 'adminlte/img/user-avatar.jpg' %}"
+                     class="rounded-circle shadow-sm" alt="{{ comment.author.get_full_name|default:comment.author.username }}"
+                     style="width: 36px; height: 36px; object-fit: cover;" />
               </div>
               <div class="ms-3 flex-grow-1">
                 <div class="d-flex justify-content-between">
@@ -132,15 +157,15 @@
     <div class="card mb-4">
       <div class="card-header"><h3 class="card-title fs-6 mb-0">Add a Reply</h3></div>
       <div class="card-body">
-        <form method="POST" action="{% url 'ticket_add_comment' ticket.pk %}">
+        <form method="POST" action="{% url 'ticket_add_comment' ticket.pk %}" class="d-flex gap-2 align-items-start">
           {% csrf_token %}
-          {{ comment_form.message }}
-          {% if comment_form.message.errors %}
-            <div class="text-danger small mt-1">{{ comment_form.message.errors|striptags }}</div>
-          {% endif %}
-          <div class="mt-2 text-end">
-            <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i>Reply</button>
+          <div class="flex-grow-1">
+            {{ comment_form.message }}
+            {% if comment_form.message.errors %}
+              <div class="text-danger small mt-1">{{ comment_form.message.errors|striptags }}</div>
+            {% endif %}
           </div>
+          <button type="submit" class="btn btn-primary flex-shrink-0"><i class="bi bi-send me-1"></i>Reply</button>
         </form>
       </div>
     </div>
@@ -167,32 +192,6 @@
       </div>
     </div>
     <!--end::Ticket History-->
-  </div>
-
-  <div class="col-lg-4">
-    <!--begin::Ticket Actions-->
-    <div class="card mb-4">
-      <div class="card-header"><h3 class="card-title fs-6 mb-0">Ticket Actions</h3></div>
-      <div class="card-body d-grid gap-2">
-        <button type="button" class="btn btn-outline-danger" disabled title="Coming soon">
-          <i class="bi bi-check-circle me-1"></i>Close Ticket
-        </button>
-        <button type="button" class="btn btn-outline-secondary" disabled title="Available once the ticket is Resolved or Closed">
-          <i class="bi bi-arrow-counterclockwise me-1"></i>Reopen Ticket
-        </button>
-        <div class="form-text">Reopen becomes available once an agent marks this ticket Resolved or Closed.</div>
-      </div>
-    </div>
-    <!--end::Ticket Actions-->
-
-    <!--begin::Related Knowledge Articles-->
-    <div class="card">
-      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-journal-text me-1"></i>Related Knowledge Articles</h3></div>
-      <div class="card-body">
-        <p class="text-secondary mb-0">Knowledge base articles aren't wired up yet — coming soon.</p>
-      </div>
-    </div>
-    <!--end::Related Knowledge Articles-->
   </div>
 </div>
 {% endblock %}
