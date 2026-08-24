@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization",
     "classification",
     "tickets",
+    "ai",
 ]
 
 # ResolveAI uses its own user model instead of django.contrib.auth.User.
@@ -127,5 +128,7 @@ AI_SERVICE_URL = os.getenv(
     "AI_SERVICE_URL",
     "http://ai_service:8000",
 )
+
+
 
 
