@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -14,5 +16,11 @@ class StudentQueryResponse(BaseModel):
 
     question: str
     answer: str
+
     similarity_score: float
     confidence_level: str
+
+    model_name: str = "resolveai-student-query"
+    model_version: str = "v1"
+
+    confidence_score: Optional[float] = None
