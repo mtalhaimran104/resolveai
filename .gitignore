@@ -35,3 +35,9 @@ ai_service/app/models/*.h5
 ai_service/app/models/*.pt
 ai_service/app/models/*.pth
 ai_service/app/models/*.bin
+
+# Ticket classification models
+ai_service/app/models/ticket_classification/*.pkl
+
+# Priority prediction models
+ai_service/app/models/priority_prediction/*.pkl

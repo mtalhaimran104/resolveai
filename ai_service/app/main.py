@@ -6,7 +6,6 @@ from app.api.routers import (
     faq,
     sentiment,
     summarization,
-    student_query,
 )
 
 
@@ -25,7 +24,7 @@ app = FastAPI(
 
 
 # ============================================================
-# PUBLIC AI ENDPOINTS
+# AI ENDPOINTS
 # ============================================================
 
 app.include_router(
@@ -40,21 +39,6 @@ app.include_router(
     summarization.router
 )
 
-app.include_router(
-    student_query.router
-)
-
-
-# ============================================================
-# TEST ENDPOINT
-# ============================================================
-
-@app.get("/hello")
-def hello():
-    return {
-        "message": "Hello World"
-    }
-
 
 # ============================================================
 # HEALTH CHECK
@@ -65,4 +49,15 @@ def health():
     return {
         "status": "healthy",
         "service": "ResolveAI AI Service"
+    }
+
+
+# ============================================================
+# TEST ENDPOINT
+# ============================================================
+
+@app.get("/hello")
+def hello():
+    return {
+        "message": "Hello World"
     }
