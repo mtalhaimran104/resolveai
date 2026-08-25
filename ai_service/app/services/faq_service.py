@@ -1,8 +1,4 @@
-# app/services/faq_service.py
-
-from app.retrieval.faq_retrieval import (
-    retrieve_faq
-)
+from app.retrieval.faq_retrieval import retrieve_faq
 
 
 # ============================================================
@@ -21,31 +17,31 @@ IUB_CONTACT = (
 
 
 # ============================================================
-# NON-IUB RESPONSE
+# MODEL INFORMATION
 # ============================================================
 
-def non_iub_response(query: str) -> dict:
-    """
-    Return a professional response when the question is
-    clearly outside the IUB FAQ scope.
-    """
+MODEL_NAME = "resolveai-faq-retriever"
+MODEL_VERSION = "v1"
+
+
+# ============================================================
+# EMPTY QUERY
+# ============================================================
+
+def _empty_response(query: str = "") -> dict:
 
     return {
         "found": False,
         "question": query,
         "answer": (
-            "I am the **IUB AI Help Desk** and can assist "
-            "with questions related to **The Islamia University "
-            "of Bahawalpur (IUB)**.\n\n"
-            "Please ask an IUB-related question about "
-            "**admissions, programs, courses, fees, "
-            "scholarships, examinations, student portal, "
-            "registration, LMS, university email, library, "
-            "departments, offices or other student services**."
+            "Please enter a valid IUB-related question."
         ),
         "similarity_score": 0.0,
+        "confidence_score": 0.0,
         "confidence_level": "Low",
-        "source": "domain_filter"
+        "source": "empty_query",
+        "model_name": MODEL_NAME,
+        "model_version": MODEL_VERSION,
     }
 
 
@@ -55,13 +51,7 @@ def non_iub_response(query: str) -> dict:
 
 def find_faq_answer(query: str) -> dict:
     """
-    Main FAQ service.
-
-    The actual FAQ retrieval is handled by:
-
-        app.retrieval.faq_retrieval
-
-    This service is the application-facing layer.
+    Application-facing FAQ service.
 
     Flow:
 
@@ -73,9 +63,9 @@ def find_faq_answer(query: str) -> dict:
              v
         retrieve_faq()
              |
-             +---- Good Match ----> Return FAQ Answer
+             +---- Reliable Match ----> Return Answer
              |
-             +---- No Match ------> Safe Fallback
+             +---- No Match ----------> Safe Fallback
     """
 
     # --------------------------------------------------------
@@ -83,29 +73,14 @@ def find_faq_answer(query: str) -> dict:
     # --------------------------------------------------------
 
     if query is None:
-
-        return {
-            "found": False,
-            "question": "",
-            "answer": (
-                "Please enter an IUB-related question."
-            ),
-            "similarity_score": 0.0,
-            "confidence_level": "Low",
-            "source": "empty_query"
-        }
+        return _empty_response("")
 
     # --------------------------------------------------------
-    # Convert non-string input to string
+    # Convert input to string
     # --------------------------------------------------------
 
     if not isinstance(query, str):
-
         query = str(query)
-
-    # --------------------------------------------------------
-    # Remove unnecessary spaces
-    # --------------------------------------------------------
 
     query = query.strip()
 
@@ -114,24 +89,13 @@ def find_faq_answer(query: str) -> dict:
     # --------------------------------------------------------
 
     if not query:
-
-        return {
-            "found": False,
-            "question": query,
-            "answer": (
-                "Please enter an IUB-related question."
-            ),
-            "similarity_score": 0.0,
-            "confidence_level": "Low",
-            "source": "empty_query"
-        }
+        return _empty_response(query)
 
     # --------------------------------------------------------
     # Retrieve FAQ
     # --------------------------------------------------------
 
     try:
-
         result = retrieve_faq(query)
 
     except Exception as exc:
@@ -151,12 +115,15 @@ def find_faq_answer(query: str) -> dict:
                 + IUB_CONTACT
             ),
             "similarity_score": 0.0,
+            "confidence_score": 0.0,
             "confidence_level": "Low",
-            "source": "retrieval_error"
+            "source": "retrieval_error",
+            "model_name": MODEL_NAME,
+            "model_version": MODEL_VERSION,
         }
 
     # --------------------------------------------------------
-    # Make sure retrieval returned a dictionary
+    # Validate retrieval result
     # --------------------------------------------------------
 
     if not isinstance(result, dict):
@@ -172,8 +139,11 @@ def find_faq_answer(query: str) -> dict:
                 + IUB_CONTACT
             ),
             "similarity_score": 0.0,
+            "confidence_score": 0.0,
             "confidence_level": "Low",
-            "source": "invalid_retrieval_result"
+            "source": "invalid_retrieval_result",
+            "model_name": MODEL_NAME,
+            "model_version": MODEL_VERSION,
         }
 
     # --------------------------------------------------------
@@ -184,26 +154,49 @@ def find_faq_answer(query: str) -> dict:
 
         return {
             "found": True,
+
             "question": result.get(
                 "question",
-                query
+                query,
             ),
+
             "answer": result.get(
                 "answer",
-                ""
+                "",
             ),
-            "similarity_score": result.get(
-                "similarity_score",
-                0.0
+
+            "similarity_score": round(
+                float(
+                    result.get(
+                        "similarity_score",
+                        0.0,
+                    )
+                ),
+                4,
             ),
+
+            "confidence_score": round(
+                float(
+                    result.get(
+                        "confidence_score",
+                        0.0,
+                    )
+                ),
+                4,
+            ),
+
             "confidence_level": result.get(
                 "confidence_level",
-                "Medium"
+                "Low",
             ),
+
             "source": result.get(
                 "source",
-                "iub_verified_knowledge"
-            )
+                "iub_verified_knowledge",
+            ),
+
+            "model_name": MODEL_NAME,
+            "model_version": MODEL_VERSION,
         }
 
     # --------------------------------------------------------
@@ -212,7 +205,9 @@ def find_faq_answer(query: str) -> dict:
 
     return {
         "found": False,
+
         "question": query,
+
         "answer": (
             "I could not find a sufficiently relevant "
             "answer for this question in the available "
@@ -226,18 +221,39 @@ def find_faq_answer(query: str) -> dict:
             "offices or other student services**."
             + IUB_CONTACT
         ),
-        "similarity_score": result.get(
-            "similarity_score",
-            0.0
+
+        "similarity_score": round(
+            float(
+                result.get(
+                    "similarity_score",
+                    0.0,
+                )
+            ),
+            4,
         ),
+
+        "confidence_score": round(
+            float(
+                result.get(
+                    "confidence_score",
+                    0.0,
+                )
+            ),
+            4,
+        ),
+
         "confidence_level": result.get(
             "confidence_level",
-            "Low"
+            "Low",
         ),
+
         "source": result.get(
             "source",
-            "faq_not_found"
-        )
+            "faq_not_found",
+        ),
+
+        "model_name": MODEL_NAME,
+        "model_version": MODEL_VERSION,
     }
 
 
@@ -246,12 +262,6 @@ def find_faq_answer(query: str) -> dict:
 # ============================================================
 
 def reload_faq_model():
-    """
-    Reload the FAQ dataset and rebuild the retrieval model.
-
-    This is useful when faq_dataset.csv has been changed
-    while the FastAPI application is running.
-    """
 
     from app.retrieval.faq_retrieval import (
         reload_faq_model as reload_retrieval_model

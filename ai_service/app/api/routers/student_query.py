@@ -23,22 +23,41 @@ router = APIRouter(
 def student_query(
     request: StudentQueryRequest,
 ):
+
     result = answer_student_query(
         request.question
     )
 
     return StudentQueryResponse(
         question=request.question,
-        answer=result["answer"],
+
+        answer=result.get(
+            "answer",
+            "",
+        ),
+
         similarity_score=result.get(
             "similarity_score",
             0.0,
         ),
+
         confidence_level=result.get(
             "confidence_level",
             "Low",
         ),
-        model_name="resolveai-student-query",
-        model_version="v1",
-        confidence_score=None,
+
+        confidence_score=result.get(
+            "confidence_score",
+            0.0,
+        ),
+
+        model_name=result.get(
+            "model_name",
+            "resolveai-student-query",
+        ),
+
+        model_version=result.get(
+            "model_version",
+            "v1",
+        ),
     )

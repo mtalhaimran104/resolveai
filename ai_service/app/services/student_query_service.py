@@ -8,6 +8,14 @@ from app.services.iub_knowledge_service import (
 
 
 # ============================================================
+# MODEL INFORMATION
+# ============================================================
+
+MODEL_NAME = "resolveai-student-query"
+MODEL_VERSION = "v1"
+
+
+# ============================================================
 # CONTACT INFORMATION
 # ============================================================
 
@@ -28,6 +36,8 @@ PROGRAM_KEYWORDS = [
 
     "program",
     "programs",
+    "programme",
+    "programmes",
     "degree",
     "degrees",
     "course",
@@ -50,8 +60,7 @@ PROGRAM_KEYWORDS = [
     "mphil",
     "ms",
     "phd",
-    "bs"
-
+    "bs",
 ]
 
 
@@ -61,13 +70,15 @@ ADMISSION_KEYWORDS = [
     "admissions",
     "apply",
     "application",
+    "applications",
     "eligibility",
+    "eligible",
     "merit",
     "deadline",
     "last date",
     "entry test",
-    "prospectus"
-
+    "entry test",
+    "prospectus",
 ]
 
 
@@ -76,8 +87,9 @@ SCHOLARSHIP_KEYWORDS = [
     "scholarship",
     "scholarships",
     "financial aid",
-    "honhaar"
-
+    "financial assistance",
+    "honhaar",
+    "stipend",
 ]
 
 
@@ -90,11 +102,15 @@ FEE_KEYWORDS = [
     "financial",
     "challan",
     "payment",
+    "payments",
     "installment",
+    "installments",
     "dues",
     "refund",
-    "accounts"
-
+    "accounts",
+    "cost",
+    "costs",
+    "charges",
 ]
 
 
@@ -114,8 +130,9 @@ PORTAL_KEYWORDS = [
     "down",
     "not working",
     "error",
-    "upload"
-
+    "upload",
+    "lms",
+    "moodle",
 ]
 
 
@@ -134,8 +151,7 @@ LOCATION_KEYWORDS = [
     "helpline",
     "library",
     "hostel",
-    "transport"
-
+    "transport",
 ]
 
 
@@ -145,8 +161,7 @@ UNIFORM_KEYWORDS = [
     "dress",
     "dress code",
     "color",
-    "colour"
-
+    "colour",
 ]
 
 
@@ -158,13 +173,12 @@ def detect_category(query: str) -> str:
 
     query = query.lower().strip()
 
-    # Order matters.
-
-    if any(
-        word in query
-        for word in PROGRAM_KEYWORDS
-    ):
-        return "program"
+    # ========================================================
+    # Specific categories FIRST.
+    #
+    # Generic words such as "course", "degree" and "study"
+    # must not override admission/fee/scholarship questions.
+    # ========================================================
 
     if any(
         word in query
@@ -201,6 +215,12 @@ def detect_category(query: str) -> str:
         for word in UNIFORM_KEYWORDS
     ):
         return "uniform"
+
+    if any(
+        word in query
+        for word in PROGRAM_KEYWORDS
+    ):
+        return "program"
 
     return "general"
 
@@ -244,7 +264,7 @@ def fallback_answer(category: str) -> str:
             "fee or financial answer for this question.\n\n"
             "I do not want to guess a fee amount, challan "
             "procedure, refund procedure or Finance/Accounts "
-            "Office location that may be outdated.\n\n"
+            "Office information that may be outdated.\n\n"
             "For verified assistance, please contact the "
             "**IUB Information Center/Helpline**."
             + IUB_CONTACT
@@ -294,10 +314,60 @@ def fallback_answer(category: str) -> str:
         "examinations, student portal, registration, hostels, "
         "library, transport, departments, offices and other "
         "university services**.\n\n"
-
         "I could not find a sufficiently verified answer "
         "for this particular question."
     )
+
+
+# ============================================================
+# SAFE RESULT NORMALIZATION
+# ============================================================
+
+def _normalize_program_result(result: dict) -> dict:
+
+    similarity_score = result.get(
+        "similarity_score",
+        result.get("score", 0.0),
+    )
+
+    confidence_score = result.get(
+        "confidence_score",
+        0.0,
+    )
+
+    confidence_level = result.get(
+        "confidence_level",
+        "Low",
+    )
+
+    return {
+        "answer": result.get(
+            "answer",
+            "",
+        ),
+
+        "similarity_score": round(
+            float(similarity_score),
+            4,
+        ),
+
+        "confidence_level": confidence_level,
+
+        "confidence_score": round(
+            float(confidence_score),
+            4,
+        ),
+
+        "model_name": result.get(
+            "model_name",
+            "resolveai-iub-knowledge",
+        ),
+
+        "model_version": result.get(
+            "model_version",
+            "v1",
+        ),
+    }
 
 
 # ============================================================
@@ -306,11 +376,21 @@ def fallback_answer(category: str) -> str:
 
 def answer_student_query(query: str) -> dict:
 
+    # --------------------------------------------------------
+    # Validate input
+    # --------------------------------------------------------
+
+    if query is None:
+        query = ""
+
+    if not isinstance(query, str):
+        query = str(query)
+
     query = query.strip()
 
-    # ========================================================
-    # EMPTY QUESTION
-    # ========================================================
+    # --------------------------------------------------------
+    # Empty question
+    # --------------------------------------------------------
 
     if not query:
 
@@ -320,16 +400,17 @@ def answer_student_query(query: str) -> dict:
                 + IUB_CONTACT
             ),
             "similarity_score": 0.0,
-            "confidence_level": "Low"
+            "confidence_level": "Low",
+            "confidence_score": 0.0,
+            "model_name": MODEL_NAME,
+            "model_version": MODEL_VERSION,
         }
 
-    # ========================================================
-    # CATEGORY
-    # ========================================================
+    # --------------------------------------------------------
+    # Category
+    # --------------------------------------------------------
 
-    category = detect_category(
-        query
-    )
+    category = detect_category(query)
 
     # ========================================================
     # PROGRAM QUESTIONS
@@ -345,15 +426,11 @@ def answer_student_query(query: str) -> dict:
 
             if result:
 
-                return {
-                    "answer": result["answer"],
-                    "similarity_score": result[
-                        "similarity_score"
-                    ],
-                    "confidence_level": result[
-                        "confidence_level"
-                    ]
-                }
+                normalized = _normalize_program_result(
+                    result
+                )
+
+                return normalized
 
         except Exception as exc:
 
@@ -361,9 +438,6 @@ def answer_student_query(query: str) -> dict:
                 f"[STUDENT QUERY] "
                 f"Program search error: {exc}"
             )
-
-        # If program knowledge fails,
-        # continue to FAQ search.
 
     # ========================================================
     # FAQ SEARCH
@@ -373,25 +447,52 @@ def answer_student_query(query: str) -> dict:
         query
     )
 
-    # IMPORTANT:
-    #
-    # find_faq_answer() returns a DICTIONARY.
-    #
-    # Do not unpack it like:
-    #
-    # faq_answer, similarity, confidence = ...
-    #
+    # --------------------------------------------------------
+    # Reliable FAQ match
+    # --------------------------------------------------------
 
-    if faq_result.get("found"):
+    if faq_result.get("found") is True:
 
         return {
-            "answer": faq_result["answer"],
-            "similarity_score": faq_result[
-                "similarity_score"
-            ],
-            "confidence_level": faq_result[
-                "confidence_level"
-            ]
+            "answer": faq_result.get(
+                "answer",
+                "",
+            ),
+
+            "similarity_score": round(
+                float(
+                    faq_result.get(
+                        "similarity_score",
+                        0.0,
+                    )
+                ),
+                4,
+            ),
+
+            "confidence_level": faq_result.get(
+                "confidence_level",
+                "Low",
+            ),
+
+            "confidence_score": round(
+                float(
+                    faq_result.get(
+                        "confidence_score",
+                        0.0,
+                    )
+                ),
+                4,
+            ),
+
+            "model_name": faq_result.get(
+                "model_name",
+                "resolveai-faq-retriever",
+            ),
+
+            "model_version": faq_result.get(
+                "model_version",
+                "v1",
+            ),
         }
 
     # ========================================================
@@ -402,12 +503,39 @@ def answer_student_query(query: str) -> dict:
         "answer": fallback_answer(
             category
         ),
-        "similarity_score": faq_result.get(
-            "similarity_score",
-            0.0
+
+        "similarity_score": round(
+            float(
+                faq_result.get(
+                    "similarity_score",
+                    0.0,
+                )
+            ),
+            4,
         ),
+
         "confidence_level": faq_result.get(
             "confidence_level",
-            "Low"
-        )
+            "Low",
+        ),
+
+        "confidence_score": round(
+            float(
+                faq_result.get(
+                    "confidence_score",
+                    0.0,
+                )
+            ),
+            4,
+        ),
+
+        "model_name": faq_result.get(
+            "model_name",
+            "resolveai-faq-retriever",
+        ),
+
+        "model_version": faq_result.get(
+            "model_version",
+            "v1",
+        ),
     }
