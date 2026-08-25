@@ -2,9 +2,132 @@
 {% load static %}
 
 {% block title %}{{ page_title }} | ResolveAI{% endblock %}
+
+
 {% block page_title %}{{ page_title }}{% endblock %}
 
 {% block content %}
+
+<!--begin::Filters-->
+<div class="card mb-3">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title fs-6 mb-0">
+      <i class="bi bi-funnel me-1"></i>Filters
+    </h3>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      id="toggleFilters"
+      aria-expanded="false"
+      aria-controls="filterOptions"
+    >
+      <i class="bi bi-sliders me-1"></i>
+      Filter
+    </button>
+  </div>
+
+  <div class="card-body d-none" id="filterOptions">
+    <form method="get">
+      <div class="row g-3">
+
+        <!-- Search -->
+        <div class="col-md-3">
+          <label for="filterSearch" class="form-label">Search</label>
+          <input
+            type="text"
+            class="form-control"
+            id="filterSearch"
+            name="q"
+            value="{{ search_query }}"
+            placeholder="Ticket #, subject, requester…"
+          >
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-2">
+          <label for="filterStatus" class="form-label">Status</label>
+          <select class="form-select" id="filterStatus" name="status">
+            <option value="">All statuses</option>
+            {% for value, label in statuses %}
+              <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Priority -->
+        <div class="col-md-2">
+          <label for="filterPriority" class="form-label">Priority</label>
+          <select class="form-select" id="filterPriority" name="priority">
+            <option value="">All priorities</option>
+            {% for value, label in priorities %}
+              <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Department -->
+        <div class="col-md-2">
+          <label for="filterDepartment" class="form-label">Department</label>
+          <select class="form-select" id="filterDepartment" name="department">
+            <option value="">All departments</option>
+            {% for dept in filter_departments %}
+              <option
+                value="{{ dept.pk }}"
+                {% if selected_department == dept.pk|stringformat:"s" %}selected{% endif %}
+              >
+                {{ dept.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div class="col-md-2">
+          <label for="filterCategory" class="form-label">Category</label>
+          <select class="form-select" id="filterCategory" name="category">
+            <option value="">All categories</option>
+            {% for cat in filter_categories %}
+              <option
+                value="{{ cat.pk }}"
+                {% if selected_category == cat.pk|stringformat:"s" %}selected{% endif %}
+              >
+                {{ cat.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 d-flex gap-2">
+
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-funnel me-1"></i>
+            Apply Filters
+          </button>
+
+          {% if search_query or selected_status or selected_priority or selected_department or selected_category %}
+            <a
+              href="{{ request.path }}"
+              class="btn btn-outline-secondary"
+            >
+              <i class="bi bi-x-circle me-1"></i>
+              Clear Filters
+            </a>
+          {% endif %}
+
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+<!--end::Filters-->
+
 <div class="card">
   <div class="card-body p-0">
     <div class="table-responsive">
@@ -44,8 +167,16 @@
             <td>
               <div class="btn-group btn-group-sm">
                 <a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
-                {% if user.is_superuser or user.has_role_supervisor %}
-                  <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
+                  {% if not ticket.assigned_to %}
+                    <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
+                  {% elif user.is_superuser or user.has_role_supervisor or ticket.assigned_to_id == user.id %}
+                    <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Reassign"><i class="bi bi-person-plus"></i></a>
+                    <form action="{% url 'ticket_unassign' ticket.pk %}" method="post" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-danger" title="Unassign" data-ra-confirm="Unassign this ticket?"><i class="bi bi-person-dash"></i></button>
+                    </form>
+                  {% endif %}
                 {% endif %}
               </div>
             </td>
@@ -58,4 +189,9 @@
     </div>
   </div>
 </div>
+
+{% if page_obj %}
+  {% include "includes/pagination.html" with page_obj=page_obj %}
+{% endif %}
+
 {% endblock %}

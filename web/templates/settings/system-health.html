@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}System Health{% endblock %}
+{% block page_title %}System Health{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">System Health</li>{% endblock %}
+{% block content %}
+<div class="app-content"><div class="container-fluid">
+
+
+            <!--begin::Health Cards-->
+            <div class="row g-3 mb-4">
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-diagram-2"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">Django application</h6>
+                        <span class="badge text-bg-success">Operational</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Uptime</p>
+                      <p class="mb-0 fw-semibold">99.98% &middot; 46 days</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-hdd-stack"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">MySQL database</h6>
+                        <span class="badge text-bg-success">Operational</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Active connections</p>
+                      <p class="mb-0 fw-semibold">42 / 200</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">FastAPI AI service</h6>
+                        <span class="badge text-bg-warning">Degraded</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Avg. response time</p>
+                      <p class="mb-0 fw-semibold">1,240 ms (threshold 1,000 ms)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-hdd-network"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">File storage</h6>
+                        <span class="badge text-bg-success">Operational</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Disk usage</p>
+                      <p class="mb-0 fw-semibold">63% of 500 GB</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-envelope-check"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">Email service</h6>
+                        <span class="badge text-bg-success">Operational</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Queue size</p>
+                      <p class="mb-0 fw-semibold">3 pending messages</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xl-4">
+                <div class="card ra-stat-card h-100">
+                  <div class="card-body d-flex align-items-start gap-3">
+                    <div class="ra-stat-icon bg-body-tertiary text-primary">
+                      <i class="bi bi-gear-wide-connected"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">Background jobs</h6>
+                        <span class="badge text-bg-success">Operational</span>
+                      </div>
+                      <p class="mb-0 text-secondary fs-7">Throughput</p>
+                      <p class="mb-0 fw-semibold">18 jobs/min</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Health Cards-->
+
+            <div class="row g-3">
+              <!--begin::Recent Error Logs-->
+              <div class="col-lg-7">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h3 class="card-title">Recent Error Logs</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>Timestamp</th>
+                            <th>Service</th>
+                            <th>Level</th>
+                            <th>Message</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-30 09:14</td>
+                            <td>FastAPI AI service</td>
+                            <td><span class="badge text-bg-danger">Error</span></td>
+                            <td>Request timeout after 8000ms calling <code>priority-recommender-v1.8</code></td>
+                          </tr>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-30 08:02</td>
+                            <td>FastAPI AI service</td>
+                            <td><span class="badge text-bg-warning">Warning</span></td>
+                            <td>Response time exceeded the 1,000&nbsp;ms threshold</td>
+                          </tr>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-29 23:47</td>
+                            <td>Background jobs</td>
+                            <td><span class="badge text-bg-warning">Warning</span></td>
+                            <td>Retry attempt 2/3 for escalation notification job</td>
+                          </tr>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-29 18:30</td>
+                            <td>Email service</td>
+                            <td><span class="badge text-bg-info">Info</span></td>
+                            <td>Outgoing queue backlog cleared</td>
+                          </tr>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-29 14:12</td>
+                            <td>MySQL database</td>
+                            <td><span class="badge text-bg-warning">Warning</span></td>
+                            <td>Slow query detected on <code>tickets</code> table (2.3s)</td>
+                          </tr>
+                          <tr>
+                            <td class="text-nowrap fs-7">2026-07-29 06:05</td>
+                            <td>Django application</td>
+                            <td><span class="badge text-bg-info">Info</span></td>
+                            <td>Scheduled maintenance window completed</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end::Recent Error Logs-->
+
+              <!--begin::Status History-->
+              <div class="col-lg-5">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h3 class="card-title">Status History &middot; Last 24 Hours</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                          <span class="fw-semibold"><span class="ra-health-dot degraded"></span>FastAPI AI service degraded</span>
+                          <span class="text-secondary fs-7">09:10 &middot; ongoing</span>
+                        </div>
+                        <p class="mb-0 fs-7 text-secondary">Response times elevated above the 1,000&nbsp;ms threshold.</p>
+                      </li>
+                      <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                          <span class="fw-semibold"><span class="ra-health-dot up"></span>Nightly backup completed</span>
+                          <span class="text-secondary fs-7">03:00</span>
+                        </div>
+                        <p class="mb-0 fs-7 text-secondary">Full database and file storage backup completed successfully.</p>
+                      </li>
+                      <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                          <span class="fw-semibold"><span class="ra-health-dot up"></span>Background jobs queue recovered</span>
+                          <span class="text-secondary fs-7">Yesterday 22:15</span>
+                        </div>
+                        <p class="mb-0 fs-7 text-secondary">Brief backlog on the notification queue resolved automatically.</p>
+                      </li>
+                      <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                          <span class="fw-semibold"><span class="ra-health-dot up"></span>All services operational</span>
+                          <span class="text-secondary fs-7">Yesterday 09:00</span>
+                        </div>
+                        <p class="mb-0 fs-7 text-secondary">Daily health check passed with no incidents.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!--end::Status History-->
+            </div>
+
+          </div></div>
+{% endblock %}

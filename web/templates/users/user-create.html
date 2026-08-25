@@ -1,37 +1,10 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-
 {% block title %}Create User{% endblock %}
 {% block page_title %}Create User{% endblock %}
-
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Create User</li>{% endblock %}
 {% block content %}
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Create User</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item"><a href="user-list.html">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Create User</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+<div class="app-content"><div class="container-fluid">
 
             <!--begin::Create User Form-->
             <div class="row">
@@ -40,7 +13,8 @@
                   <div class="card-header">
                     <h3 class="card-title"><i class="bi bi-person-plus me-2"></i>New User</h3>
                   </div>
-                  <form novalidate data-ra-validate action="user-list.html" method="post">
+                  <form novalidate data-ra-validate action="{% url 'admin_user_create' %}" method="post">
+{% csrf_token %}
                     <div class="card-body">
                       <!--begin::Identity Fields-->
                       <div class="row g-3">
@@ -177,7 +151,7 @@
                       <!--end::Welcome Email-->
                     </div>
                     <div class="card-footer d-flex justify-content-end gap-2">
-                      <a href="user-list.html" class="btn btn-outline-secondary">Cancel</a>
+                      <a href="{% url 'admin_user_list' %}" class="btn btn-outline-secondary">Cancel</a>
                       <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create User</button>
                     </div>
                   </form>
@@ -203,10 +177,5 @@
             <!--end::Create User Form-->
 
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-
-     {% endblock %}
+          </div></div>
+{% endblock %}

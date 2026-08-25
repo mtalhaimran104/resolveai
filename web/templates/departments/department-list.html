@@ -1,142 +1,216 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Departments | ResolveAI{% endblock %}
 
-{% block title %}Departments {% endblock %}
-{% block page_title %}Departments {% endblock %}
+{% block page_title %}Departments{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item">
+    <a href="{% url 'dashboard' %}">Home</a>
+</li>
+<li class="breadcrumb-item">Administration</li>
+<li class="breadcrumb-item active" aria-current="page">
+    Departments
+</li>
+{% endblock %}
 
 {% block content %}
 
+<div class="app-content">
+    <div class="container-fluid">
 
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Departments</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item active" aria-current="page">Departments</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
+        <!-- Toolbar -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'department_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>
+                New Department
+            </a>
         </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+        <!-- End Toolbar -->
 
-            <!--begin::Toolbar-->
-            <div class="d-flex justify-content-end mb-3">
-              <a href="department-create.html" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>New Department
-              </a>
-            </div>
-            <!--end::Toolbar-->
 
-            <!--begin::Departments Table-->
-            <div class="card">
-              <div class="card-header">
+        <!-- Departments Table -->
+        <div class="card">
+
+            <div class="card-header">
                 <h3 class="card-title">All Departments</h3>
+
                 <div class="card-tools">
-                  <span class="text-secondary fs-7">4 departments</span>
+                    <span class="text-secondary fs-7">
+                        {{ page_obj.paginator.count }} departments
+                    </span>
                 </div>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Code</th>
-                        <th>Description</th>
-                        <th class="text-center"># Agents</th>
-                        <th class="text-center">Open Tickets</th>
-                        <th class="text-center">Active</th>
-                        <th class="text-end">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><a href="department-detail.html" class="fw-semibold text-decoration-none">IT Support</a></td>
-                        <td><code>ITS</code></td>
-                        <td>Handles account access, hardware, network, and technical error tickets across the organization.</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center"><span class="badge text-bg-primary">14</span></td>
-                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
-                        <td class="text-end">
-                          <a href="department-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
-                          <a href="department-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><a href="department-detail.html" class="fw-semibold text-decoration-none">Finance</a></td>
-                        <td><code>FIN</code></td>
-                        <td>Manages payment issues, refund requests, and tuition invoice disputes.</td>
-                        <td class="text-center">2</td>
-                        <td class="text-center"><span class="badge text-bg-primary">9</span></td>
-                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
-                        <td class="text-end">
-                          <a href="department-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
-                          <a href="department-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><a href="department-detail.html" class="fw-semibold text-decoration-none">Admissions</a></td>
-                        <td><code>ADM</code></td>
-                        <td>Handles admission inquiries and document verification for prospective and current students.</td>
-                        <td class="text-center">2</td>
-                        <td class="text-center"><span class="badge text-bg-primary">7</span></td>
-                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
-                        <td class="text-end">
-                          <a href="department-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
-                          <a href="department-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><a href="department-detail.html" class="fw-semibold text-decoration-none">Examination</a></td>
-                        <td><code>EXM</code></td>
-                        <td>Reviews grade disputes and examination-related escalations.</td>
-                        <td class="text-center">1</td>
-                        <td class="text-center"><span class="badge text-bg-primary">4</span></td>
-                        <td class="text-center"><span class="badge text-bg-success">Active</span></td>
-                        <td class="text-end">
-                          <a href="department-detail.html" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
-                          <a href="department-edit.html" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                          <button type="button" class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-slash-circle"></i></button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="card-footer">
-                <nav aria-label="Departments pagination">
-                  <ul class="pagination pagination-sm justify-content-end mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
-                    <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a></li>
-                  </ul>
-                </nav>
-              </div>
             </div>
-            <!--end::Departments Table-->
 
-          </div>
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th class="text-center"># Agents</th>
+                                <th class="text-center">Open Tickets</th>
+                                <th class="text-center">Active</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for department in departments %}
+
+                            <tr>
+
+                                <!-- Name -->
+                                <td>
+                                    <a
+                                        href="{% url 'department_detail' pk=department.pk %}"
+                                        class="fw-semibold text-decoration-none"
+                                    >
+                                        {{ department.name }}
+                                    </a>
+                                </td>
+
+
+                                <!-- Code -->
+                                <td>
+                                    <code>{{ department.code }}</code>
+                                </td>
+
+
+                                <!-- Description -->
+                                <td>
+                                    {{ department.description|default:"—" }}
+                                </td>
+
+
+                                <!-- Agents -->
+                                <td class="text-center">
+                                    {{ department.agents.count }}
+                                </td>
+
+
+                                <!-- Open Tickets -->
+                                <td class="text-center">
+
+                                    <span class="badge text-bg-primary">
+                                        {{ department.open_tickets_count|default:0 }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Active -->
+                                <td class="text-center">
+
+                                    {% if department.is_active %}
+
+                                        <span class="badge text-bg-success">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge text-bg-secondary">
+                                            Inactive
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- Actions -->
+                                <td class="text-end">
+
+                                    <!-- View -->
+                                    <a
+                                        href="{% url 'department_detail' pk=department.pk %}"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        title="View"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+
+                                    <!-- Edit -->
+                                    <a
+                                        href="{% url 'department_edit' pk=department.pk %}"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        title="Edit"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+
+                                    <!-- Toggle Status -->
+                                    <form
+                                        method="post"
+                                        action="{% url 'department_toggle_status' pk=department.pk %}"
+                                        class="d-inline"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            title="{% if department.is_active %}Deactivate{% else %}Activate{% endif %}"
+                                        >
+
+                                            {% if department.is_active %}
+                                                <i class="bi bi-slash-circle"></i>
+                                            {% else %}
+                                                <i class="bi bi-check-circle"></i>
+                                            {% endif %}
+
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    No departments found.
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pagination -->
+            <div class="card-footer">
+
+                {% include "includes/pagination.html" %}
+
+            </div>
+            <!-- End Pagination -->
+
         </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
+        <!-- End Departments Table -->
 
-      {% endblock %}
+    </div>
+</div>
+
+{% endblock %}

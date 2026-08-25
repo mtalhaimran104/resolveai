@@ -1,14 +1,5 @@
 from django.db import models
-
-# Create your models here.
-"""
-Ticket models for the ResolveAI help desk.
-Follows the project's pattern: TimeStampedModel base, TextChoices for
-enums, explicit on_delete, related_name on every FK.
-"""
-
 from django.conf import settings
-
 from django.utils import timezone
 
 from core.models import TimeStampedModel
@@ -30,8 +21,19 @@ class Ticket(TimeStampedModel):
         RESOLVED = "RESOLVED", "Resolved"
         CLOSED = "CLOSED", "Closed"
 
-    ticket_number = models.CharField(max_length=32, unique=True, editable=False)
+    class Sentiment(models.TextChoices):
+        POSITIVE = "POSITIVE", "Positive"
+        NEUTRAL = "NEUTRAL", "Neutral"
+        NEGATIVE = "NEGATIVE", "Negative"
+
+    ticket_number = models.CharField(
+        max_length=32,
+        unique=True,
+        editable=False,
+    )
+
     subject = models.CharField(max_length=255)
+
     description = models.TextField()
 
     requester = models.ForeignKey(
@@ -39,6 +41,7 @@ class Ticket(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="tickets_requested",
     )
+
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -46,6 +49,7 @@ class Ticket(TimeStampedModel):
         null=True,
         blank=True,
     )
+
     department = models.ForeignKey(
         Department,
         on_delete=models.SET_NULL,
@@ -53,6 +57,7 @@ class Ticket(TimeStampedModel):
         null=True,
         blank=True,
     )
+
     category = models.ForeignKey(
         TicketCategory,
         on_delete=models.SET_NULL,
@@ -61,8 +66,32 @@ class Ticket(TimeStampedModel):
         blank=True,
     )
 
-    priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
+    priority = models.CharField(
+        max_length=20,
+        choices=Priority.choices,
+        default=Priority.MEDIUM,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.OPEN,
+    )
+
+    ai_confidence = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="AI classification confidence percentage (0-100).",
+    )
+
+    sentiment = models.CharField(
+        max_length=20,
+        choices=Sentiment.choices,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table = "tickets"
@@ -74,13 +103,22 @@ class Ticket(TimeStampedModel):
     def save(self, *args, **kwargs):
         if not self.ticket_number:
             year = timezone.now().year
+
             last = (
-                Ticket.objects.filter(ticket_number__startswith=f"RA-{year}-")
+                Ticket.objects
+                .filter(ticket_number__startswith=f"RA-{year}-")
                 .order_by("-ticket_number")
                 .first()
             )
-            last_seq = int(last.ticket_number.split("-")[-1]) if last else 0
+
+            last_seq = (
+                int(last.ticket_number.split("-")[-1])
+                if last
+                else 0
+            )
+
             self.ticket_number = f"RA-{year}-{last_seq + 1:06d}"
+
         super().save(*args, **kwargs)
 
 
@@ -89,19 +127,30 @@ def ticket_attachment_upload_path(instance, filename):
 
 
 class TicketComment(TimeStampedModel):
-    """A single message in a ticket's conversation thread."""
+    """Conversation messages and internal notes."""
 
     ticket = models.ForeignKey(
         Ticket,
         on_delete=models.CASCADE,
         related_name="comments",
     )
+
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="ticket_comments",
     )
+
     message = models.TextField()
+
+    is_internal = models.BooleanField(
+        default=False,
+        blank=True,
+        help_text=(
+            "Internal notes are visible to agents, supervisors and "
+            "admins only. Requesters must never see them."
+        ),
+    )
 
     class Meta:
         db_table = "ticket_comments"
@@ -112,21 +161,31 @@ class TicketComment(TimeStampedModel):
 
 
 class TicketAttachment(TimeStampedModel):
-    """A file uploaded to a ticket, either at creation or in conversation."""
+    """Files attached to a ticket."""
 
     ticket = models.ForeignKey(
         Ticket,
         on_delete=models.CASCADE,
         related_name="attachments",
     )
+
     uploaded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="ticket_attachments",
     )
-    file = models.FileField(upload_to=ticket_attachment_upload_path)
-    original_filename = models.CharField(max_length=255)
-    size_bytes = models.PositiveIntegerField(default=0)
+
+    file = models.FileField(
+        upload_to=ticket_attachment_upload_path,
+    )
+
+    original_filename = models.CharField(
+        max_length=255,
+    )
+
+    size_bytes = models.PositiveIntegerField(
+        default=0,
+    )
 
     class Meta:
         db_table = "ticket_attachments"
@@ -137,14 +196,13 @@ class TicketAttachment(TimeStampedModel):
 
 
 class TicketHistory(TimeStampedModel):
-    """An audit-trail entry recording a lifecycle event on a ticket
-    (created, assigned, status changed). Separate from TicketComment,
-    which is the human conversation thread."""
+    """Audit trail for ticket lifecycle events."""
 
     class Action(models.TextChoices):
         CREATED = "CREATED", "Created"
         ASSIGNED = "ASSIGNED", "Assigned"
         REASSIGNED = "REASSIGNED", "Reassigned"
+        UNASSIGNED = "UNASSIGNED", "Unassigned"
         STATUS_CHANGED = "STATUS_CHANGED", "Status changed"
 
     ticket = models.ForeignKey(
@@ -152,6 +210,7 @@ class TicketHistory(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="history",
     )
+
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -159,8 +218,15 @@ class TicketHistory(TimeStampedModel):
         null=True,
         blank=True,
     )
-    action = models.CharField(max_length=20, choices=Action.choices)
-    description = models.CharField(max_length=255)
+
+    action = models.CharField(
+        max_length=20,
+        choices=Action.choices,
+    )
+
+    description = models.CharField(
+        max_length=255,
+    )
 
     class Meta:
         db_table = "ticket_history"
@@ -168,4 +234,7 @@ class TicketHistory(TimeStampedModel):
         verbose_name_plural = "Ticket history"
 
     def __str__(self):
-        return f"{self.get_action_display()} on {self.ticket.ticket_number}"
+        return (
+            f"{self.get_action_display()} "
+            f"on {self.ticket.ticket_number}"
+        )

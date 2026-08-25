@@ -11,57 +11,266 @@
     <nav class="mt-2" aria-label="Main navigation">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false">
 
+        {% url 'dashboard' as dashboard_url %}
+        {% with current=request.resolver_match.url_name %}
+
+        <li class="nav-header">MAIN</li>
+        <li class="nav-item">
+          <a href="{{ dashboard_url }}" class="nav-link {% if current == 'dashboard' %}active{% endif %}">
+            <i class="nav-icon bi bi-speedometer2"></i><p>Dashboard</p>
+          </a>
+        </li>
+
         {% if user.is_superuser %}
 
           <!-- ADMIN SIDEBAR -->
+          <li class="nav-header">TICKET MANAGEMENT</li>
           <li class="nav-item">
-            <a href="{% url 'user_list' %}" class="nav-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-people"></i>
-              <p>All Users</p>
+            <a href="{% url 'admin_ticket_list' %}" class="nav-link {% if current == 'admin_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-ticket-detailed"></i><p>All Tickets</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'admin_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_ticket_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-ticket-detailed"></i>
-              <p>All Tickets</p>
+            <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if current == 'unassigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'assigned_tickets' %}" class="nav-link {% if current == 'assigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-person-check"></i><p>Assigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
+            </a>
+          </li>
+
+          <li class="nav-header">ADMINISTRATION</li>
+          <li class="nav-item">
+            <a href="{% url 'user_list' %}" class="nav-link {% if current == 'user_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-people"></i><p>Users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'role_list' %}" class="nav-link {% if current == 'role_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-shield-lock"></i><p>Roles</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'permissions_list' %}" class="nav-link {% if current == 'permissions_list' or current == 'permission_matrix' %}active{% endif %}">
+              <i class="nav-icon bi bi-key"></i><p>Permissions</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'department_list' %}" class="nav-link {% if current == 'department_list' or current == 'department_detail' %}active{% endif %}">
+              <i class="nav-icon bi bi-building"></i><p>Departments</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'category_list' %}" class="nav-link {% if current == 'category_list' or current == 'category_detail' %}active{% endif %}">
+              <i class="nav-icon bi bi-tags"></i><p>Categories</p>
+            </a>
+          </li>
+
+          <li class="nav-header">KNOWLEDGE BASE</li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
+              <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_public' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
+              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
+            </a>
+          </li>
+
+          <li class="nav-header">AI &amp; AUTOMATION</li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_overview' %}" class="nav-link {% if current == 'demo_ai_overview' %}active{% endif %}">
+              <i class="nav-icon bi bi-robot"></i><p>AI Overview</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_analysis_list' %}" class="nav-link {% if current == 'demo_ai_analysis_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-cpu"></i><p>AI Analyses</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_suggestions' %}" class="nav-link {% if current == 'demo_ai_suggestions' %}active{% endif %}">
+              <i class="nav-icon bi bi-lightbulb"></i><p>AI Suggestions</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_low_confidence' %}" class="nav-link {% if current == 'demo_ai_low_confidence' %}active{% endif %}">
+              <i class="nav-icon bi bi-question-diamond"></i><p>Low Confidence Results</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_model_performance' %}" class="nav-link {% if current == 'demo_ai_model_performance' %}active{% endif %}">
+              <i class="nav-icon bi bi-graph-up-arrow"></i><p>Model Performance</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_service_status' %}" class="nav-link {% if current == 'demo_ai_service_status' %}active{% endif %}">
+              <i class="nav-icon bi bi-hdd-network"></i><p>AI Service Status</p>
             </a>
           </li>
 
         {% elif user.has_role_supervisor %}
 
           <!-- SUPERVISOR SIDEBAR -->
+          <li class="nav-header">TICKET MANAGEMENT</li>
           <li class="nav-item">
-            <a href="{% url 'supervisor_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'supervisor_ticket_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-kanban"></i>
-              <p>Ticket Management</p>
+            <a href="{% url 'supervisor_ticket_list' %}" class="nav-link {% if current == 'supervisor_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-kanban"></i><p>Ticket Management</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'unassigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-inbox"></i>
-              <p>Unassigned Tickets</p>
+            <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if current == 'unassigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'assigned_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'assigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-person-check"></i>
-              <p>Assigned Tickets</p>
+            <a href="{% url 'assigned_tickets' %}" class="nav-link {% if current == 'assigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-person-check"></i><p>Assigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
+            </a>
+          </li>
+
+          <li class="nav-header">ADMINISTRATION</li>
+          <li class="nav-item">
+            <a href="{% url 'department_list' %}" class="nav-link {% if current == 'department_list' or current == 'department_detail' %}active{% endif %}">
+              <i class="nav-icon bi bi-building"></i><p>Departments</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'category_list' %}" class="nav-link {% if current == 'category_list' or current == 'category_detail' %}active{% endif %}">
+              <i class="nav-icon bi bi-tags"></i><p>Categories</p>
             </a>
           </li>
 
         {% elif user.has_role_agent %}
 
           <!-- AGENT SIDEBAR -->
+         
+
+          <li class="nav-header">TICKET MANAGEMENT</li>
           <li class="nav-item">
-            <a href="{% url 'agent_ticket_list' %}" class="nav-link {% if request.resolver_match.url_name == 'agent_ticket_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-ticket-detailed"></i>
-              <p>My Assigned Tickets</p>
+            <a href="{% url 'agent_ticket_list' %}" class="nav-link {% if current == 'agent_ticket_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-list-check"></i><p>All Tickets</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'agent_faq_list' %}" class="nav-link {% if request.resolver_match.url_name == 'agent_faq_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-robot"></i>
-              <p>Suggested FAQs</p>
+            <a href="{% url 'agent_unassigned_tickets' %}" class="nav-link {% if current == 'agent_unassigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'agent_assigned_tickets' %}" class="nav-link {% if current == 'agent_assigned_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-person-check"></i><p>Assigned to Me</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
+            </a>
+          </li>
+
+         
+          
+
+          <li class="nav-header">KNOWLEDGE BASE</li>
+          
+          <li class="nav-item">
+            <a href="{% url 'agent_faq_list' %}" class="nav-link {% if current == 'agent_faq_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-robot"></i><p>Suggested FAQs</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
+              <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_kb_public' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
+              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
+            </a>
+          </li>
+
+          <li class="nav-header">AI &amp; AUTOMATION</li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_overview' %}" class="nav-link {% if current == 'demo_ai_overview' %}active{% endif %}">
+              <i class="nav-icon bi bi-robot"></i><p>AI Overview</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_analysis_list' %}" class="nav-link {% if current == 'demo_ai_analysis_list' %}active{% endif %}">
+              <i class="nav-icon bi bi-cpu"></i><p>AI Analyses</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_suggestions' %}" class="nav-link {% if current == 'demo_ai_suggestions' %}active{% endif %}">
+              <i class="nav-icon bi bi-lightbulb"></i><p>AI Suggestions</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_low_confidence' %}" class="nav-link {% if current == 'demo_ai_low_confidence' %}active{% endif %}">
+              <i class="nav-icon bi bi-question-diamond"></i><p>Low Confidence Results</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_model_performance' %}" class="nav-link {% if current == 'demo_ai_model_performance' %}active{% endif %}">
+              <i class="nav-icon bi bi-graph-up-arrow"></i><p>Model Performance</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'demo_ai_service_status' %}" class="nav-link {% if current == 'demo_ai_service_status' %}active{% endif %}">
+              <i class="nav-icon bi bi-hdd-network"></i><p>AI Service Status</p>
             </a>
           </li>
 
@@ -69,19 +278,19 @@
 
           <!-- REQUESTER SIDEBAR -->
           <li class="nav-item">
-            <a href="{% url 'create_ticket' %}" class="nav-link {% if request.resolver_match.url_name == 'create_ticket' %}active{% endif %}">
-              <i class="nav-icon bi bi-plus-square"></i>
-              <p>Create Ticket</p>
+            <a href="{% url 'create_ticket' %}" class="nav-link {% if current == 'create_ticket' %}active{% endif %}">
+              <i class="nav-icon bi bi-plus-square"></i><p>Create Ticket</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'my_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'my_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-ticket-detailed"></i>
-              <p>My Tickets</p>
+            <a href="{% url 'my_tickets' %}" class="nav-link {% if current == 'my_tickets' %}active{% endif %}">
+              <i class="nav-icon bi bi-ticket-detailed"></i><p>My Tickets</p>
             </a>
           </li>
 
         {% endif %}
+
+        {% endwith %}
 
         <li class="nav-item mt-auto">
           <form action="{% url 'logout' %}" method="post" class="px-3">

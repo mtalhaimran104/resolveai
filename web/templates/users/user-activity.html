@@ -1,48 +1,20 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-
 {% block title %}User Activity{% endblock %}
 {% block page_title %}User Activity{% endblock %}
-
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">User Activity</li>{% endblock %}
 {% block content %}
-
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Activity Log</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item"><a href="user-list.html">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Activity Log</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+<div class="app-content"><div class="container-fluid">
 
             <!--begin::User Context Banner-->
             <div class="card">
               <div class="card-body d-flex align-items-center flex-wrap gap-3">
-                <img src="../assets/img/user6-128x128.jpg" class="img-size-50 rounded-circle" alt="Kamran Latif" />
+                <img src="{% static 'adminlte/img/' %}user6-128x128.jpg" class="img-size-50 rounded-circle" alt="{{ target_user.get_full_name }}" />
                 <div class="flex-grow-1">
-                  <h3 class="mb-0 fs-5">Kamran Latif</h3>
-                  <span class="text-secondary fs-7">kamran.latif@resolveai.edu &middot; Support Agent &middot; IT Support</span>
+                  <h3 class="mb-0 fs-5">{{ target_user.get_full_name }}</h3>
+                  <span class="text-secondary fs-7">{{ target_user.email }} &middot; Support Agent &middot; IT Support</span>
                 </div>
-                <a href="user-detail.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Profile</a>
+                <a href="{% url 'admin_user_detail' pk=target_user.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Profile</a>
               </div>
             </div>
             <!--end::User Context Banner-->
@@ -50,7 +22,7 @@
             <!--begin::Activity Filter-->
             <div class="card">
               <div class="card-body">
-                <form class="row g-3" action="#" method="get">
+                <form class="row g-3" action="{% url 'admin_user_activity' pk=target_user.pk %}" method="get">
                   <div class="col-md-4 col-sm-6">
                     <label for="filterEventType" class="form-label">Event type</label>
                     <select id="filterEventType" name="event_type" class="form-select">
@@ -95,92 +67,7 @@
                         <th>Date &amp; time</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td><span class="badge text-bg-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Login</span></td>
-                        <td>Logged in from Karachi, Pakistan (Chrome on Windows)</td>
-                        <td>&mdash;</td>
-                        <td>Jul 30, 2026 &middot; 07:45</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-warning"><i class="bi bi-arrow-repeat me-1"></i>Status Changed</span></td>
-                        <td>Changed status from Open to In Progress</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000118</a></td>
-                        <td>Jul 29, 2026 &middot; 16:20</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-success"><i class="bi bi-chat-left-text me-1"></i>Reply Added</span></td>
-                        <td>Replied to requester asking for a screenshot of the login error</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000118</a></td>
-                        <td>Jul 29, 2026 &middot; 16:18</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Login</span></td>
-                        <td>Logged in from Karachi, Pakistan (Chrome on Windows)</td>
-                        <td>&mdash;</td>
-                        <td>Jul 29, 2026 &middot; 08:10</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-info"><i class="bi bi-pencil-square me-1"></i>Ticket Updated</span></td>
-                        <td>Escalated priority from High to Critical after campus-wide outage reports</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000139</a></td>
-                        <td>Jul 27, 2026 &middot; 10:05</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-success"><i class="bi bi-chat-left-text me-1"></i>Reply Added</span></td>
-                        <td>Posted troubleshooting steps for portal outage</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000139</a></td>
-                        <td>Jul 27, 2026 &middot; 09:52</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Login</span></td>
-                        <td>Logged in from Karachi, Pakistan (Chrome on Windows)</td>
-                        <td>&mdash;</td>
-                        <td>Jul 27, 2026 &middot; 08:02</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-secondary"><i class="bi bi-file-earmark-plus me-1"></i>Ticket Created</span></td>
-                        <td>Logged a new ticket on behalf of a walk-in requester</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000159</a></td>
-                        <td>Jul 21, 2026 &middot; 14:36</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-warning"><i class="bi bi-arrow-repeat me-1"></i>Status Changed</span></td>
-                        <td>Changed status from In Progress to Resolved</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000101</a></td>
-                        <td>Jul 14, 2026 &middot; 11:47</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Login</span></td>
-                        <td>Logged in from Karachi, Pakistan (Chrome on Windows)</td>
-                        <td>&mdash;</td>
-                        <td>Jul 14, 2026 &middot; 08:15</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-dark"><i class="bi bi-shield-check me-1"></i>Role Updated</span></td>
-                        <td>Support Agent role permissions refreshed by System Administrator Zainab Malik (added Knowledge Base &mdash; create)</td>
-                        <td>&mdash;</td>
-                        <td>Jul 8, 2026 &middot; 17:00</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-success"><i class="bi bi-chat-left-text me-1"></i>Reply Added</span></td>
-                        <td>Replied confirming two-factor authentication was re-enabled</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000101</a></td>
-                        <td>Jul 3, 2026 &middot; 13:29</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Login</span></td>
-                        <td>Logged in from Karachi, Pakistan (Chrome on Windows)</td>
-                        <td>&mdash;</td>
-                        <td>Jun 22, 2026 &middot; 08:03</td>
-                      </tr>
-                      <tr>
-                        <td><span class="badge text-bg-info"><i class="bi bi-pencil-square me-1"></i>Ticket Updated</span></td>
-                        <td>Assigned RA-2026-000118 to self from the unassigned queue</td>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000118</a></td>
-                        <td>Jun 15, 2026 &middot; 09:41</td>
-                      </tr>
-                    </tbody>
+                    <tbody>{% for log in logs %}<tr><td>{{ log.created_at|date:'M d, Y H:i' }}</td><td>{{ log.action }}</td><td>{{ log.description }}</td><td>{{ log.path }}</td></tr>{% empty %}<tr><td colspan="4" class="text-center text-secondary">No activity recorded.</td></tr>{% endfor %}</tbody>
                   </table>
                 </div>
               </div>
@@ -198,10 +85,5 @@
             <!--end::Activity Table-->
 
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-
-    {% endblock %}
+          </div></div>
+{% endblock %}

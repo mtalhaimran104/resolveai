@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+  <div class="mb-4">
+    <h4 class="mb-1">Welcome back, {{ welcome_name }}</h4>
+    <p class="text-secondary mb-0">Here's your team's ticket queue overview.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-inbox"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Unassigned Tickets</span>
+          <span class="info-box-number">{{ unassigned_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-info shadow-sm"><i class="bi bi-person-check"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Assigned Tickets</span>
+          <span class="info-box-number">{{ assigned_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-danger shadow-sm"><i class="bi bi-exclamation-octagon-fill"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Critical Tickets</span>
+          <span class="info-box-number">{{ critical_count }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-6">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-success shadow-sm"><i class="bi bi-check-circle-fill"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Resolved Today</span>
+          <span class="info-box-number">{{ resolved_today }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3 class="card-title mb-0">Unassigned Tickets</h3>
+      <a href="{% url 'unassigned_tickets' %}" class="fs-7">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr><th>Ticket #</th><th>Subject</th><th>Requester</th><th>Department</th><th>Priority</th></tr>
+          </thead>
+          <tbody>
+            {% for ticket in unassigned_tickets %}
+              <tr>
+                <td><a href="{% url 'ticket_detail_requester' ticket.pk %}">{{ ticket.ticket_number }}</a></td>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
+                <td>{{ ticket.department.name|default:"—" }}</td>
+                <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5" class="text-center text-secondary py-4">No unassigned tickets right now.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header"><h3 class="card-title mb-0">Recent Ticket Activity</h3></div>
+    <div class="card-body p-0">
+      <ul class="list-group list-group-flush">
+        {% for entry in recent_history %}
+          <li class="list-group-item">
+            {{ entry.description }}
+            <span class="d-block text-secondary fs-7">{{ entry.created_at|date:"M d, Y g:i A" }} &middot; <a href="{% url 'ticket_detail_requester' entry.ticket_id %}">{{ entry.ticket.ticket_number }}</a></span>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-secondary">No recent activity yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% endblock %}

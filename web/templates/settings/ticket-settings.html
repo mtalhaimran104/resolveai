@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Ticket Settings{% endblock %}
+{% block page_title %}Ticket Settings{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Ticket Settings</li>{% endblock %}
+{% block content %}
+<div class="app-content"><div class="container-fluid">
+
+
+            <div class="row">
+              
+            <!--begin::Settings Sub-navigation-->
+            <div class="col-lg-3 mb-4 mb-lg-0">
+              <div class="list-group shadow-sm">
+                <a href="{% url 'general_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-sliders me-2"></i>General</a><a href="{% url 'ticket_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center active"><i class="bi bi-ticket-detailed me-2"></i>Tickets</a><a href="{% url 'email_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-envelope me-2"></i>Email</a><a href="{% url 'security_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-shield-lock me-2"></i>Security</a><a href="{% url 'system_health' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-heart-pulse me-2"></i>System Health</a>
+              </div>
+            </div>
+            <!--end::Settings Sub-navigation-->
+              <div class="col-lg-9">
+                <!--begin::Ticket Settings Form-->
+                <form method="post" novalidate data-ra-validate data-ra-loading-on-submit>
+{% csrf_token %}
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Ticket Defaults</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-md-4">
+                          <label for="ticketPrefix" class="form-label">Ticket number prefix</label>
+                          <input type="text" class="form-control" id="ticketPrefix" name="ticketPrefix" value="RA" required maxlength="6" pattern="[A-Za-z0-9\-]+" />
+                          <div class="form-text">Example: RA-2026-000142</div>
+                          <div class="invalid-feedback">Prefix is required (letters/numbers only).</div>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="defaultPriority" class="form-label">Default priority</label>
+                          <select class="form-select" id="defaultPriority" name="defaultPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="defaultStatus" class="form-label">Default status</label>
+                          <select class="form-select" id="defaultStatus" name="defaultStatus">
+                            <option value="open" selected>Open</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="waiting">Waiting for User</option>
+                          </select>
+                        </div>
+
+                        <div class="col-12"><hr /></div>
+
+                        <div class="col-md-6">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="allowRequesterClosure" checked />
+                            <label class="form-check-label fw-semibold" for="allowRequesterClosure">Allow requester closure</label>
+                            <div class="fs-7 text-secondary">Requesters may close their own resolved tickets.</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="allowRequesterReopen" name="allowRequesterReopen" {% if settings.allowRequesterReopen.value == "on" %}checked{% endif %} />
+                            <label class="form-check-label fw-semibold" for="allowRequesterReopen">Allow requester reopen</label>
+                            <div class="fs-7 text-secondary">Requesters may reopen a closed ticket within the auto-close window.</div>
+                          </div>
+                        </div>
+
+                        <div class="col-12"><hr /></div>
+
+                        <div class="col-md-4">
+                          <label for="autoCloseDays" class="form-label">Auto-close resolved tickets after</label>
+                          <div class="input-group">
+                            <input type="number" class="form-control" id="autoCloseDays" name="autoCloseDays" value="{{ settings.autoCloseDays.value|default:"7" }}" min="1" max="90" required />
+                            <span class="input-group-text">days</span>
+                          </div>
+                          <div class="invalid-feedback">Enter a value between 1 and 90 days.</div>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="attachmentSizeLimit" class="form-label">Attachment size limit</label>
+                          <div class="input-group">
+                            <input type="number" class="form-control" id="attachmentSizeLimit" name="attachmentSizeLimit" value="25" min="1" max="100" required />
+                            <span class="input-group-text">MB</span>
+                          </div>
+                          <div class="invalid-feedback">Enter a value between 1 and 100 MB.</div>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="allowedAttachmentTypes" class="form-label">Allowed attachment types</label>
+                          <div class="ra-tag-input" id="allowedAttachmentTypesTags">
+                            <span class="badge text-bg-secondary">pdf <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove pdf" style="font-size: 0.55rem"></button></span>
+                            <span class="badge text-bg-secondary">png <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove png" style="font-size: 0.55rem"></button></span>
+                            <span class="badge text-bg-secondary">jpg <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove jpg" style="font-size: 0.55rem"></button></span>
+                            <span class="badge text-bg-secondary">docx <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove docx" style="font-size: 0.55rem"></button></span>
+                            <span class="badge text-bg-secondary">xlsx <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove xlsx" style="font-size: 0.55rem"></button></span>
+                            <input type="text" id="allowedAttachmentTypes" name="allowedAttachmentTypes" placeholder="Add a file extension&hellip;" aria-label="Add allowed attachment type" />
+                          </div>
+                          <div class="form-text">Comma-separated file extensions accepted on ticket attachments.</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                      <div class="d-none" data-ra-success-alert>
+                        <span class="text-success fs-7"><i class="bi bi-check-circle-fill me-1"></i>Settings saved.</span>
+                      </div>
+                      <div class="ms-auto">
+                        <button type="reset" class="btn btn-outline-secondary me-2">Reset</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                <!--end::Ticket Settings Form-->
+              </div>
+            </div>
+
+          </div></div>
+{% endblock %}
