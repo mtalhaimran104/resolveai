@@ -44,7 +44,7 @@ print("Sentiment model loaded successfully.")
 # SENTIMENT ANALYSIS
 # ============================================================
 
-def analyze_sentiment(text: str) -> str:
+def analyze_sentiment(text: str):
 
     inputs = sentiment_tokenizer(
         text,
@@ -83,7 +83,15 @@ def analyze_sentiment(text: str) -> str:
         2: "positive"
     }
 
-    return labels.get(
+    sentiment = labels.get(
         predicted_class,
         "neutral"
     )
+
+    # Actual probability of the predicted sentiment.
+    # This is the model's confidence score.
+    confidence_score = float(
+        probabilities[0][predicted_class].item()
+    )
+
+    return sentiment, confidence_score

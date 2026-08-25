@@ -23,19 +23,13 @@ router = APIRouter(
 def sentiment_analysis(
     request: SentimentRequest,
 ):
-    sentiment = analyze_student_sentiment(
+    sentiment, confidence_score = analyze_student_sentiment(
         request.text
     )
 
     return SentimentResponse(
         text=request.text,
         sentiment=sentiment,
-        analysis_type="SENTIMENT",
-        model_name="resolveai-sentiment",
         model_version="v1",
-        result_json={
-            "sentiment": sentiment,
-        },
-        confidence_score=None,
-        status="SUCCESS",
+        confidence_score=confidence_score,
     )

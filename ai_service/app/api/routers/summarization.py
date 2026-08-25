@@ -23,19 +23,12 @@ router = APIRouter(
 def summarize(
     request: SummarizationRequest,
 ):
-    summary = summarize_student_query(
-        request.text
-    )
+    summary = summarize_student_query(request.text)
 
     return SummarizationResponse(
         text=request.text,
         summary=summary,
-        analysis_type="SUMMARY",
         model_name="resolveai-extractive-summarizer",
         model_version="v1",
-        result_json={
-            "summary": summary,
-        },
         confidence_score=None,
-        status="SUCCESS",
     )

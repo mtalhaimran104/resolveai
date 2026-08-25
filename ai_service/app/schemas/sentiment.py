@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -15,12 +15,5 @@ class SentimentResponse(BaseModel):
     text: str
     sentiment: str
 
-    analysis_type: str = "SENTIMENT"
-    model_name: str = "resolveai-sentiment"
     model_version: str = "v1"
-
-    result_json: Dict[str, Any]
-
     confidence_score: Optional[float] = None
-
-    status: str = "SUCCESS"
