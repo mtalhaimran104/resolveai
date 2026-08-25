@@ -5,9 +5,7 @@ from fastapi import FastAPI
 from app.api.routers import (
     sentiment,
     summarization,
-    faq,
-    iub_knowledge,
-    student_query
+    student_query,
 )
 
 
@@ -21,12 +19,12 @@ app = FastAPI(
         "AI-powered student support service "
         "for The Islamia University of Bahawalpur"
     ),
-    version="2.0.0"
+    version="2.0.0",
 )
 
 
 # ============================================================
-# ROUTERS
+# PUBLIC AI ENDPOINTS
 # ============================================================
 
 app.include_router(
@@ -35,14 +33,6 @@ app.include_router(
 
 app.include_router(
     summarization.router
-)
-
-app.include_router(
-    faq.router
-)
-
-app.include_router(
-    iub_knowledge.router
 )
 
 app.include_router(
