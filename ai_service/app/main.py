@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 
 from app.api.routers import (
+    faq,
     sentiment,
     summarization,
     student_query,
@@ -26,6 +27,10 @@ app = FastAPI(
 # ============================================================
 # PUBLIC AI ENDPOINTS
 # ============================================================
+
+app.include_router(
+    faq.router
+)
 
 app.include_router(
     sentiment.router
