@@ -1,10 +1,17 @@
 import requests
+
 from django.conf import settings
+
+
 class AIServiceError(Exception):
     """Raised when the AI service cannot process a request."""
+
+
 def call_classification_service(ticket_id: int, text: str) -> dict:
     """Send ticket text to the classification model service."""
+
     url = f"{settings.AI_SERVICE_URL}/api/v1/classification/predict"
+
     try:
         response = requests.post(
             url,
@@ -14,15 +21,22 @@ def call_classification_service(ticket_id: int, text: str) -> dict:
             },
             timeout=30,
         )
+
         response.raise_for_status()
+
         return response.json()
+
     except requests.RequestException as exc:
         raise AIServiceError(
             "Classification service is unavailable."
         ) from exc
+
+
 def call_priority_service(ticket_id: int, text: str) -> dict:
     """Send ticket text to the priority prediction model service."""
+
     url = f"{settings.AI_SERVICE_URL}/api/v1/priority/predict"
+
     try:
         response = requests.post(
             url,
@@ -32,9 +46,84 @@ def call_priority_service(ticket_id: int, text: str) -> dict:
             },
             timeout=30,
         )
+
         response.raise_for_status()
+
         return response.json()
+
     except requests.RequestException as exc:
         raise AIServiceError(
             "Priority prediction service is unavailable."
+        ) from exc
+
+
+def call_sentiment_service(text: str) -> dict:
+    """Send ticket text to the sentiment analysis service."""
+
+    url = f"{settings.AI_SERVICE_URL}/sentiment/"
+
+    try:
+        response = requests.post(
+            url,
+            json={
+                "text": text,
+            },
+            timeout=30,
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Sentiment analysis service is unavailable."
+        ) from exc
+
+
+def call_summarization_service(text: str) -> dict:
+    """Send ticket text to the summarization service."""
+
+    url = f"{settings.AI_SERVICE_URL}/summarization/"
+
+    try:
+        response = requests.post(
+            url,
+            json={
+                "text": text,
+            },
+            timeout=60,
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Summarization service is unavailable."
+        ) from exc
+
+
+def call_faq_service(question: str) -> dict:
+    """Send a student question to the FAQ retrieval service."""
+
+    url = f"{settings.AI_SERVICE_URL}/faq/"
+
+    try:
+        response = requests.post(
+            url,
+            json={
+                "question": question,
+            },
+            timeout=30,
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "FAQ service is unavailable."
         ) from exc
