@@ -15,7 +15,12 @@ router = APIRouter(
 def predict_classification(
     request: ClassificationRequest,
 ) -> ClassificationResponse:
+    # Fetch ticket details from DB where id = request.ticket_id
+    # 
+    #
+    # 
     category, confidence = classify_ticket(request.text)
+          
     return ClassificationResponse(
         ticket_id=request.ticket_id,
         category=category,

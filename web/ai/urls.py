@@ -12,4 +12,9 @@ urlpatterns = [
         views.predict_ticket_priority,
         name="predict_ticket_priority",
     ),
+    path(
+        "feedback/",
+        views.review_ai_analysis,
+        name="review_ai_analysis",
+    ),
 ]
