@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 from django.urls import include, path
 
 urlpatterns = [
@@ -8,6 +9,10 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("", include("dashboard.urls")),
     path("tickets/", include("tickets.urls")),
+    path("", include("organization.urls")),
+    path("", include("classification.urls")),
+    path("assets/<path:path>", serve, {"document_root": settings.BASE_DIR / "assets"}),
+    path("", include("knowledge.urls")),
 ]
 
 if settings.DEBUG:

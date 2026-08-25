@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Knowledge Base | ResolveAI</title>
+
+    <!--begin::Theme Init (prevents flash of incorrect theme on load)-->
+    <script>
+      (() => {
+        'use strict';
+        const STORAGE_KEY = 'lte-theme';
+        let stored = null;
+        try {
+          stored = localStorage.getItem(STORAGE_KEY);
+        } catch {
+          // localStorage may be unavailable (private mode, sandboxed iframe).
+        }
+        const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
+        let resolved = 'light';
+        if (stored === 'dark' || stored === 'light') {
+          resolved = stored;
+        } else if (prefersDark) {
+          resolved = 'dark';
+        }
+        document.documentElement.setAttribute('data-bs-theme', resolved);
+        document.documentElement.style.colorScheme = resolved;
+      })();
+    </script>
+    <!--end::Theme Init-->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0b3d91" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#10141f" media="(prefers-color-scheme: dark)" />
+
+    <meta name="description" content="ResolveAI — Intelligent Help Desk and Support Platform." />
+    <meta name="author" content="ResolveAI" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" media="print" onload="this.media = 'all'" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../assets/css/adminlte.css" />
+    <link rel="stylesheet" href="../assets/css/resolve-ai.css" />
+    <style>
+      .ra-public-header {
+        border-bottom: 1px solid var(--bs-border-color);
+      }
+      .ra-kb-hero {
+        padding: 3.5rem 1rem 4.5rem;
+      }
+      .ra-kb-search-box {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      .ra-kb-cat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.65rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        background: rgba(var(--ra-primary-rgb), 0.1);
+        color: var(--ra-primary);
+      }
+    </style>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="bg-body-tertiary">
+    <!--begin::Public Header-->
+    <header class="ra-public-header bg-body">
+      <nav class="navbar navbar-expand-md container-fluid px-3 px-lg-5">
+        <a class="navbar-brand d-flex align-items-center" href="../index.html">
+          <span class="ra-logo-icon"><i class="bi bi-headset"></i></span>
+          <span class="fw-bold">ResolveAI</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#raPublicNav" aria-controls="raPublicNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="raPublicNav">
+          <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active fw-semibold" href="public-knowledge-base.html" aria-current="page">Knowledge Base</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-sm" href="../auth/login.html"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <!--end::Public Header-->
+
+    <!--begin::Hero Search-->
+    <section class="bg-gradient-resolveai ra-kb-hero text-center">
+      <div class="container">
+        <h1 class="display-6 fw-bold mb-2">How can we help you today?</h1>
+        <p class="fs-5 mb-4 opacity-75">Search hundreds of help articles, or browse by category below.</p>
+        <form class="ra-kb-search-box" role="search" action="article-list.html" method="get">
+          <div class="input-group input-group-lg shadow-sm">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="search" class="form-control" placeholder="Search for articles, e.g. &quot;reset password&quot;" aria-label="Search knowledge base" />
+            <button class="btn btn-dark" type="submit">Search</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    <!--end::Hero Search-->
+
+    <main class="py-5">
+      <div class="container">
+
+        <!--begin::Categories-->
+        <section class="mb-5">
+          <h2 class="fs-4 fw-bold mb-3">Browse by Category</h2>
+          <div class="row g-3">
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-shield-lock"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Account Access</h3>
+                    <p class="fs-7 text-secondary mb-1">Logins, lockouts, two-factor authentication and account recovery.</p>
+                    <span class="fs-7 text-primary">4 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-credit-card"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Payment Issue</h3>
+                    <p class="fs-7 text-secondary mb-1">Declined payments, gateway errors, duplicate charges and invoices.</p>
+                    <span class="fs-7 text-primary">6 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-cone-striped"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Technical Error</h3>
+                    <p class="fs-7 text-secondary mb-1">Portal outages, slow performance and general troubleshooting.</p>
+                    <span class="fs-7 text-primary">5 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-mortarboard"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Admission Inquiry</h3>
+                    <p class="fs-7 text-secondary mb-1">Application deadlines, requirements and late admission guidance.</p>
+                    <span class="fs-7 text-primary">3 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-clipboard-data"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Grade Dispute</h3>
+                    <p class="fs-7 text-secondary mb-1">How grade appeals and transcript corrections are reviewed.</p>
+                    <span class="fs-7 text-primary">2 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <a href="article-list.html" class="card ra-kb-category-card h-100 text-decoration-none text-body">
+                <div class="card-body d-flex align-items-start gap-3">
+                  <span class="ra-kb-cat-icon"><i class="bi bi-file-earmark-check"></i></span>
+                  <div>
+                    <h3 class="fs-6 fw-bold mb-1">Document Verification</h3>
+                    <p class="fs-7 text-secondary mb-1">Uploading and verifying admission and identity documents.</p>
+                    <span class="fs-7 text-primary">4 articles &rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+        <!--end::Categories-->
+
+        <div class="row g-4 mb-5">
+          <!--begin::Popular Articles-->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h3 class="card-title"><i class="bi bi-fire text-danger me-1"></i>Popular Articles</h3>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>How to Reset Your Account Password</span>
+                    <span class="badge text-bg-secondary">Password Reset</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Enabling Two-Factor Authentication</span>
+                    <span class="badge text-bg-secondary">Account Access</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Fixing &quot;Portal Unreachable&quot; Errors</span>
+                    <span class="badge text-bg-secondary">Technical Error</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Understanding Refund Timelines</span>
+                    <span class="badge text-bg-secondary">Refund Request</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::Popular Articles-->
+
+          <!--begin::Recently Updated Articles-->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h3 class="card-title"><i class="bi bi-arrow-repeat text-primary me-1"></i>Recently Updated</h3>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Submitting Admission Documents Correctly</span>
+                    <span class="fs-7 text-secondary">2026-05-30</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Late Admission Application Guide</span>
+                    <span class="fs-7 text-secondary">2026-03-15</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Payment Gateway Troubleshooting</span>
+                    <span class="fs-7 text-secondary">2026-04-11</span>
+                  </a>
+                  <a href="article-detail.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>Troubleshooting Slow Portal Performance</span>
+                    <span class="fs-7 text-secondary">2026-06-05</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::Recently Updated Articles-->
+        </div>
+
+        <!--begin::FAQ-->
+        <section class="mb-5">
+          <h2 class="fs-4 fw-bold mb-3">Frequently Asked Questions</h2>
+          <div class="accordion" id="kbFaqAccordion">
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="faqHeadingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
+                  How do I submit a support ticket?
+                </button>
+              </h3>
+              <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne" data-bs-parent="#kbFaqAccordion">
+                <div class="accordion-body">
+                  Sign in to your account and select <strong>New Ticket</strong> from your dashboard, or use the &quot;Still need help?&quot; button below. Choose the category that best matches your issue and provide as much detail as possible &mdash; this helps our AI classifier route your ticket to the right department faster.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="faqHeadingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                  How long does it take to get a response?
+                </button>
+              </h3>
+              <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#kbFaqAccordion">
+                <div class="accordion-body">
+                  Response times depend on your ticket's priority. Critical issues are typically triaged within 30 minutes, high priority within 2 hours, and medium/low priority within one business day. You can track live status updates from the ticket detail page at any time.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="faqHeadingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
+                  How do I reset my account password?
+                </button>
+              </h3>
+              <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#kbFaqAccordion">
+                <div class="accordion-body">
+                  Select <strong>Forgot password?</strong> on the sign-in page and follow the emailed reset link, which expires after 30 minutes. See our full guide, <a href="article-detail.html">How to Reset Your Account Password</a>, for detailed steps and troubleshooting tips.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="faqHeadingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
+                  Can I check the status of my ticket?
+                </button>
+              </h3>
+              <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#kbFaqAccordion">
+                <div class="accordion-body">
+                  Yes. Sign in and open <strong>My Tickets</strong> to see the live status, assigned agent, and full conversation history for every ticket you've submitted. You'll also receive email and in-app notifications whenever an agent replies.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="faqHeadingFive">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">
+                  Who do I contact for billing or payment issues?
+                </button>
+              </h3>
+              <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#kbFaqAccordion">
+                <div class="accordion-body">
+                  Submit a ticket under the <strong>Payment Issue</strong> or <strong>Refund Request</strong> category and it will automatically route to the Finance department. Include your invoice or transaction reference number so the assigned agent can look up the charge quickly.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!--end::FAQ-->
+
+        <!--begin::Still Need Help CTA-->
+        <section>
+          <div class="card bg-gradient-resolveai border-0">
+            <div class="card-body text-center py-5">
+              <h2 class="fw-bold mb-2">Still need help?</h2>
+              <p class="mb-4 opacity-75">Can't find what you're looking for? Our support team is ready to help &mdash; sign in to track existing tickets or submit a new one.</p>
+              <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a href="../tickets/create-ticket.html" class="btn btn-light btn-lg"><i class="bi bi-plus-circle me-1"></i>Submit a Ticket</a>
+                <a href="../auth/login.html" class="btn btn-outline-light btn-lg"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In to Your Account</a>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!--end::Still Need Help CTA-->
+
+      </div>
+    </main>
+
+    <!--begin::Public Footer-->
+    <footer class="bg-body border-top py-4">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span class="text-secondary fs-7">Copyright &copy; 2026 <a href="../index.html" class="text-decoration-none">ResolveAI</a>. All rights reserved.</span>
+        <div class="d-flex gap-3">
+          <a href="../index.html" class="text-decoration-none fs-7">Home</a>
+          <a href="public-knowledge-base.html" class="text-decoration-none fs-7">Knowledge Base</a>
+          <a href="../auth/login.html" class="text-decoration-none fs-7">Sign In</a>
+        </div>
+      </div>
+    </footer>
+    <!--end::Public Footer-->
+
+    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/js/resolve-ai.js"></script>
+  </body>
+  <!--end::Body-->
+</html>

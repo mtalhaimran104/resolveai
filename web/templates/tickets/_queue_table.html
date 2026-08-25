@@ -1,0 +1,142 @@
+{% load static %}
+<!--begin::Filter Row-->
+<div class="card mb-3">
+  <div class="card-body">
+    <form class="row g-2 align-items-end" role="search" aria-label="Filter tickets">
+      <div class="col-md-3">
+        <label class="form-label fs-7 mb-1" for="fltSearch">Search</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control" id="fltSearch" placeholder="Ticket #, subject, requester…" />
+        </div>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fs-7 mb-1" for="fltStatus">Status</label>
+        <select class="form-select form-select-sm" id="fltStatus">
+          <option selected value="">All Statuses</option>
+          <option>Open</option>
+          <option>In Progress</option>
+          <option>Waiting for User</option>
+          <option>Resolved</option>
+          <option>Closed</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        {% if show_priority_filter %}
+          <label class="form-label fs-7 mb-1" for="fltPriority">Priority</label>
+          <select class="form-select form-select-sm" id="fltPriority">
+            <option selected value="">All Priorities</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        {% else %}
+          <label class="form-label fs-7 mb-1" for="fltDept">Department</label>
+          <select class="form-select form-select-sm" id="fltDept">
+            <option selected value="">All Departments</option>
+            {% for department in all_departments %}
+              <option>{{ department.name }}</option>
+            {% endfor %}
+          </select>
+        {% endif %}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fs-7 mb-1" for="fltCategory">Category</label>
+        <select class="form-select form-select-sm" id="fltCategory">
+          <option selected value="">All Categories</option>
+          {% for category in all_categories %}
+            <option>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fs-7 mb-1" for="fltDateFrom">Created Between</label>
+        <div class="input-group input-group-sm">
+          <input type="date" class="form-control" id="fltDateFrom" aria-label="From date" />
+          <span class="input-group-text">to</span>
+          <input type="date" class="form-control" id="fltDateTo" aria-label="To date" />
+        </div>
+      </div>
+      <div class="col-12 d-flex gap-2 justify-content-end">
+        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-funnel me-1"></i>Filter</button>
+        <button type="reset" class="btn btn-sm btn-outline-secondary">Reset</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!--end::Filter Row-->
+
+<!--begin::Bulk Actions Toolbar-->
+<div class="ra-bulk-toolbar" data-ra-bulk-toolbar="[data-ra-row-check]">
+  <span class="fw-semibold"><span data-ra-bulk-count>0</span> selected</span>
+  <button type="button" class="btn btn-sm btn-primary" disabled title="Coming soon"><i class="bi bi-person-plus me-1"></i>Assign</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Coming soon"><i class="bi bi-flag me-1"></i>Change Priority</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Coming soon"><i class="bi bi-arrow-repeat me-1"></i>Change Status</button>
+  <button type="button" class="btn btn-sm btn-link ms-auto text-decoration-none" data-ra-bulk-clear>Clear selection</button>
+</div>
+<!--end::Bulk Actions Toolbar-->
+
+<!--begin::Ticket Table-->
+<div class="card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title mb-0">{{ queue_title }} <span class="text-secondary fw-normal fs-7">Showing {{ tickets|length }} of {{ tickets|length }}</span></h3>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width: 2rem"><input class="form-check-input" type="checkbox" data-ra-select-all="[data-ra-row-check]" aria-label="Select all tickets" /></th>
+            <th>Ticket #</th>
+            <th>Subject</th>
+            <th>Requester</th>
+            <th>Department</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned Agent</th>
+            <th>Created</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td><input class="form-check-input" type="checkbox" data-ra-row-check aria-label="Select ticket {{ ticket.ticket_number }}" /></td>
+            <td><a href="{% url 'ticket_detail_requester' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.ticket_number }}</a></td>
+            <td>{{ ticket.subject }}</td>
+            <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
+            <td>{{ ticket.department.name|default:"—" }}</td>
+            <td>{{ ticket.category.name|default:"—" }}</td>
+            <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
+            <td><span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span></td>
+            <td>
+              {% if ticket.assigned_to %}
+                <i class="bi bi-person-circle me-1 text-secondary"></i>{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+              {% else %}
+                <span class="text-secondary fst-italic">Unassigned</span>
+              {% endif %}
+            </td>
+            <td>{{ ticket.created_at|date:"M d, Y" }}</td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+              {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
+                {% if ticket.assigned_to %}
+                  <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Reassign"><i class="bi bi-arrow-repeat"></i></a>
+                {% else %}
+                  <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-sm btn-primary" title="Assign"><i class="bi bi-person-plus me-1"></i>Assign</a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="11" class="text-center text-secondary py-4">No tickets found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!--end::Ticket Table-->
+

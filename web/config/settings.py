@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization",
     "classification",
     "tickets",
+    "knowledge",
 ]
 
 # ResolveAI uses its own user model instead of django.contrib.auth.User.
@@ -73,6 +74,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csrf",
                 "accounts.context_processors.user_roles",
+                "accounts.context_processors.sidebar_counts",
             ],
         },
     },

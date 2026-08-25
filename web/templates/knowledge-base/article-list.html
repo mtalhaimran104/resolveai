@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}Articles{% endblock %}
+
+{% block page_title %}Articles{% endblock %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'dashboard' %}">Home</a>
+  </li>
+  <li class="breadcrumb-item">
+    <a href="{% url 'article_list' %}">Knowledge Base</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">Articles</li>
+{% endblock %}
+
+{% block content %}
+
+<!--begin::Filters-->
+<div class="card mb-3">
+  <div class="card-body">
+    <form class="row g-3 align-items-end" method="get">
+
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="filterCategory">Category</label>
+        <select class="form-select" id="filterCategory" name="category">
+          <option value="">All Categories</option>
+
+          {% for category in categories %}
+            <option value="{{ category.id }}"
+              {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="filterStatus">Status</label>
+        <select class="form-select" id="filterStatus" name="status">
+          <option value="">All Statuses</option>
+
+          {% for value, label in status_choices %}
+            <option value="{{ value }}"
+              {% if request.GET.status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="filterAuthor">Author</label>
+        <select class="form-select" id="filterAuthor" name="author">
+          <option value="">All Authors</option>
+
+          {% for author in authors %}
+            <option value="{{ author.id }}"
+              {% if request.GET.author == author.id|stringformat:"s" %}selected{% endif %}>
+              {{ author.get_full_name|default:author.username }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="filterUpdated">Updated</label>
+        <input
+          type="date"
+          class="form-control"
+          id="filterUpdated"
+          name="updated"
+          value="{{ request.GET.updated|default:'' }}"
+        />
+      </div>
+
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-sm">
+          <i class="bi bi-funnel me-1"></i>
+          Apply Filters
+        </button>
+
+        <a href="{% url 'article_list' %}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>
+          Reset
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+<!--end::Filters-->
+
+
+<!--begin::Articles Table-->
+<div class="card">
+
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3 class="card-title mb-0">
+      All Articles
+      <span class="badge text-bg-secondary ms-1">
+        {{ articles.paginator.count|default:articles|length }}
+      </span>
+    </h3>
+
+    <a href="{% url 'article_create' %}" class="btn btn-primary btn-sm">
+      <i class="bi bi-file-earmark-plus me-1"></i>
+      New Article
+    </a>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+
+      <table class="table table-hover align-middle mb-0">
+
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Version</th>
+            <th>Author</th>
+            <th>Last Updated</th>
+            <th>Published</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for article in articles %}
+
+            <tr>
+
+              <td>
+                <a
+                  href="{% url 'article_detail' article.pk %}"
+                  class="fw-semibold text-decoration-none"
+                >
+                  {{ article.title }}
+                </a>
+              </td>
+
+              <td>
+                {{ article.category.name }}
+              </td>
+
+              <td>
+                {% if article.status == 'published' %}
+                  <span class="badge text-bg-success">Published</span>
+                {% elif article.status == 'draft' %}
+                  <span class="badge text-bg-secondary">Draft</span>
+                {% elif article.status == 'archived' %}
+                  <span class="badge text-bg-dark">Archived</span>
+                {% else %}
+                  <span class="badge text-bg-secondary">
+                    {{ article.get_status_display|default:article.status }}
+                  </span>
+                {% endif %}
+              </td>
+
+              <td>
+                v{{ article.version }}
+              </td>
+
+              <td>
+                {% if article.author %}
+                  {{ article.author.get_full_name|default:article.author.username }}
+                {% else %}
+                  &mdash;
+                {% endif %}
+              </td>
+
+              <td>
+                {{ article.updated_at|date:"Y-m-d" }}
+              </td>
+
+              <td>
+                {% if article.published_at %}
+                  {{ article.published_at|date:"Y-m-d" }}
+                {% else %}
+                  &mdash;
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+
+                <a
+                  href="{% url 'article_detail' article.pk %}"
+                  class="btn btn-sm btn-outline-secondary"
+                  title="View"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a
+                  href="{% url 'article_edit' article.pk %}"
+                  class="btn btn-sm btn-outline-primary"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+              </td>
+
+            </tr>
+
+          {% empty %}
+
+            <tr>
+              <td colspan="8" class="text-center py-4 text-secondary">
+                <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
+                No articles found.
+              </td>
+            </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+
+
+  <!--begin::Pagination-->
+  <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+    <span class="text-secondary fs-7">
+      {% if articles %}
+        Showing
+        {{ articles.start_index }}&ndash;{{ articles.end_index }}
+        of {{ articles.paginator.count }} articles
+      {% else %}
+        Showing 0 articles
+      {% endif %}
+    </span>
+
+    {% if articles.has_other_pages %}
+      <nav aria-label="Article list pagination">
+
+        <ul class="pagination pagination-sm mb-0">
+
+          {% if articles.has_previous %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ articles.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+              >
+                Previous
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Previous</span>
+            </li>
+          {% endif %}
+
+
+          {% for num in articles.paginator.page_range %}
+
+            {% if articles.number == num %}
+
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ num }}</span>
+              </li>
+
+            {% else %}
+
+              <li class="page-item">
+                <a
+                  class="page-link"
+                  href="?page={{ num }}{% if query_string %}&{{ query_string }}{% endif %}"
+                >
+                  {{ num }}
+                </a>
+              </li>
+
+            {% endif %}
+
+          {% endfor %}
+
+
+          {% if articles.has_next %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ articles.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+              >
+                Next
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Next</span>
+            </li>
+          {% endif %}
+
+        </ul>
+
+      </nav>
+    {% endif %}
+
+  </div>
+  <!--end::Pagination-->
+
+</div>
+<!--end::Articles Table-->
+
+{% endblock %}

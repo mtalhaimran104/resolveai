@@ -1,41 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-
 {% block title %}Edit Department{% endblock %}
-{% block page_title %}Edit Department {% endblock %}
-
+{% block page_title %}Edit Department{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Edit Department</li>{% endblock %}
 {% block content %}
-
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Edit Department</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-admin.html">Home</a></li>
-                    <li class="breadcrumb-item">Administration</li>
-                    <li class="breadcrumb-item"><a href="department-list.html">Departments</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit Department</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+<div class="app-content"><div class="container-fluid">
 
             <!--begin::Edit Department Form-->
-            <form novalidate data-ra-validate action="#" method="post">
+            <form novalidate data-ra-validate action="{% url 'department_edit' pk=department.pk %}" method="post">
+{% csrf_token %}
               <div class="row">
                 <div class="col-lg-8">
                   <!--begin::Department Details-->
@@ -148,7 +121,7 @@
                     <div class="card-body">
                       <p class="text-secondary fs-7">Last updated by Zainab Malik on Jul 18, 2026.</p>
                       <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
-                      <a href="department-detail.html" class="btn btn-outline-secondary w-100">Cancel</a>
+                      <a href="{% url 'department_detail' pk=department.pk %}" class="btn btn-outline-secondary w-100">Cancel</a>
                     </div>
                   </div>
                   <!--end::Save Panel-->
@@ -157,10 +130,5 @@
             </form>
             <!--end::Edit Department Form-->
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
-
-      {% endblock %}
+          </div></div>
+{% endblock %}
