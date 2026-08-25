@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}General Settings{% endblock %}
+{% block page_title %}General Settings{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">General Settings</li>{% endblock %}
+{% block content %}
+<div class="app-content"><div class="container-fluid">
+
+
+            <div class="row">
+              
+            <!--begin::Settings Sub-navigation-->
+            <div class="col-lg-3 mb-4 mb-lg-0">
+              <div class="list-group shadow-sm">
+                <a href="{% url 'general_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center active"><i class="bi bi-sliders me-2"></i>General</a><a href="{% url 'ticket_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-ticket-detailed me-2"></i>Tickets</a><a href="{% url 'email_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-envelope me-2"></i>Email</a><a href="{% url 'security_settings' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-shield-lock me-2"></i>Security</a><a href="{% url 'system_health' %}" class="list-group-item list-group-item-action d-flex align-items-center"><i class="bi bi-heart-pulse me-2"></i>System Health</a>
+              </div>
+            </div>
+            <!--end::Settings Sub-navigation-->
+              <div class="col-lg-9">
+                <!--begin::General Settings Form-->
+                <form method="post" novalidate data-ra-validate data-ra-loading-on-submit>
+{% csrf_token %}
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Application Settings</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="appName" class="form-label">Application name</label>
+                          <input type="text" class="form-control" id="appName" name="appName" value="{{ settings.appName.value|default:"ResolveAI" }}" required maxlength="60" />
+                          <div class="invalid-feedback">Application name is required.</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="supportEmail" class="form-label">Support email</label>
+                          <input type="email" class="form-control" id="supportEmail" name="supportEmail" value="{{ settings.supportEmail.value|default:"support@resolveai.io" }}" required />
+                          <div class="invalid-feedback">Enter a valid support email address.</div>
+                        </div>
+                        <div class="col-12">
+                          <label for="appTagline" class="form-label">Application tagline</label>
+                          <input type="text" class="form-control" id="appTagline" name="appTagline" value="{{ settings.appTagline.value|default:"Intelligent Help Desk and Support Platform" }}" maxlength="120" />
+                        </div>
+                        <div class="col-md-4">
+                          <label for="defaultTimezone" class="form-label">Default timezone</label>
+                          <select class="form-select" id="defaultTimezone" name="defaultTimezone">
+                            <option value="UTC">UTC</option>
+                            <option value="Asia/Karachi" selected>Asia/Karachi (PKT)</option>
+                            <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                            <option value="Europe/London">Europe/London (GMT/BST)</option>
+                            <option value="America/New_York">America/New York (ET)</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="dateFormat" class="form-label">Date format</label>
+                          <select class="form-select" id="dateFormat" name="dateFormat">
+                            <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="recordsPerPage" class="form-label">Records per page</label>
+                          <select class="form-select" id="recordsPerPage" name="recordsPerPage">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                          </select>
+                        </div>
+                        <div class="col-12">
+                          <hr />
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="maintenanceMode" name="maintenanceMode" />
+                            <label class="form-check-label fw-semibold" for="maintenanceMode">Maintenance mode</label>
+                            <div class="fs-7 text-secondary">When enabled, only administrators can sign in; all other users see a maintenance notice.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                      <div class="d-none" data-ra-success-alert>
+                        <span class="text-success fs-7"><i class="bi bi-check-circle-fill me-1"></i>Settings saved.</span>
+                      </div>
+                      <div class="ms-auto">
+                        <button type="reset" class="btn btn-outline-secondary me-2">Reset</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                <!--end::General Settings Form-->
+              </div>
+            </div>
+
+          </div></div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Notifications</li>{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title mb-0">Notifications</h3>
+  </div>
+  <div class="card-body">
+    {% if notifications %}
+      <ul class="list-group list-group-flush">
+        {% for note in notifications %}
+          <li class="list-group-item">{{ note }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-secondary mb-0">
+        You're all caught up — there are no notifications yet. This screen will
+        show ticket and system alerts once the notification system is built.
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

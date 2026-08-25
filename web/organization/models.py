@@ -18,3 +18,7 @@ class Department(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def agents(self):
+        return self.users.filter(roles__code="AGENT").distinct()

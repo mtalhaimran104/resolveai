@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       debounceTimer = setTimeout(function () {
-        fetch("/check-username/?username=" + encodeURIComponent(value))
+        fetch("{% url 'check_username' %}?username=" + encodeURIComponent(value))
           .then((res) => res.json())
           .then((data) => {
             if (data.available) {
