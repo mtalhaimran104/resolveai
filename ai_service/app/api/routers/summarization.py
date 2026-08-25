@@ -5,24 +5,37 @@ from app.schemas.summarization import (
     SummarizationResponse,
 )
 
-from app.services.summarization_service import summarize_student_query
+from app.services.summarization_service import (
+    summarize_student_query,
+)
 
 
 router = APIRouter(
     prefix="/summarization",
-    tags=["Summarization"]
+    tags=["Summarization"],
 )
 
 
 @router.post(
     "/",
-    response_model=SummarizationResponse
+    response_model=SummarizationResponse,
 )
-def summarize(request: SummarizationRequest):
-
-    summary = summarize_student_query(request.text)
+def summarize(
+    request: SummarizationRequest,
+):
+    summary = summarize_student_query(
+        request.text
+    )
 
     return SummarizationResponse(
         text=request.text,
-        summary=summary
+        summary=summary,
+        analysis_type="SUMMARY",
+        model_name="resolveai-extractive-summarizer",
+        model_version="v1",
+        result_json={
+            "summary": summary,
+        },
+        confidence_score=None,
+        status="SUCCESS",
     )
