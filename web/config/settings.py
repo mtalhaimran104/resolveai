@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization",
     "classification",
     "tickets",
+    "ai",
     "knowledge",
 ]
 
@@ -124,3 +125,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+AI_SERVICE_URL = os.getenv(
+    "AI_SERVICE_URL",
+    "http://ai_service:8000",
+)
+
+
+
+
