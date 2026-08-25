@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization",
     "classification",
     "tickets",
+    "ai",
 ]
 
 # ResolveAI uses its own user model instead of django.contrib.auth.User.
@@ -91,7 +92,7 @@ DATABASES = {
         "USER": os.getenv("MYSQL_USER", "resolve_ai_user"),
         "PASSWORD": os.getenv("MYSQL_PASSWORD", "resolve_ai_password"),
         "HOST": os.getenv("MYSQL_HOST", "localhost"),
-        "PORT": os.getenv("MYSQL_PORT", "3306"),
+        "PORT": os.getenv("MYSQL_PORT", "3307"),
     }
 }
 

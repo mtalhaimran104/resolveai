@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -29,5 +29,9 @@ htmlcov/
 .DS_Store
 
 # Trained ML models
-ai_service/app/models/tfidf_vectorizer.pkl
-ai_service/app/models/ticket_classification_model.pkl
+ai_service/app/models/*.pkl
+ai_service/app/models/*.joblib
+ai_service/app/models/*.h5
+ai_service/app/models/*.pt
+ai_service/app/models/*.pth
+ai_service/app/models/*.bin

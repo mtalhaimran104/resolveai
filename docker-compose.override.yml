@@ -1,0 +1,4 @@
+﻿services:
+  ai_service:
+    volumes:
+      - ./data/faq_dataset.csv:/data/faq_dataset.csv:ro
