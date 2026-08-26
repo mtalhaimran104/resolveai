@@ -11,7 +11,7 @@
               <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h3 class="card-title mb-0"><i class="bi bi-key me-2"></i>Permission Catalog <span class="badge text-bg-secondary ms-1">{{ page_obj.paginator.count }}</span></h3>
                 <div class="d-flex gap-2">
-                  <a href="{% url 'permission_matrix' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-grid-3x3 me-1"></i>View Matrix</a>
+                  <a href="{% url 'accounts:permission_matrix' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-grid-3x3 me-1"></i>View Matrix</a>
                   <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New Permission</button>
                 </div>
               </div>

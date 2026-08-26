@@ -20,8 +20,8 @@
             <td>{{ ticket.created_at|date:"M d, Y" }}</td>
             <td>
               <div class="btn-group btn-group-sm">
-                <a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
-                <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary"><i class="bi bi-person-plus"></i></a>
+                <a href="{% url 'tickets:ticket_detail' ticket.pk %}" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
+                <a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-outline-secondary"><i class="bi bi-person-plus"></i></a>
               </div>
             </td>
           </tr>

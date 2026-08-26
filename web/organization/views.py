@@ -1,15 +1,12 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-
-from accounts.decorators import admin_required
+from accounts.decorators import supervisor_or_admin_required
+# from accounts.decorators import admin_required
 from core.pagination import paginate_queryset
 from .models import Department
 
 
-@admin_required
+@supervisor_or_admin_required
 def department_list(request):
     departments = Department.objects.all().order_by("name")
     page_obj = paginate_queryset(departments, request)
@@ -25,7 +22,7 @@ def department_list(request):
     )
 
 
-@admin_required
+@supervisor_or_admin_required
 def department_detail(request, pk):
     department = get_object_or_404(Department, pk=pk)
 
@@ -39,7 +36,7 @@ def department_detail(request, pk):
     )
 
 
-@admin_required
+@supervisor_or_admin_required
 def department_create(request):
     if request.method == "POST":
         name = request.POST.get("deptName", "").strip()
@@ -85,7 +82,7 @@ def department_create(request):
     )
 
 
-@admin_required
+@supervisor_or_admin_required
 def department_edit(request, pk):
     department = get_object_or_404(Department, pk=pk)
 
@@ -138,7 +135,7 @@ def department_edit(request, pk):
     )
 
 
-@admin_required
+@supervisor_or_admin_required
 def department_toggle_status(request, pk):
     department = get_object_or_404(Department, pk=pk)
 

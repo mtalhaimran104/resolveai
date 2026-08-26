@@ -13,7 +13,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><i class="bi bi-person-plus me-2"></i>New User</h3>
                   </div>
-                  <form novalidate data-ra-validate action="{% url 'admin_user_create' %}" method="post">
+                  <form novalidate data-ra-validate action="{% url 'accounts:user_create' %}" method="post">
 {% csrf_token %}
                     <div class="card-body">
                       <!--begin::Identity Fields-->
@@ -151,7 +151,7 @@
                       <!--end::Welcome Email-->
                     </div>
                     <div class="card-footer d-flex justify-content-end gap-2">
-                      <a href="{% url 'admin_user_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                      <a href="{% url 'accounts:user_list' %}" class="btn btn-outline-secondary">Cancel</a>
                       <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create User</button>
                     </div>
                   </form>

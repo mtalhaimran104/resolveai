@@ -1,0 +1,416 @@
+ticket_id,description,category,priority
+PR-1117,Kindly note: Could you confirm the status of my scholarship application submitted over a week ago? Awaiting your response.,Scholarship,Medium
+PR-0377,"Kindly note: The telephone line of the Scholarship Office at Bahawalpur City Campus is not functioning, and this is adversely affecting the ongoing admission campaign whose deadline is this week. Regards.",Infrastructure / Maintenance,High
+PR-0786,"My professional profile still shows outdated information even though I updated it about a week ago, and a scholarship committee is reviewing my profile today.",Profile Update,High
+PR-1093,"Respected Sir/Madam, what is the recommended word count for a thesis final draft? Thank you.",Thesis,Low
+TCK-0059,"Sir mera account login nahi ho raha, password reset bhi kaam nahi kar raha. Roll no S24BBECON3M8434.",Account & Login,Medium
+PR-0672,"Dear concerned team, what is the admission fee structure for BS Mathematics? Kindly advise.",Admission,Low
+PR-1214,"Respected Sir/Madam, my login access to a system I need for essential work was suddenly revoked, and I have a task depending on it due in two days. Thank you.",Account & Login,High
+PR-1258,I have a supply in Operating Systems but the Course Repeat option does not show this subject; could it be enabled? Kindly help.,Course Registration,Medium
+PR-0853,"Dear concerned team, our entire class's clearance requests have been frozen due to a system error, blocking all 307 of us from collecting our degrees before by Friday's convocation. Awaiting your response.",Clearance,Critical
+PR-0459,"Respected Sir/Madam, my account has clearly been compromised, someone changed my password and recovery email, and I no longer have any access with my degree application deadline being this week. Regards.",Account & Login,Critical
+PR-1431,"My clearance was rejected without any specified reason, and this is now delaying my degree collection needed for a job joining date tomorrow. Awaiting your response.",Clearance,High
+PR-0495,When I open the transcript section on the portal it appears empty and does not load any data. Thank you.,Portal Technical Issue,Medium
+TCK-0187,"My salary has not been credited for a few days despite my department confirming approval, and I urgently need this to cover overdue household expenses. Kindly expedite.",Employee Services,High
+PR-0005,"My account keeps logging me out automatically every few minutes, which is a bit inconvenient when filling out forms. Kindly advise.",Account & Login,Medium
+PR-1232,"Dear concerned team, the portal loads a little slowly on mobile sometimes; just wanted to mention it, not urgent. Please look into this.",Portal Technical Issue,Low
+TCK-0245,"My exam re-evaluation result has still not been updated for over a month, and my final semester GPA calculation, needed for a scholarship application this week, depends on it. Roll No: S22BBMEDS3M4090",Examination,High
+PR-1015,"How can I request a bonafide certificate in general, just for future reference? Awaiting your response.",Certificate / Verification,Low
+TCK-0280,Sir mera transcript voucher pay ho chuka hai lekin portal pr abi tak show nahi ho raha. Roll no F25BMPHIL3M1711. Kindly check kr dein.,Transcript,Medium
+PR-0092,Just wanted to confirm the standard leave application process for staff. Kindly advise.,Employee Services,Low
+PR-0597,"Hi, could you update my thesis supervisor's details on the portal, as they were assigned a couple of days ago but not reflected yet? Please look into this.",Thesis,Medium
+PR-0643,"Respected Sir/Madam, i updated my profile with my new degree information required for a job application deadline this week, but the changes are not being saved by the portal at all.",Profile Update,High
+PR-0020,By mistake I applied for clearance under the wrong semester; could my clearance be reset so I can reapply correctly? Awaiting your response.,Clearance,Medium
+TCK-0404,"I was awarded the Ehsaas Scholarship but the final installment of Rs. 12,000 has not been disbursed for a few days, and I now have an overdue semester fee deadline approaching without it. Roll No: F25BBAGRI6M5088",Scholarship,High
+PR-0742,"Dear concerned team, i have a supply in English Composition but the Course Repeat option does not show this subject; could it be enabled?",Course Registration,Medium
+TCK-0376,I accidentally uploaded someone else's documents to my profile by mistake; please remove them so I can upload my own. Roll No: S24BBSCS2M3471,Profile Update,Medium
+TCK-0372,I am lodging a serious complaint that confidential information from my student file was reportedly discussed with an unauthorized third party. This requires immediate investigation.,Complaint,High
+PR-0991,"Respected Sir/Madam, there is a spelling mistake in my name on my student portal record; my correct name is Rabia Anjum. Could this be corrected? Please look into this.",Name Correction,Medium
+PR-0838,"Hi, my contract renewal has not been processed and my current contract expires tomorrow, putting my continued employment at risk.",Employee Services,High
+PR-0612,"Kindly note: The fee payment gateway on the portal is throwing a fatal error for every single student today, which is the last date for semester fee submission without penalty. Kindly advise.",Portal Technical Issue,Critical
+TCK-0016,How do I add my thesis supervisor's name on the portal?,Thesis,Low
+PR-1508,"Kindly note: My admission offer will be automatically cancelled at midnight today if I do not submit my documents, but the document upload portal is showing a server error for every applicant right now.",Admission,Critical
+PR-0336,"Respected Sir/Madam, how can I get the developer pack using my student email, just curious if it's available? Awaiting your response.",Other,Low
+PR-1141,"Hi, the fire alarm system across the entire Baghdad-ul-Jadeed Campus hostel block has stopped working, posing a serious safety risk to every resident student right now.",Infrastructure / Maintenance,Critical
+TCK-0067,"I am escalating my complaint as my previous three tickets on the same unresolved degree issue were closed without any action, and the matter remains urgent. Roll No: S24BBSEEN5M6400",Complaint,High
+PR-0961,What is the process to request an official transcript copy in general? Regards.,Transcript,Low
+PR-0595,My comprehensive exam date is missing from my record; could this be updated so I can proceed with the next steps? Regards.,Examination,Medium
+PR-0690,"Kindly note: The portal loads a little slowly on mobile sometimes; just wanted to mention it, not urgent. Kindly advise.",Portal Technical Issue,Low
+PR-0331,Kindly note: My registered course list is missing one elective that I selected during registration week; could this be added back? Kindly advise.,Course Registration,Medium
+PR-0922,"Hi, what is the usual turnaround time for certificate issuance?",Certificate / Verification,Low
+TCK-0310,"Respected Sir/Madam, My HEC degree attestation application is currently stuck at ""Submitted by UFP"" status. It is pending online verification from The Islamia University of Bahawalpur. Kindly verify my degree details from the university database so HEC can proceed with my attestation. My Details: Name: Muhammad Ali Zia Roll Number / Registration Number: [S22BSEEN1M01122] CNIC: [31202-4785294-3] HEC Application ID: [5238287] Degree Program: [BS Software Engineering] Passing Year: [2022-2026] Thank you.",Certificate / Verification,High
+TCK-0025,My scholarship installment for last semester is shown as 'Processing' for a few days now with no further update. Roll No: F21BPHD4M5533,Scholarship,Medium
+TCK-0302,"My HEC attestation appointment is tomorrow and the university verification, which HEC is waiting on, has still not been submitted despite my request nearly two months ago. Please expedite immediately. Roll No: F21BPHD7M8606",Certificate / Verification,Critical
+PR-0180,"Respected Sir/Madam, i have been awarded a compartment in Financial Accounting despite being confident I attempted the paper correctly, and I need urgent re-evaluation as it affects my scholarship eligibility review within 24 hours. Please look into this.",Examination,High
+PR-0831,"Sir, do I need to visit in person for a name correction, or is there an online option available?",Name Correction,Low
+PR-0879,"Hi, my 6th semester result is not showing on the portal even though the declaration date has passed.",Result,Medium
+PR-0107,"The profile update system has been completely inaccessible for the entire batch for two days, and our internship documents due within 24 hours require an updated profile printout. Kindly advise.",Profile Update,Critical
+PR-0904,"Hi, what is the process to request an official transcript copy in general? Awaiting your response.",Transcript,Low
+PR-0520,"Sir, i would like to request my monthly payslip copies for the last few months for my personal records. Kindly help.",Employee Services,Medium
+PR-1042,"Hi, i would like to request my monthly payslip copies for the last few months for my personal records. Kindly help.",Employee Services,Medium
+PR-1011,"None of the 327 students in our batch can log in to the portal since last night, and this week is the final date for exam form submission with no extension announced. Kindly advise.",Account & Login,Critical
+PR-0506,"Dear concerned team, hEC verification of my scholarship documents is still pending after over a week, and my semester fee due date is within 24 hours.",Scholarship,High
+PR-0074,"Sir, small feedback: the waiting area could use a bit more seating, just a general comment. Kindly help.",Complaint,Low
+PR-0706,"Hi, my HEC degree attestation application has been stuck pending university verification for a couple of days, and my attestation appointment is by Friday. Regards.",Certificate / Verification,High
+TCK-0383,Small complaint: the library reading room could use better lighting.,Complaint,Low
+TCK-0022,"My thesis section shows an error 'Missing Comprehensive Exam Date'; kindly contact the exam coordinator to update this on my behalf, or guide me on the process. Roll No: F22BBSCS5M7267",Thesis,Medium
+PR-1362,"Dear concerned team, my transcript request has been pending for over a week despite the fee being paid, and I need it for a scholarship submission in two days.",Transcript,High
+PR-0208,"Sir, my admission abroad will be cancelled by Friday unless I submit my original degree, and it has been stuck in processing for more than two months despite paying the urgent fee. Thank you.",Degree,Critical
+PR-0984,"Dear concerned team, i need an official letter of recommendation urgently for a scholarship application closing by tomorrow morning, and my department has not responded to my request from almost two weeks ago. Regards.",Other,High
+PR-1298,"Hi, my Directorate of Academics clearance has been pending for over a month even though my other clearances were completed long ago, and I need my final transcript for a job that starts this week. Please look into this.",Clearance,High
+TCK-0068,Just wanted to confirm if results are usually delayed at IUB.,Result,Low
+PR-0607,How long does the clearance approval usually take on average? Awaiting your response.,Clearance,Low
+TCK-0391,"None of the students in our batch can log in to the portal since last night, and today is the final date for exam form submission with no extension announced. BS Data Science",Account & Login,Critical
+PR-1257,"Kindly note: Could you tell me the general process to change the username linked to my profile, no rush on this?",Account & Login,Low
+PR-0399,"Hi, my repeat subject fee challan has not been generated even though the subject shows as failed on my result, and course registration closes this week. Please look into this.",Course Registration,High
+PR-1051,"Hi, the fee payment gateway on the portal is throwing a fatal error for every single student today, which is the last date for semester fee submission without penalty. Kindly advise.",Portal Technical Issue,Critical
+PR-0907,"My transcript request submitted a couple of days ago is still pending, and I would like an update on the expected completion date. Awaiting your response.",Transcript,Medium
+PR-1009,"Hi, when I open the fee section on the portal it appears empty and does not load any data. Awaiting your response.",Portal Technical Issue,Medium
+PR-0833,"My name correction request has been pending for several months, and it is now blocking my degree printing needed before this week. Awaiting your response.",Name Correction,High
+PR-0825,"Kindly note: My admission at a foreign university will be cancelled if I do not submit my original transcript by tomorrow, and the transcript office has not responded to my repeated requests.",Transcript,Critical
+PR-1072,"Hi, is fee payable through mobile wallets or only through bank challan? Please look into this.",Fee & Challan,Low
+PR-0900,"Sir, it has been over a month since I completed my graduation and I still have not received my degree, which is now delaying a job I was set to start by tomorrow morning.",Degree,High
+TCK-0097,"When I open the myIUB app and navigate to the Result section, it appears empty and does not load any data. Kindly resolve. Roll No: F22BBSIT5M5978",Portal Technical Issue,Medium
+PR-1211,"Hi, i am unable to log in even with the correct credentials; it shows 'Invalid Username or Password' repeatedly, though I can still access things from my phone as a workaround. Thank you.",Account & Login,Medium
+TCK-0441,When does course registration open for the next semester?,Course Registration,Low
+PR-0876,"Sir, is there a mobile app version of the portal available, just curious?",Portal Technical Issue,Low
+TCK-0405,"My salary has not been credited for nearly two months despite my department confirming approval, and I urgently need this to cover overdue household expenses. Kindly expedite.",Employee Services,High
+PR-1300,"Dear concerned team, just wanted to confirm the general examination fee amount for this term. Awaiting your response.",Examination,Low
+TCK-0147,"My thesis section shows an error 'Missing Comprehensive Exam Date'; kindly contact the exam coordinator to update this on my behalf, or guide me on the process. Roll No: S23BLLB5M3344",Thesis,Medium
+PR-0599,"Hi, how can I download my transcript from the student portal?",Transcript,Low
+TCK-0421,Just a minor suggestion: the campus cafeteria menu could use more variety.,Complaint,Low
+PR-1057,"My scholarship disbursement has been delayed by several months, and I need this amount to clear my semester fee challan before the due date this week, otherwise I risk being dropped. Kindly advise.",Scholarship,High
+TCK-0217,My department clearance is approved but the library clearance section still shows pending despite no outstanding books. Roll No: S23BBSIT7M3780,Clearance,Medium
+PR-1364,"Dear concerned team, the paint on a corridor wall near the library is a little worn, just reporting it, not urgent at all. Kindly advise.",Infrastructure / Maintenance,Low
+TCK-0165,"I need my final clearance certificate today for a job that requires it as proof of degree completion, and without it my job offer will be withdrawn by end of day. Roll No: S23BMPHIL7M9270",Clearance,Critical
+TCK-0071,"Subject: Complaint Regarding Delay in Urgent Degree Processing Dear Sir/Madam, I am writing to formally raise a complaint regarding the delay in processing my Urgent Degree Application. My application details are as follows: Application No.: 26389 Name: Zulqarnain Ali Roll No.: F22BDATS1M02038 Registration No.: BS-F22B-DATS-M2038 Program: BS Data Science Apply Type: Urgent Application Date: 04 July 2026 Challan Status: Paid It has now been more than 20 days since I submitted my urgent degree application, yet the status is still showing as Pending. I specifically applied under the urgent category and completed all required formalities, including payment, with the expectation that the process would be completed within the promised timeframe. The delay is causing significant difficulties because I need my degree documents to apply for higher studies abroad, where application deadlines are approaching. I kindly request you to investigate the reason for the delay and process my urgent degree application as soon as possible. I would appreciate an update on the current status of my application and an expected completion date. Thank you for your attention. I look forward to your prompt response. Sincerely, Zulqarnain Ali BS Data Science Roll No: F22BDATS1M02038 Application No: 26389",Degree,High
+PR-0665,"My urgent degree application has been under 'review' for almost two weeks even though I paid the urgent fee, and I need it for a job offer that requires verification by tomorrow morning. Awaiting your response.",Degree,High
+TCK-0351,Can a water cooler be installed near the Department of Mathematics building?,Infrastructure / Maintenance,Low
+TCK-0167,"The examination portal has crashed for the entire class right before the scheduled online exam start time, and no backup arrangement has been announced yet. BS Information Technology",Examination,Critical
+PR-1091,"Respected Sir/Madam, my contract renewal has not been processed and my current contract expires by Friday, putting my continued employment at risk. Please look into this.",Employee Services,High
+TCK-0257,My admission abroad will be cancelled today unless I submit a degree with my name matching my passport exactly; the correction request has been pending for over a month despite the urgency I flagged. Roll No: S24BBSIT4M8616,Name Correction,Critical
+TCK-0040,Sir mera transcript voucher pay ho chuka hai lekin portal pr abi tak show nahi ho raha. Roll no F21BBSCS4M2584. Kindly check kr dein.,Transcript,Medium
+PR-1226,"Dear concerned team, i have an F grade in Microbiology but the subject is not appearing in the Course Repeat section, and I cannot register for the upcoming semester which closes within 24 hours. Regards.",Course Registration,High
+PR-0130,"Respected Sir/Madam, my thesis submission is blocked on the portal due to a missing field error, and my defense is scheduled within 24 hours. Regards.",Thesis,High
+TCK-0087,My admission at a foreign university will be cancelled if I do not submit my original degree by tomorrow. I have already paid all urgent fees. Kindly help immediately. Roll No: F20BMPHIL5M4770,Degree,Critical
+PR-0386,"My HEC degree attestation application has been stuck pending university verification for over a week, and my attestation appointment is this week. Kindly advise.",Certificate / Verification,High
+PR-1327,I am unable to update my biography and professional links on my profile page; the save button does not seem to work.,Profile Update,Medium
+PR-1058,"Sir, i updated my profile with my new degree information required for a job application deadline today, but the changes are not being saved by the portal at all.",Profile Update,High
+TCK-0306,"My semester fee challan is not showing on the portal, please help me generate it so I can pay before the due date. Roll No: S25BMBA5M1998",Fee & Challan,Medium
+TCK-0114,Sir I submitted my degree application form but have not received any confirmation email. Please confirm receipt. Roll No: S25BBAGRI2M7126,Degree,Medium
+PR-1272,The Wi-Fi router in one of the blocks has been intermittent for several days; could it be checked?,Infrastructure / Maintenance,Medium
+PR-0339,What documents are generally required for the final clearance process?,Clearance,Low
+PR-0788,Kindly note: I am unable to update my biography and professional links on my profile page; the save button does not seem to work. Regards.,Profile Update,Medium
+PR-1594,"I was declared eligible on the merit list for BS Economics but my admission fee challan is not generating, and tomorrow is the last date to pay and confirm my seat. Regards.",Admission,High
+TCK-0321,I would like to request a review of my examination papers as my marks appear lower than expected across almost every subject. Roll No: S25BBDOCS6M3236,Examination,Medium
+PR-1536,How can employees generally check their leave balance? Thank you.,Employee Services,Low
+PR-1472,"Hi, how do I log out of the portal properly on a shared computer? Kindly help.",Account & Login,Low
+PR-1529,"The entire fee payment gateway has been down since last night for all students, and within 24 hours is the final date to submit semester fees without a late fine.",Fee & Challan,Critical
+PR-1107,"Dear concerned team, i have already submitted my thesis but I am unable to check the current status because it shows a missing registration number error. Regards.",Thesis,Medium
+TCK-0010,Kindly guide me on the renewal process for my scholarship for the upcoming semester. Roll No: S24BBSEEN6M5905,Scholarship,Medium
+PR-0411,Kindly note: One of my course results is missing from my transcript page while the rest are showing correctly. Please look into this.,Result,Medium
+PR-0268,"Sir, how can I get the developer pack using my student email, just curious if it's available? Please look into this.",Other,Low
+PR-1297,"The payroll system for the entire faculty has failed this cycle and salaries have not been disbursed to anyone, with rent and utility deadlines due tomorrow for many staff members.",Employee Services,Critical
+PR-0349,"Hi, i would like to know how to request a change of campus from Khanpur Campus to another campus.",Other,Medium
+PR-0152,Kindly note: My admission application fee was paid but the status still shows 'Pending Payment' on the portal. Kindly help.,Admission,Medium
+TCK-0160,On my clearence form only 7th semester show but now i am completed my degree Please add 8th semester fee details in my clearence form,Clearance,Medium
+PR-0770,"Sir, how can I generate a new fee challan for the semester?",Fee & Challan,Low
+PR-1162,"Dear concerned team, my profile shows a completely wrong CNIC that is blocking my degree attestation submission, which is due at the HEC office in two days, and I cannot correct it myself. Please look into this.",Profile Update,Critical
+PR-1552,I accidentally generated a combined fee voucher for two subjects; could this be split into separate vouchers? Regards.,Fee & Challan,Medium
+PR-1563,What is the usual format of the mid-term examination?,Examination,Low
+TCK-0174,Is there an option to change my profile picture on the portal?,Profile Update,Low
+PR-0841,"Sir, when does the admission form submission usually open for the next intake? Awaiting your response.",Admission,Low
+PR-1268,"Dear concerned team, just wanted to confirm the general thesis submission format guidelines.",Thesis,Low
+TCK-0176,How can I get the GitHub Student Developer Pack using my IUB email?,Other,Low
+PR-0443,"Sir, my registered course list is missing one elective that I selected during registration week; could this be added back? Kindly help.",Course Registration,Medium
+PR-1221,"Dear concerned team, the result declaration system crashed for the entire batch of 390 students just minutes before the scheduled announcement time, and everyone is waiting anxiously.",Result,Critical
+PR-0525,"The entire university portal has been completely down for all students and staff since last night, and by tomorrow morning is the deadline for semester registration with no announced extension. Kindly advise.",Portal Technical Issue,Critical
+TCK-0305,"Scholarship form kahan se milay ga, please guide karain.",Scholarship,Low
+PR-0969,"Kindly note: I paid my urgent degree processing fee of Rs. 8,000 but the transaction has completely vanished from both my bank statement and the portal, and my visa appointment is this week. Thank you.",Fee & Challan,Critical
+PR-1587,"Could you update my thesis supervisor's details on the portal, as they were assigned a couple of days ago but not reflected yet? Regards.",Thesis,Medium
+PR-0007,"Hi, what documents are generally required for the final clearance process? Kindly advise.",Clearance,Low
+TCK-0335,How can I check where my account is is login and how can I log out,Account & Login,Low
+TCK-0164,What is the admission fee structure for BS Mathematics?,Admission,Low
+PR-1461,"Respected Sir/Madam, my thesis submission is blocked on the portal due to a missing field error, and my defense is scheduled by Friday. Kindly help.",Thesis,High
+PR-0894,"I have a visa interview tomorrow morning and the embassy has specifically asked for my original transcript, which I still do not have despite requesting it almost two weeks ago. Please look into this.",Transcript,Critical
+PR-0290,I have already submitted my thesis but I am unable to check the current status because it shows a missing registration number error. Kindly help.,Thesis,Medium
+PR-1373,"Respected Sir/Madam, it has been several months since I completed my graduation and I still have not received my degree, which is now delaying a job I was set to start this week. Awaiting your response.",Degree,High
+PR-0049,"Dear concerned team, my visa application will be rejected if I do not submit a verified degree equivalence certificate by this week, and the verification office has stopped responding entirely. Awaiting your response.",Certificate / Verification,Critical
+TCK-0184,"My degree verification request from a foreign employer has been pending response from the university for more than 20 days, and my job offer is contingent on this verification being completed soon. Roll No: F24BMBA7M6549",Certificate / Verification,High
+PR-0212,"Respected Sir/Madam, my thesis submission is blocked on the portal due to a missing field error, and my defense is scheduled by Friday. Please look into this.",Thesis,High
+TCK-0429,"The result declaration module has crashed for the whole university just minutes before the scheduled declaration time, and thousands of students including myself are waiting anxiously. Please resolve urgently.",Portal Technical Issue,Critical
+PR-0750,"Hi, my admission abroad will be cancelled this week unless I submit my original degree, and it has been stuck in processing for nearly two months despite paying the urgent fee.",Degree,Critical
+PR-1053,"My professional profile still shows outdated information even though I updated it almost two weeks ago, and a scholarship committee is reviewing my profile this week.",Profile Update,High
+PR-1449,"Hi, is there a student club focused on debate that I could join? Kindly advise.",Other,Low
+PR-0644,"My name mismatch between my degree and CNIC is the sole reason my HEC attestation, required this week for a visa appointment, has been rejected. Awaiting your response.",Name Correction,Critical
+PR-1444,"The clearance module of the portal has been throwing a server error for about a week, and I cannot proceed with a task due within 24 hours.",Portal Technical Issue,High
+PR-1538,"Respected Sir/Madam, what is the usual format of the mid-term examination? Please look into this.",Examination,Low
+PR-0481,"Sir, my transcript request has been pending for about a week despite the fee being paid, and I need it for a scholarship submission tomorrow.",Transcript,High
+PR-0651,Kindly note: I would like to know how to request a change of campus from Khanpur Campus to another campus.,Other,Medium
+PR-0214,"Could you tell me the general process to change the username linked to my profile, no rush on this? Awaiting your response.",Account & Login,Low
+PR-1128,"Hi, is there a way to change my profile picture on the portal, just curious about the option?",Profile Update,Low
+PR-1401,"Kindly note: Do I need to visit in person for a name correction, or is there an online option available? Regards.",Name Correction,Low
+PR-0258,"Sir, i keep getting logged out mid-way while submitting a required form, and I've now failed to submit it three times with the deadline being by Friday. Regards.",Account & Login,High
+PR-1545,Kindly note: I need my final transcript urgently as I am applying for a Master's program abroad and the application portal closes today. Regards.,Transcript,High
+PR-1429,Kindly note: How can employees generally check their leave balance? Please look into this.,Employee Services,Low
+TCK-0387,How can I change my name spelling on the student ID card?,Name Correction,Low
+PR-0613,"Dear concerned team, i paid my semester fee of Rs. 26,400 on about a week ago and the amount was deducted from my account, but the portal still shows the challan as unpaid, and the late fee deadline is this week.",Fee & Challan,High
+TCK-0179,"Subject: Fee Deducted But Challan Showing Expired Challan ID: 2627301822 Description: Respected Sir, I am a student of Department of Mathematics. I paid my financial voucher for HAT test via Alfa app right around the expiration time. The amount has been successfully deducted from my bank account, but on the IUB portal, the status is still showing ""Expired"" instead of ""Paid"". My details are: Name: Yusra Rehman CNIC: 3120283834396 Challan ID: 2627301822 Transaction ID (TID): 838343963886 I have attached the payment receipt/proof below. Kindly verify the transaction from the bank ledger and update my portal status to ""Paid"". Thank you.",Fee & Challan,High
+PR-0539,"Dear concerned team, today is the absolute last date for admission fee submission for BS Zoology, and the online payment gateway has been down since this morning for every single applicant on the merit list. Awaiting your response.",Admission,Critical
+PR-1157,Kindly note: My examination is scheduled to start in less than an hour and the admit card generation system has been down for our entire session since early this morning. Thank you.,Examination,Critical
+PR-0227,"My repeat subject fee challan has not been generated even though the subject shows as failed on my result, and course registration closes today. Thank you.",Course Registration,High
+PR-0855,I would like to get my 'Financial Accounting' exam paper rechecked as I believe there may be a marking error. Please look into this.,Examination,Medium
+PR-1188,"Dear concerned team, my degree application shows 'Submitted' status even though I paid the challan almost two weeks ago, and I would like to know if this is normal processing time. Kindly advise.",Degree,Medium
+PR-1115,"Kindly note: I have an F grade in Operating Systems but the subject is not appearing in the Course Repeat section, and I cannot register for the upcoming semester which closes by tomorrow morning. Please look into this.",Course Registration,High
+PR-1166,"Kindly note: The entire fee payment gateway has been down since last night for all students, and in two days is the final date to submit semester fees without a late fine. Regards.",Fee & Challan,Critical
+PR-0816,"Hi, what is the usual turnaround time for certificate issuance? Kindly help.",Certificate / Verification,Low
+PR-0998,"The entire university portal has been completely down for all students and staff since last night, and by Friday is the deadline for semester registration with no announced extension. Kindly help.",Portal Technical Issue,Critical
+PR-1174,"Dear concerned team, i am escalating a critical complaint on behalf of my entire batch — none of our clearance requests have been processed for nearly two months, and our convocation, requiring proof of clearance, is this week. Please look into this.",Complaint,Critical
+PR-1252,"Could you tell me the general process to change the username linked to my profile, no rush on this? Thank you.",Account & Login,Low
+TCK-0093,There is a spelling mistake in my name on my student email and portal record; my correct name is Areeba Malik. Kindly correct as soon as possible. Roll No: F21BMPHIL1M6111,Name Correction,Medium
+PR-1275,"My name correction request has been pending for over a month, and it is now blocking my degree printing needed before in two days.",Name Correction,High
+PR-1104,"Kindly note: The telephone line of the Admissions Office at Khanpur Campus is not functioning, and this is adversely affecting the ongoing admission campaign whose deadline is within 24 hours.",Infrastructure / Maintenance,High
+TCK-0358,My thesis file was rejected by the portal for an unspecified reason and the resubmission deadline is in two days; I need urgent guidance. Roll No: S23BBSMATH3M4263,Thesis,High
+PR-0498,"Hi, is there a mobile app version of the portal available, just curious? Kindly help.",Portal Technical Issue,Low
+PR-1385,"Dear concerned team, my admission at a foreign university will be cancelled if I do not submit my original transcript by within 24 hours, and the transcript office has not responded to my repeated requests.",Transcript,Critical
+PR-1501,"Sir, my registration hold has still not been cleared despite clearing all dues weeks ago, and this week is the absolute last day to register, after which I will lose the entire semester.",Course Registration,Critical
+TCK-0079,I urgently need guidance on the credit transfer process as my enrollment at another institution depends on this being resolved before their deadline this week. Roll No: S22BBSMATH1M4986,Other,High
+PR-1255,"Sir, is it possible to link two of my accounts together, or should I just keep using them separately? Kindly advise.",Account & Login,Low
+PR-0902,My scholarship was suddenly cancelled without any notice and I have no funds to pay by Friday's fee deadline; if I don't pay today I will be dropped from the semester entirely. Kindly help.,Scholarship,Critical
+TCK-0304,Dear Account officer !Recently I have cleared my BSc Hons Agriculture form Agronomy department.I paid my degree Internship fee from easypaisa But still challan is pending on My IUB Kindly help me in clearing my Challan Status.,Fee & Challan,Medium
+TCK-0253,Filing a complaint about being given inconsistent information by two different staff members regarding my clearance requirements.,Complaint,Medium
+PR-1195,"My Turnitin account was blocked by mistake and despite raising a complaint a couple of days ago, it is still blocked, preventing me from submitting my assigned work due this week.",Account & Login,High
+PR-0700,"Respected Sir/Madam, my transcript request submitted a couple of days ago is still pending, and I would like an update on the expected completion date. Please look into this.",Transcript,Medium
+PR-1425,"Respected Sir/Madam, my middle name is missing from my official university record though it appears correctly on my CNIC. Awaiting your response.",Name Correction,Medium
+TCK-0119,How can I add my LinkedIn profile link to my MyIUB profile?,Profile Update,Low
+PR-0768,"Sir, my credit transfer approval, required in two days to secure my admission abroad before their deadline expires, has still not been processed despite three urgent escalations this week.",Other,Critical
+PR-0173,"Hi, i would like to request my monthly payslip copies for the last few months for my personal records. Awaiting your response.",Employee Services,Medium
+PR-0259,"Respected Sir/Madam, i need a duplicate transcript copy as my original was misplaced. Could you guide me on the reissuance process?",Transcript,Medium
+PR-0359,"Sir, i have been awarded a compartment in Statistics despite being confident I attempted the paper correctly, and I need urgent re-evaluation as it affects my scholarship eligibility review by tomorrow morning.",Examination,High
+PR-1521,"Dear concerned team, i accidentally generated a combined fee voucher for two subjects; could this be split into separate vouchers?",Fee & Challan,Medium
+TCK-0341,"I have an F grade in Design & Analysis of Algorithms which is visible in my result, but the subject is not appearing in the Course Repeat section, and I cannot register for Summer Semester 2026 without it. Kindly resolve urgently. Roll No: F24BBDOCS2M5719",Course Registration,High
+PR-0598,My middle name is missing from my official university record though it appears correctly on my CNIC. Regards.,Name Correction,Medium
+PR-0834,Just wondering if I can register for an elective from a different department. Awaiting your response.,Course Registration,Low
+PR-0167,"Respected Sir/Madam, my name mismatch between my degree and CNIC is the sole reason my HEC attestation, required in two days for a visa appointment, has been rejected. Please look into this.",Name Correction,Critical
+PR-1314,"How can I request a bonafide certificate in general, just for future reference? Kindly advise.",Certificate / Verification,Low
+PR-0676,How do I log out of the portal properly on a shared computer? Regards.,Account & Login,Low
+PR-1111,"I am filing an urgent complaint that despite an official refund approval of Rs. 31,000 on record, the accounts office has still not released the funds, and I cannot pay this week's non-negotiable admission deadline fee without it. Awaiting your response.",Complaint,Critical
+PR-0103,"Respected Sir/Madam, the examination portal has completely gone down while the final exam is currently being conducted live for hundreds of students, and no backup arrangement has been announced. Thank you.",Examination,Critical
+PR-0940,"Respected Sir/Madam, could you update my bank account details in the payroll system, as my old account has been closed?",Employee Services,Medium
+PR-0584,"Hi, my 4th semester result is not showing on the portal even though the declaration date has passed. Please look into this.",Result,Medium
+PR-0890,"Hi, my leave of absence request for a medical situation has not been approved yet, and my semester fee deadline, which depends on this approval, is by Friday.",Other,High
+PR-0166,"Hi, i have a supply in Financial Accounting but the Course Repeat option does not show this subject; could it be enabled? Awaiting your response.",Course Registration,Medium
+PR-1180,"I was awarded the scholarship shown on my portal, but I have not received any update on the disbursement schedule yet. Kindly help.",Scholarship,Medium
+TCK-0343,"My admission slot is at risk of being cancelled because the portal has not accepted my scanned documents despite multiple attempts, and the admission deadline is tomorrow.",Admission,High
+PR-1027,"Sir, my name on my degree does not match my CNIC due to a typo, and this mismatch is blocking my HEC attestation submission, which has a deadline within 24 hours.",Name Correction,High
+PR-0628,How do I log out of the portal properly on a shared computer?,Account & Login,Low
+PR-0579,"Respected Sir/Madam, the Wi-Fi router in one of the blocks has been intermittent for several days; could it be checked?",Infrastructure / Maintenance,Medium
+TCK-0251,I urgently require my final transcript as I am applying for higher studies abroad and the application deadline is approaching soon. Kindly expedite. Roll No: F25BBDATS3M6820,Transcript,High
+PR-0102,"My HEC attestation appointment is within 24 hours and the university's online verification, which HEC is waiting on for dozens of applicants today, has still not been submitted for any of us. Kindly help.",Certificate / Verification,Critical
+TCK-0051,I would like to request a review of my examination papers as my marks appear lower than expected across almost every subject. Roll No: S23BBDOCS2M7284,Examination,Medium
+TCK-0150,"My repeat subject fee challan has not been generated even though the subject is showing on my result as failed, and course registration closes in two days. Roll No: S22BBSEEN2M9494",Course Registration,High
+TCK-0060,Just wanted to know the required documents for admission application.,Admission,Low
+TCK-0080,"I keep getting logged out mid-way while filling a long form on the portal, losing all my entered data. Roll No: F21BBDATS1M7693",Portal Technical Issue,Medium
+PR-0284,"Sir, my HEC degree attestation application has been stuck pending university verification for over a week, and my attestation appointment is by tomorrow morning. Regards.",Certificate / Verification,High
+PR-0246,How long does the clearance approval usually take on average?,Clearance,Low
+PR-1278,"Respected Sir/Madam, i forgot my portal password and the reset link is not sending an OTP to my registered email; is there another way to reset it? Thank you.",Account & Login,Medium
+PR-0170,"I am formally complaining about a delay of more than two months in processing my transcript request despite multiple follow-ups, and I now have a hard deadline this week. Thank you.",Complaint,High
+PR-0409,"Small feedback: the waiting area could use a bit more seating, just a general comment. Regards.",Complaint,Low
+PR-0785,My registered course list is missing one elective that I selected during registration week; could this be added back? Awaiting your response.,Course Registration,Medium
+TCK-0330,I have applied for adjustment of MS allowance arrears against an excess amount deducted from my salary. Kindly confirm if any further information is required. Contact: 0359509870,Employee Services,Medium
+PR-0566,"The portal keeps logging me into an authentication error whenever I try to access my dashboard, and I have a form to submit before in two days.",Portal Technical Issue,High
+PR-1207,Kindly note: Has the result declaration date been finalized yet for this semester?,Result,Low
+PR-0799,"Dear concerned team, i forgot my portal password and the reset link is not sending an OTP to my registered email; is there another way to reset it? Awaiting your response.",Account & Login,Medium
+PR-1225,"Sir, how can I download my transcript from the student portal? Regards.",Transcript,Low
+PR-0178,"Sir, my department clearance is approved but the library clearance section still shows pending despite no outstanding books. Kindly advise.",Clearance,Medium
+PR-1349,How can I download my transcript from the student portal?,Transcript,Low
+PR-0164,"Dear concerned team, several months of ticket records and attached documents appear to have been permanently deleted from the system overnight with no backup available, affecting hundreds of open cases. Please look into this.",Portal Technical Issue,Critical
+PR-0832,"My account has clearly been compromised, someone changed my password and recovery email, and I no longer have any access with my degree application deadline being today. Please look into this.",Account & Login,Critical
+PR-0888,"My HEC attestation appointment is by tomorrow morning and the university's online verification, which HEC is waiting on for dozens of applicants today, has still not been submitted for any of us. Please look into this.",Certificate / Verification,Critical
+TCK-0151,"To: The Director, Admissions Office The Islamia University of Bahawalpur Subject: Request for Refund of Late Fee Charges (Rs. 16,000) Respected Sir/Madam, I hope this letter finds you well. My name is Shahzad Khan, Roll No. F20BPESS1M01002, student of BS Physical Education & Sports Sciences (Session 2020–2024) at the Bahawalpur Campus. I respectfully request your kind attention regarding the refund of my late fee charges amounting to Rs. 16,000 (Rs. 8,000 each for Fall 2023 and Spring 2024). The University announced that these additional late fee charges would be refunded to eligible students. I completed all the required formalities and submitted my refund application to the Admissions Office approximately two years ago. However, despite the completion of the entire process, I have not yet received the refund. Neither has the amount been transferred to my bank account nor have I received any cheque. I, therefore, humbly request you to kindly look into my case and arrange the release of my pending refund of Rs. 16,000 at the earliest. Your prompt attention and cooperation in this matter will be highly appreciated. Thank you for your time and consideration. Yours sincerely, Shahzad Khan Roll No.: F20BPESS1M01002 BS Physical Education & Sports Sciences Session: 2020–2024 Department of Physical Education & Sports Sciences Bahawalpur Campus Phone: 0340-1307166",Fee & Challan,High
+PR-0451,"Kindly note: The elevator serving the examination hall has broken down, creating serious difficulty for students with mobility issues ahead of in two days's exam. Kindly help.",Infrastructure / Maintenance,High
+PR-0365,"Sir, none of the 565 students in our batch can log in to the portal since last night, and by Friday is the final date for exam form submission with no extension announced.",Account & Login,Critical
+PR-0300,"Hi, the telephone line of the Scholarship Office at Bahawalpur City Campus is not functioning, and this is adversely affecting the ongoing admission campaign whose deadline is within 24 hours.",Infrastructure / Maintenance,High
+PR-0085,What is the admission fee structure for BS Computer Science?,Admission,Low
+TCK-0243,"Aoa I am doing PhD and it is my fourth year , due to domestic issue I want to freeze the PhD course how to apply for this. Regards",Course Registration,Medium
+PR-1040,"Respected Sir/Madam, my registration hold has still not been cleared despite clearing all dues weeks ago, and by Friday is the absolute last day to register, after which I will lose the entire semester. Please look into this.",Course Registration,Critical
+PR-0518,"Hi, despite paying all dues on time, I have faced continuous delays across multiple offices regarding my final clearance, now jeopardizing my job joining date today. Please look into this.",Complaint,High
+PR-1071,"I have a visa interview tomorrow morning and the embassy has specifically asked for my original transcript, which I still do not have despite requesting it over a week ago.",Transcript,Critical
+PR-0956,"Hi, despite paying all dues on time, I have faced continuous delays across multiple offices regarding my final clearance, now jeopardizing my job joining date within 24 hours. Kindly advise.",Complaint,High
+PR-0632,"Dear concerned team, small feedback: the waiting area could use a bit more seating, just a general comment. Kindly advise.",Complaint,Low
+PR-1146,"Hi, i would like to raise a complaint about receiving conflicting information from two different staff members regarding the same issue. Thank you.",Complaint,Medium
+PR-1020,"My HEC degree attestation application has been stuck pending university verification for over a week, and my attestation appointment is by tomorrow morning.",Certificate / Verification,High
+PR-1416,"I have a visa interview in two days and my experience certificate, promised for today, has still not been issued despite multiple follow-ups all week. Please look into this.",Employee Services,Critical
+TCK-0447,"When will the next semester result be announced, just asking.",Result,Low
+PR-0364,"Sir, my account keeps logging me out automatically every few minutes, which is a bit inconvenient when filling out forms. Awaiting your response.",Account & Login,Medium
+PR-1286,"My account has been completely locked for almost two weeks after a failed password reset, and I am unable to submit my thesis-related forms before the deadline within 24 hours. Thank you.",Account & Login,High
+PR-0885,"My profile shows a completely wrong CNIC that is blocking my degree attestation submission, which is due at the HEC office this week, and I cannot correct it myself. Kindly advise.",Profile Update,Critical
+TCK-0395,"The result portal has been completely down for our entire batch of BS Software Engineering since yesterday, and we have a scholarship application deadline tomorrow that requires the latest transcript. Please fix this urgently, Khanpur Campus.",Result,Critical
+PR-1212,Course registration closes at midnight by Friday and the registration module has been throwing an error for every single student in my batch since this morning. Thank you.,Course Registration,Critical
+PR-0255,"Sir, my clearance is the only thing standing between me and graduation, and my scholarship abroad requires proof of graduation by by Friday, but the Directorate of Academics has gone completely silent. Kindly help.",Clearance,Critical
+PR-1193,"Hi, just wanted to confirm the standard leave application process for staff. Kindly help.",Employee Services,Low
+PR-0475,Kindly note: What is the usual format of the mid-term examination? Regards.,Examination,Low
+PR-0715,I have a supply in Database Systems but the Course Repeat option does not show this subject; could it be enabled? Thank you.,Course Registration,Medium
+TCK-0354,"I was awarded the HEC Need-Based Scholarship but the final installment of Rs. 31,000 has not been disbursed for about a week, and I now have an overdue semester fee deadline approaching without it. Roll No: S24BBSEEN7M7049",Scholarship,High
+PR-0868,"Sir, i forgot my portal password and the reset link is not sending an OTP to my registered email; is there another way to reset it?",Account & Login,Medium
+PR-0560,"I am unable to log in even with the correct credentials; it shows 'Invalid Username or Password' repeatedly, though I can still access things from my phone as a workaround.",Account & Login,Medium
+PR-0529,"Hi, my examination admit card is missing and my paper is scheduled for within 24 hours; without it I may not be allowed to sit the exam.",Examination,High
+PR-1471,"My profile shows a completely wrong CNIC that is blocking my degree attestation submission, which is due at the HEC office in two days, and I cannot correct it myself. Regards.",Profile Update,Critical
+PR-0918,"Respected Sir/Madam, my Directorate of Academics clearance has been pending for over a month even though my other clearances were completed long ago, and I need my final transcript for a job that starts by Friday. Please look into this.",Clearance,High
+PR-0801,"My HEC attestation appointment is in two days and the university's online verification, which HEC is waiting on for dozens of applicants today, has still not been submitted for any of us. Kindly help.",Certificate / Verification,Critical
+PR-0645,The notification bell on my dashboard shows a count but clicking it does not open any notifications.,Portal Technical Issue,Medium
+TCK-0278,I need a bonafide student certificate for a bank loan application. Kindly issue at your earliest convenience. Roll No: F24BPHD7M3240,Certificate / Verification,Medium
+PR-0781,How can I download my transcript from the student portal? Kindly advise.,Transcript,Low
+PR-0561,"Respected Sir/Madam, is fee payable through mobile wallets or only through bank challan?",Fee & Challan,Low
+PR-0129,"Hi, the result declaration system crashed for the entire batch of 360 students just minutes before the scheduled announcement time, and everyone is waiting anxiously. Kindly help.",Result,Critical
+PR-0678,Just wanted to confirm the general examination fee amount for this term. Kindly help.,Examination,Low
+PR-0528,"My admission abroad will be cancelled in two days unless I submit my original degree, and it has been stuck in processing for more than two months despite paying the urgent fee. Kindly help.",Degree,Critical
+PR-0808,"I have a visa interview today and my experience certificate, promised for today, has still not been issued despite multiple follow-ups all week.",Employee Services,Critical
+TCK-0423,Aoa sir please reverse my clearance form because meri supply rehti hai wo ghalti sy hogai ha please uski reverse kr dein supply deny k bd dubra apply kronga,Clearance,Medium
+TCK-0272,"I was declared eligible on the merit list for MS Electrical Power Engineering but my admission fee challan is not generating, and today is the last date to pay and confirm my seat.",Admission,High
+PR-0745,"Respected Sir/Madam, my profile shows a completely wrong CNIC that is blocking my degree attestation submission, which is due at the HEC office this week, and I cannot correct it myself. Kindly advise.",Profile Update,Critical
+PR-1210,My semester fee challan is not showing on the portal; could you help me generate it so I can pay before the due date? Kindly advise.,Fee & Challan,Medium
+PR-0671,"Respected Sir/Madam, my admission abroad will be cancelled today unless I submit my original degree, and it has been stuck in processing for more than two months despite paying the urgent fee. Thank you.",Degree,Critical
+PR-0552,"My account shows an 'Access Restricted' message on the dashboard, though I can still use the mobile app in the meantime. Please look into this.",Account & Login,Medium
+PR-1005,"My account has been completely locked for a couple of days after a failed password reset, and I am unable to submit my thesis-related forms before the deadline by Friday. Kindly help.",Account & Login,High
+PR-1579,I accidentally generated a combined fee voucher for two subjects; could this be split into separate vouchers? Thank you.,Fee & Challan,Medium
+TCK-0363,Just want to know what documents are needed to support a name correction request.,Name Correction,Low
+PR-1596,"I am filing an urgent complaint that despite an official refund approval of Rs. 26,400 on record, the accounts office has still not released the funds, and I cannot pay today's non-negotiable admission deadline fee without it. Kindly help.",Complaint,Critical
+PR-1468,"Kindly note: My embassy visa interview is scheduled for tomorrow and they require my original degree as mandatory proof, which has still not been issued. Kindly help.",Degree,Critical
+PR-1387,"Sir, could a dark mode option be added to the profile page? It would be a nice addition.",Profile Update,Low
+TCK-0192,Just want to know how to update my mobile number on my profile.,Profile Update,Low
+PR-0830,"Hi, my Directorate of Academics clearance has been pending for more than two months even though my other clearances were completed long ago, and I need my final transcript for a job that starts today. Awaiting your response.",Clearance,High
+PR-1112,"My account has been completely locked for about a week after a failed password reset, and I am unable to submit my thesis-related forms before the deadline today.",Account & Login,High
+PR-1527,"The result declaration system crashed for the entire batch of 518 students just minutes before the scheduled announcement time, and everyone is waiting anxiously. Kindly help.",Result,Critical
+PR-0465,"I am filing an urgent complaint that despite an official refund approval of Rs. 12,000 on record, the accounts office has still not released the funds, and I cannot pay tomorrow's non-negotiable admission deadline fee without it.",Complaint,Critical
+TCK-0403,Kindly correct my father's name on my transcript as it currently has a typo. Roll No: S25BMBA6M2876,Name Correction,Medium
+PR-1035,"Dear concerned team, my semester fee challan is not showing on the portal; could you help me generate it so I can pay before the due date? Kindly advise.",Fee & Challan,Medium
+PR-1375,"Dear concerned team, i have a supply in English Composition but the Course Repeat option does not show this subject; could it be enabled? Please look into this.",Course Registration,Medium
+TCK-0370,"The payroll system for the entire faculty has failed this cycle and salaries have not been disbursed to anyone, with rent and utility deadlines due today for many staff.",Employee Services,Critical
+PR-0356,One of my course results is missing from my transcript page while the rest are showing correctly. Kindly advise.,Result,Medium
+TCK-0146,"Dear Sir/Madam, I am following up on my Degree Recognition application submitted through MOHESR VFSGLOBAL as I have not received any update in about a week. Reference No: VFS-202669-57953",Certificate / Verification,Medium
+PR-1285,"I have a visa interview within 24 hours and my experience certificate, promised for today, has still not been issued despite multiple follow-ups all week.",Employee Services,Critical
+PR-0867,"Sir, i would like to raise a complaint about receiving conflicting information from two different staff members regarding the same issue. Regards.",Complaint,Medium
+PR-0726,What is the normal degree processing time for BS Computer Science graduates? Please look into this.,Degree,Low
+PR-0077,"Sir, my visa application will be rejected if I do not submit a verified degree equivalence certificate by tomorrow, and the verification office has stopped responding entirely. Please look into this.",Certificate / Verification,Critical
+PR-0608,"Hi, i have a visa interview by tomorrow morning and my experience certificate, promised for today, has still not been issued despite multiple follow-ups all week. Kindly advise.",Employee Services,Critical
+PR-0093,"I have been awarded a compartment in Database Systems despite being confident I attempted the paper correctly, and I need urgent re-evaluation as it affects my scholarship eligibility review this week. Please look into this.",Examination,High
+TCK-0203,"Dear Sir/Madam, I hope you are doing well. I am writing to kindly follow up regarding my application for Degree Recognition (Outside the UAE), which I submitted through MOHESR VFSGLOBAL. I would like to inquire about the current status of my application, as I have not yet received any update and the process appears to be taking longer than expected. For your reference, my application/reference number is: VFS-202606-45959 I would appreciate it if you could please check and provide me with an update regarding the progress of my application. Thank you for your time and support. I look forward to your response. Kind regards, Sana Nawaz",Certificate / Verification,Medium
+TCK-0444,I need guidance on transferring my credits from another university to BS Physical Education & Sports Sciences. Roll No: S24BBSMATH6M6802,Other,Medium
+TCK-0129,I need my Enrollment Certificate for a scheme application. Kindly issue it as soon as possible. Roll No: F24BBECON6M7807,Certificate / Verification,Medium
+PR-0150,"Dear concerned team, i have already submitted my thesis but I am unable to check the current status because it shows a missing registration number error.",Thesis,Medium
+PR-0496,When do scholarship applications usually open for a new batch?,Scholarship,Low
+TCK-0390,Kindly change my registered email address on my account as I no longer have access to the old one. Roll No: F25BBDATS4M4475,Account & Login,Medium
+PR-1182,"Hi, just a minor suggestion: the response templates could be a bit more personalized, nothing urgent. Kindly help.",Complaint,Low
+TCK-0342,"Respected Sir/Madam, I submitted my original transcript for verification on 14 July 2026 but there has been no update for two weeks. I need it urgently as it is my only original copy. Name: Usman Ghani, Roll No: F23BBSMATH1M7227, BS Economics.",Transcript,High
+PR-0618,"Dear concerned team, i was declared eligible on the merit list for BS Data Science but my admission fee challan is not generating, and by Friday is the last date to pay and confirm my seat. Awaiting your response.",Admission,High
+TCK-0337,"My urgent degree application (Application No. 27177) has been pending for over a month even though I applied and paid under the urgent category. I need it for higher studies admission abroad. Name: Shahzaib Khan, Roll No: F21BBAGRI2M2049",Degree,High
+PR-1261,"Dear concerned team, i need an Enrollment Certificate for a scheme application; could this be issued at your earliest convenience? Thank you.",Certificate / Verification,Medium
+TCK-0219,"I accidentally generated a single fee voucher of Rs. 3,500 combining two subjects. Kindly cancel it so I can generate separate vouchers. Roll No: S24BBSCS7M4044",Fee & Challan,Medium
+PR-1170,"I am filing an urgent complaint that despite an official refund approval of Rs. 16,000 on record, the accounts office has still not released the funds, and I cannot pay today's non-negotiable admission deadline fee without it. Thank you.",Complaint,Critical
+PR-0977,"My visa application will be rejected if I do not submit a verified degree equivalence certificate by tomorrow, and the verification office has stopped responding entirely.",Certificate / Verification,Critical
+PR-0109,"Small feedback: the waiting area could use a bit more seating, just a general comment.",Complaint,Low
+PR-0737,"Respected Sir/Madam, my result shows an F grade in English Composition that I'm confident is incorrect, and this is affecting my scholarship eligibility review scheduled within 24 hours.",Result,High
+PR-1246,"My credit transfer approval, required tomorrow to secure my admission abroad before their deadline expires, has still not been processed despite three urgent escalations this week. Kindly help.",Other,Critical
+TCK-0431,Just a suggestion: the portal font size could be a bit bigger for readability.,Portal Technical Issue,Low
+PR-0200,"Sir, what is the usual turnaround time for certificate issuance? Regards.",Certificate / Verification,Low
+PR-0238,"My repeat subject fee challan has not been generated even though the subject shows as failed on my result, and course registration closes today.",Course Registration,High
+PR-0222,"My name correction request has been pending for several months, and it is now blocking my degree printing needed before within 24 hours. Awaiting your response.",Name Correction,High
+PR-0380,"My HEC degree attestation application has been stuck pending university verification for almost two weeks, and my attestation appointment is today. Kindly help.",Certificate / Verification,High
+PR-1293,"My transcript request submitted almost two weeks ago is still pending, and I would like an update on the expected completion date. Thank you.",Transcript,Medium
+PR-1098,"Respected Sir/Madam, the portal keeps logging me into an authentication error whenever I try to access my dashboard, and I have a form to submit before tomorrow. Regards.",Portal Technical Issue,High
+TCK-0334,"Our whole department's final semester result system is showing 'no data found' for every student, blocking all of us from applying for graduation clearance before tomorrow's deadline. BS Physical Education & Sports Sciences, Baghdad-ul-Jadeed Campus",Result,Critical
+PR-1374,How many credit hours can I generally register for in a normal semester? Thank you.,Course Registration,Low
+PR-0289,"Hi, i am writing on behalf of the entire batch of BS Data Science scholarship recipients — none of us have received our final installment for over two years, and several of us cannot complete clearance for graduation because of it. Kindly help.",Scholarship,Critical
+TCK-0324,Introduction to ict lab,Other,Low
+PR-0160,Has the result declaration date been finalized yet for this semester? Regards.,Result,Low
+PR-0243,"Hi, i am unable to update my biography and professional links on my profile page; the save button does not seem to work. Awaiting your response.",Profile Update,Medium
+TCK-0130,My HEC degree attestation application is currently stuck at 'Submitted by UFP' status and is pending online verification from the university for more than 20 days. HEC cannot proceed without this verification. Roll No: F21BBDATS7M4696,Certificate / Verification,High
+PR-1247,"Hi, could you confirm the status of my scholarship application submitted about a week ago? Regards.",Scholarship,Medium
+PR-0328,"Sir, i am unable to update my biography and professional links on my profile page; the save button does not seem to work. Please look into this.",Profile Update,Medium
+PR-1470,When I open the transcript section on the portal it appears empty and does not load any data.,Portal Technical Issue,Medium
+TCK-0327,"My Directorate of Academics clearance has been pending for more than 20 days even though my IT and library clearances were completed long ago, and I need my final transcript for a job application. Roll No: F23BBDATS7M9486",Clearance,High
+PR-1103,"Kindly note: The main student database appears to be corrupted, and records for an entire batch of 221 students are showing blank or missing fields across every module.",Portal Technical Issue,Critical
+PR-1233,How can I change the spelling of my name on my student ID card? Kindly advise.,Name Correction,Low
+PR-0537,"Respected Sir/Madam, none of the 591 students in our batch can log in to the portal since last night, and by tomorrow morning is the final date for exam form submission with no extension announced. Thank you.",Account & Login,Critical
+PR-0596,"Hi, my registration hold has still not been cleared despite clearing all dues weeks ago, and in two days is the absolute last day to register, after which I will lose the entire semester.",Course Registration,Critical
+PR-1048,"Hi, hEC verification of my scholarship documents is still pending after almost two weeks, and my semester fee due date is within 24 hours. Kindly help.",Scholarship,High
+PR-0369,Kindly note: There is a spelling mistake in my name on my student portal record; my correct name is Ahmed Raza. Could this be corrected? Kindly advise.,Name Correction,Medium
+TCK-0401,Kindly tell me how long a name correction usually takes to process.,Name Correction,Low
+PR-1542,"My admission offer will be automatically cancelled at midnight today if I do not submit my documents, but the document upload portal is showing a server error for every applicant right now.",Admission,Critical
+PR-1583,"Sir, none of the 421 students in our batch can log in to the portal since last night, and today is the final date for exam form submission with no extension announced. Thank you.",Account & Login,Critical
+TCK-0378,"I need an urgent official letter confirming my enrollment for a visa interview tomorrow morning, and the department responsible has not responded despite my request three days ago. Roll No: S24BPHD1M9693",Other,Critical
+PR-0761,"My thesis submission is blocked on the portal due to a missing field error, and my defense is scheduled tomorrow. Thank you.",Thesis,High
+PR-0452,How many credit hours can I generally register for in a normal semester? Regards.,Course Registration,Low
+PR-0557,"I am formally complaining about a delay of nearly two months in processing my clearance request despite multiple follow-ups, and I now have a hard deadline by Friday. Kindly help.",Complaint,High
+PR-0263,"Hi, there is a spelling mistake in my name on my student portal record; my correct name is Waqas Ahmed. Could this be corrected? Kindly advise.",Name Correction,Medium
+PR-0283,"Sir, just wanted to confirm the general examination fee amount for this term.",Examination,Low
+PR-1507,"Sir, what is the admission fee structure for BS Mathematics?",Admission,Low
+PR-1467,I would like to know how to request a change of campus from Baghdad-ul-Jadeed Campus to another campus. Awaiting your response.,Other,Medium
+PR-1185,"My scholarship disbursement has been delayed by more than two months, and I need this amount to clear my semester fee challan before the due date by tomorrow morning, otherwise I risk being dropped.",Scholarship,High
+PR-1378,"The result module of the portal has been throwing a server error for over a week, and I cannot proceed with a task due tomorrow. Regards.",Portal Technical Issue,High
+TCK-0355,"I am filing a formal complaint that my calls and messages to the Department of Statistics office over the past a few days regarding my pending case have gone completely unanswered, causing serious inconvenience.",Complaint,High
+TCK-0422,Kindly tell me the deadline to add or drop a course this semester.,Course Registration,Low
+PR-0842,"Dear concerned team, i have an F grade in Operating Systems but the subject is not appearing in the Course Repeat section, and I cannot register for the upcoming semester which closes this week.",Course Registration,High
+PR-0144,"Sir, there is an unusual, time-sensitive situation affecting hundreds of students across multiple departments that doesn't fit any specific category, and it needs immediate institutional attention by Friday.",Other,Critical
+PR-0070,"Respected Sir/Madam, my thesis file was rejected by the portal for an unspecified reason and the resubmission deadline is today.",Thesis,High
+PR-0621,"My Turnitin account was blocked by mistake and despite raising a complaint about a week ago, it is still blocked, preventing me from submitting my assigned work due within 24 hours. Kindly advise.",Account & Login,High
+PR-0133,Could a dark mode option be added to the profile page? It would be a nice addition.,Profile Update,Low
+PR-1159,"My thesis submission is blocked on the portal due to a missing field error, and my defense is scheduled by tomorrow morning. Kindly help.",Thesis,High
+PR-1124,"Respected Sir/Madam, i have been awarded a compartment in Statistics despite being confident I attempted the paper correctly, and I need urgent re-evaluation as it affects my scholarship eligibility review within 24 hours. Please look into this.",Examination,High
+PR-0083,My semester fee challan is not showing on the portal; could you help me generate it so I can pay before the due date? Kindly help.,Fee & Challan,Medium
+PR-1554,"Hi, the Wi-Fi router in one of the blocks has been intermittent for several days; could it be checked? Kindly help.",Infrastructure / Maintenance,Medium
+PR-0975,"Hi, just wondering if I can register for an elective from a different department. Kindly advise.",Course Registration,Low
+PR-1498,"Respected Sir/Madam, my middle name is missing from my official university record though it appears correctly on my CNIC. Please look into this.",Name Correction,Medium
+PR-1372,"Hi, i updated my profile with my new degree information required for a job application deadline this week, but the changes are not being saved by the portal at all. Please look into this.",Profile Update,High
+TCK-0307,Is online degree verification available for employers?,Degree,Low
+PR-1446,"My scholarship-covered fee challan is still showing unpaid even though the scholarship office confirmed disbursement over a week ago, and a late fee surcharge starts by tomorrow morning. Regards.",Fee & Challan,High
+PR-1231,"Respected Sir/Madam, i have a visa interview this week and my experience certificate, promised for today, has still not been issued despite multiple follow-ups all week.",Employee Services,Critical
+TCK-0356,Dear Sir! I have applied for urgent degree of Msc Hons Entomology. Its been 2 month that challan is paid and application is submitted but the status on portal show that application is submitted and pending for review. Dear sir i have paid challan for urgent degree because I have to appear in swedish embassy for doc verification' without MSc Hons degree there is authentic chance of rejecting my visa application It is humbally request that please grant my degree on urgent basis so that I may process it Kindly issue my degree on urgent basis,Degree,Critical
+TCK-0098,"My degree verification request from a foreign employer has been pending response from the university for over a month, and my job offer is contingent on this verification being completed soon. Roll No: S22BBSMATH6M7086",Certificate / Verification,High
+TCK-0005,What is the process to apply for a duplicate degree certificate?,Degree,Low
+PR-1014,"Hi, our entire class's clearance requests have been frozen due to a system error, blocking all 218 of us from collecting our degrees before this week's convocation. Kindly help.",Clearance,Critical
+PR-1287,"Could you update my bank account details in the payroll system, as my old account has been closed?",Employee Services,Medium
+PR-0265,"It has been over a month since I completed my graduation and I still have not received my degree, which is now delaying a job I was set to start by tomorrow morning.",Degree,High
+PR-0216,"Sir, my degree verification request from a foreign employer has been pending response for nearly two months, and my job offer is contingent on it being completed by today. Please look into this.",Certificate / Verification,High
+PR-0565,I forgot my portal password and the reset link is not sending an OTP to my registered email; is there another way to reset it? Please look into this.,Account & Login,Medium
+TCK-0408,Kindly confirm whether my thesis proposal has been forwarded to the board for approval. Roll No: F25BBECON4M3385,Thesis,Medium
+PR-0604,"Sir, my transcript request submitted a couple of days ago is still pending, and I would like an update on the expected completion date. Please look into this.",Transcript,Medium
+PR-0468,When does the admission form submission usually open for the next intake? Kindly help.,Admission,Low
+PR-0829,"Dear concerned team, how many credit hours can I generally register for in a normal semester? Kindly help.",Course Registration,Low
+PR-0389,"Dear concerned team, my transcript request has been pending for over a week despite the fee being paid, and I need it for a scholarship submission by Friday.",Transcript,High
+PR-0089,"Kindly note: My salary has not been credited for almost two weeks despite my department confirming approval, and I need this urgently to cover overdue expenses due today. Kindly help.",Employee Services,High
+TCK-0388,I need a bonafide student certificate for a bank loan application. Kindly issue at your earliest convenience. Roll No: S24BLLB3M3695,Certificate / Verification,Medium
+PR-1002,"Respected Sir/Madam, my clearance is the only thing standing between me and graduation, and my scholarship abroad requires proof of graduation by by tomorrow morning, but the Directorate of Academics has gone completely silent.",Clearance,Critical
+PR-0360,"The fee payment gateway on the portal is throwing a fatal error for every single student today, which is the last date for semester fee submission without penalty.",Portal Technical Issue,Critical
+PR-0499,Kindly note: Could you correct my program preference on my admission application from BS Agriculture to BS Software Engineering? Please look into this.,Admission,Medium
+PR-0667,"Dear concerned team, could you confirm receipt of the documents I submitted for my degree equivalence certification? Awaiting your response.",Certificate / Verification,Medium
+PR-1556,"Respected Sir/Madam, i am writing on behalf of the entire batch of BS Mathematics scholarship recipients — none of us have received our final installment for over two years, and several of us cannot complete clearance for graduation because of it. Kindly help.",Scholarship,Critical
+PR-0479,Course registration closes at midnight in two days and the registration module has been throwing an error for every single student in my batch since this morning. Kindly help.,Course Registration,Critical
+TCK-0145,"My scholarship-covered fee challan is still showing unpaid even though the scholarship office confirmed disbursement on 18 July 2026, and the late fee surcharge is now being added daily. Roll No: S23BBECON7M2188",Fee & Challan,High
+PR-0532,"A major water leakage has flooded part of the server room at Rahim Yar Khan Campus, threatening to permanently damage critical IT infrastructure for the whole university. Kindly advise.",Infrastructure / Maintenance,Critical
+PR-0372,"My HEC degree attestation application has been stuck pending university verification for over a week, and my attestation appointment is in two days.",Certificate / Verification,High
+PR-0774,"Kindly note: The entire fee payment gateway has been down since last night for all students, and in two days is the final date to submit semester fees without a late fine.",Fee & Challan,Critical
+PR-1138,I have a supply in Microbiology but the Course Repeat option does not show this subject; could it be enabled? Kindly help.,Course Registration,Medium
+PR-0440,"Sir, the result declaration system crashed for the entire batch of 501 students just minutes before the scheduled announcement time, and everyone is waiting anxiously. Please look into this.",Result,Critical
+PR-0156,"Dear concerned team, how many credit hours can I generally register for in a normal semester?",Course Registration,Low
+TCK-0061,When does the admission form submission open for Fall 2026?,Admission,Low
+PR-0234,Is fee payable through mobile wallets or only through bank challan? Awaiting your response.,Fee & Challan,Low
+TCK-0006,"I have a visa interview tomorrow morning and my experience certificate, promised for today, has still not been issued despite multiple follow-ups this week.",Employee Services,Critical
+PR-0803,"Dear concerned team, there is a spelling mistake in my name on my student portal record; my correct name is Laiba Yasmin. Could this be corrected? Kindly advise.",Name Correction,Medium
+PR-0437,"My registration hold has still not been cleared despite clearing all dues weeks ago, and in two days is the absolute last day to register, after which I will lose the entire semester. Please look into this.",Course Registration,Critical
+PR-1153,"Dear concerned team, when I open the fee section on the portal it appears empty and does not load any data. Awaiting your response.",Portal Technical Issue,Medium
+PR-0828,"Sir, i have a supply in Microbiology but the Course Repeat option does not show this subject; could it be enabled? Kindly help.",Course Registration,Medium
+PR-0806,"Sir, i need an official letter of recommendation urgently for a scholarship application closing within 24 hours, and my department has not responded to my request from a couple of days ago. Thank you.",Other,High
+TCK-0331,The Wi-Fi router in the Department of Mathematics block has been intermittent for several days; kindly get it checked.,Infrastructure / Maintenance,Medium
+PR-0850,"Dear concerned team, the payroll system for the entire faculty has failed this cycle and salaries have not been disbursed to anyone, with rent and utility deadlines due by Friday for many staff members. Regards.",Employee Services,Critical
+PR-0640,"The examination portal has completely gone down while the final exam is currently being conducted live for hundreds of students, and no backup arrangement has been announced. Thank you.",Examination,Critical
+PR-1077,Kindly note: Just wanted to confirm the standard leave application process for staff. Kindly help.,Employee Services,Low
+PR-0880,"Sir, has the result declaration date been finalized yet for this semester?",Result,Low
+PR-1447,"Is there a way to change my profile picture on the portal, just curious about the option? Awaiting your response.",Profile Update,Low
+TCK-0301,Is there a mobile app version of MyIUB portal available?,Portal Technical Issue,Low
+PR-1147,"Dear concerned team, when is the next semester result usually announced? Please look into this.",Result,Low
+PR-0056,"Dear concerned team, i need a duplicate transcript copy as my original was misplaced. Could you guide me on the reissuance process? Awaiting your response.",Transcript,Medium
+PR-0146,"There is a clear discrepancy between my award list and my final result on the portal for 4 subjects, and I need this corrected before my transcript request within 24 hours. Kindly help.",Result,High
+PR-0725,How can I change the spelling of my name on my student ID card? Please look into this.,Name Correction,Low
+PR-0476,"Dear concerned team, my name correction request has been pending for several months, and it is now blocking my degree printing needed before tomorrow.",Name Correction,High

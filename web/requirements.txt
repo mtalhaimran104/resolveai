@@ -1,4 +1,4 @@
 Django==5.0.9
 PyMySQL==1.1.1
 cryptography==43.0.3
-requests
+requests==2.32.3

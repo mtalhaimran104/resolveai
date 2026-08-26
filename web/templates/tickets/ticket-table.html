@@ -387,8 +387,10 @@ document.addEventListener("DOMContentLoaded", function () {
           {% for ticket in tickets %}
           <tr>
 <td>
-<a href="{% url 'tickets:ticket_detail_requester' ticket.pk %}" class="fw-semibold text-decoration-none">        {{ ticket.ticket_number }}
-    </a>
+<a href="{% url 'tickets:ticket_detail' ticket.pk %}"
+   class="fw-semibold text-decoration-none">
+    {{ ticket.ticket_number }}
+</a>    </a>
 </td>            <td>{{ ticket.subject }}</td>
             <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
             <td>{{ ticket.department.name|default:"—" }}</td>
@@ -409,8 +411,11 @@ document.addEventListener("DOMContentLoaded", function () {
     <i class="bi bi-eye"></i>
 </a>                {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
                   {% if not ticket.assigned_to %}
-                    <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
-                  {% elif user.is_superuser or user.has_role_supervisor or ticket.assigned_to_id == user.id %}
+<a href="{% url 'tickets:ticket_assign' ticket.pk %}"
+   class="btn btn-outline-secondary"
+   title="Assign">
+    <i class="bi bi-person-plus"></i>
+</a>                  {% elif user.is_superuser or user.has_role_supervisor or ticket.assigned_to_id == user.id %}
 <a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Reassign">
     <i class="bi bi-person-plus"></i>
 </a>

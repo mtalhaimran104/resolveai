@@ -76,8 +76,9 @@
             {% for ticket in my_tickets %}
               <tr>
     <td>
-        <a href="{% url 'tickets:ticket_detail_requester' ticket.pk %}">
-            {{ ticket.ticket_number }}
+<a href="{% url 'tickets:ticket_detail' pk=ticket.pk %}">
+    {{ ticket.number }}
+</a>            {{ ticket.ticket_number }}
         </a>
     </td>
 
