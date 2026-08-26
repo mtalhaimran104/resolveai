@@ -1,4 +1,91 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block page_title %}Article Detail{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item"><a href="{% url 'demo_kb_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
+{% endblock %}
+
+{% block content %}
+
+            <div class="card mb-4">
+              <div class="card-header d-flex justify-content-between align-items-start">
+                <div>
+                  <h3 class="card-title mb-1">{{ article.title }}</h3>
+                  <p class="text-secondary mb-0">{{ article.summary }}</p>
+                </div>
+                <div class="text-end flex-shrink-0 ms-3">
+                  {% if article.status == "PUBLISHED" %}
+                    <span class="badge text-bg-success fs-7">Published</span>
+                  {% else %}
+                    <span class="badge text-bg-secondary fs-7">Draft</span>
+                  {% endif %}
+                  <div class="text-secondary fs-7 mt-1">v{{ article.version }}</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">{{ article.body|linebreaksbr }}</div>
+
+                {% if article.tag_list %}
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                  {% for tag in article.tag_list %}
+                    <span class="badge text-bg-secondary">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="d-flex gap-2">
+                  {% if user.is_admin %}
+                  <a href="{% url 'article_edit' pk=article.pk %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+                  <form action="{% url 'article_delete' pk=article.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm" data-ra-confirm="Delete this article? This cannot be undone."><i class="bi bi-trash me-1"></i>Delete</button>
+                  </form>
+                  {% endif %}
+                  <a href="{% url 'article_versions' pk=article.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clock-history me-1"></i>Version History</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0">Details</h3></div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-4">Category</dt><dd class="col-8">{{ article.category.name|default:"—" }}</dd>
+                      <dt class="col-4">Author</dt><dd class="col-8">{{ article.author.get_full_name|default:article.author.username }}</dd>
+                      <dt class="col-4">Created</dt><dd class="col-8">{{ article.created_at|date:"M d, Y g:i A" }}</dd>
+                      <dt class="col-4">Last Updated</dt><dd class="col-8">{{ article.updated_at|date:"M d, Y g:i A" }}</dd>
+                      <dt class="col-4">Publish Date</dt><dd class="col-8">{{ article.publish_date|date:"M d, Y"|default:"Not published yet" }}</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card">
+                  <div class="card-header"><h3 class="card-title fs-6 mb-0">Visibility</h3></div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-7">Visible to requesters</dt><dd class="col-5">{% if article.is_public %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</dd>
+                      <dt class="col-7">AI knowledge base</dt><dd class="col-5">{% if article.is_ai_indexed %}<span class="badge text-bg-indigo">Flagged</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</dd>
+                    </dl>
+                    <p class="text-secondary fs-7 mb-0 mt-2">No AI/ML service is connected yet, so this flag has no effect beyond marking intent.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} <!doctype html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -562,4 +649,4 @@
     <script src="../assets/js/resolve-ai.js"></script>
   </body>
   <!--end::Body-->
-</html>
+</html> {% endcomment %}

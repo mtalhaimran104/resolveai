@@ -1,4 +1,100 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Article{% endblock %}
+{% block page_title %}New Article{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item"><a href="{% url 'knowledge_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item active" aria-current="page">New Article</li>
+{% endblock %}
+
+{% block content %}
+
+            <form novalidate action="{% url 'knowledge_article_create' %}" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="card">
+                    <div class="card-header"><h3 class="card-title">Article Content</h3></div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label for="articleTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="articleTitle" name="title" value="{{ form.title.value|default:'' }}" placeholder="e.g. How to Reset Your Account Password" required minlength="8" />
+                          {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleSummary" class="form-label">Summary <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="articleSummary" name="summary" rows="2" maxlength="220" required placeholder="One or two sentences shown in search results and article lists.">{{ form.summary.value|default:'' }}</textarea>
+                          {% if form.summary.errors %}<div class="text-danger small mt-1">{{ form.summary.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleBody" class="form-label">Body <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="articleBody" name="body" rows="12" required placeholder="Write the full article content here…">{{ form.body.value|default:'' }}</textarea>
+                          {% if form.body.errors %}<div class="text-danger small mt-1">{{ form.body.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleTags" class="form-label">Tags</label>
+                          <input type="text" class="form-control" id="articleTags" name="tags" value="{{ form.tags.value|default:'' }}" placeholder="password, account, login" />
+                          <div class="form-text">Comma-separated.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header"><h3 class="card-title">Publishing</h3></div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label for="articleCategory" class="form-label">Category</label>
+                        <select class="form-select" id="articleCategory" name="category">
+                          <option value="">No category</option>
+                          {% for cat in form.fields.category.queryset %}
+                            <option value="{{ cat.pk }}">{{ cat.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="articleStatus" class="form-label">Status</label>
+                        <select class="form-select" id="articleStatus" name="status">
+                          <option value="DRAFT">Draft</option>
+                          <option value="PUBLISHED">Published</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="articlePublishDate" class="form-label">Publish Date</label>
+                        <input type="date" class="form-control" id="articlePublishDate" name="publish_date" value="{{ form.publish_date.value|default:'' }}" />
+                        <div class="form-text">Leave blank — set automatically when status is Published.</div>
+                      </div>
+                      <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" role="switch" id="visibleToRequesters" name="is_public" checked>
+                        <label class="form-check-label" for="visibleToRequesters">Visible to requesters</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="includeInAiKb" name="is_ai_indexed" checked>
+                        <label class="form-check-label" for="includeInAiKb">Include in AI knowledge base</label>
+                        <div class="form-text">No AI service is connected yet — this only flags intent for later.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-send-check me-1"></i>Save Article</button>
+                    <a href="{% url 'knowledge_article_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+{% endblock %}
+
+
+
+
+
+{% comment %} <!doctype html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -568,4 +664,4 @@
     <script src="../assets/js/resolve-ai.js"></script>
   </body>
   <!--end::Body-->
-</html>
+</html> {% endcomment %}

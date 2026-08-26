@@ -104,8 +104,11 @@
           {% for ticket in tickets %}
           <tr>
             <td><input class="form-check-input" type="checkbox" data-ra-row-check aria-label="Select ticket {{ ticket.ticket_number }}" /></td>
-            <td><a href="{% url 'ticket_detail_requester' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.ticket_number }}</a></td>
-            <td>{{ ticket.subject }}</td>
+<td>
+    <a href="{% url 'tickets:ticket_detail' ticket.pk %}" class="fw-semibold text-decoration-none">
+        {{ ticket.ticket_number }}
+    </a>
+</td>            <td>{{ ticket.subject }}</td>
             <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
             <td>{{ ticket.department.name|default:"—" }}</td>
             <td>{{ ticket.category.name|default:"—" }}</td>
@@ -120,11 +123,13 @@
             </td>
             <td>{{ ticket.created_at|date:"M d, Y" }}</td>
             <td class="text-end text-nowrap">
-              <a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
-              {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
+<a href="{% url 'tickets:ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+    <i class="bi bi-eye"></i>
+</a>              {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
                 {% if ticket.assigned_to %}
-                  <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Reassign"><i class="bi bi-arrow-repeat"></i></a>
-                {% else %}
+<a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Reassign">
+    <i class="bi bi-arrow-repeat"></i>
+</a>                {% else %}
                   <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-sm btn-primary" title="Assign"><i class="bi bi-person-plus me-1"></i>Assign</a>
                 {% endif %}
               {% endif %}

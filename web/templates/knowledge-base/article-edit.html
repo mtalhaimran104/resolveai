@@ -1,4 +1,102 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit — {{ article.title }}{% endblock %}
+{% block page_title %}Edit Article{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item"><a href="{% url 'demo_kb_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item"><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a></li>
+<li class="breadcrumb-item active" aria-current="page">Edit</li>
+{% endblock %}
+
+{% block content %}
+
+            <form novalidate action="{% url 'article_edit' pk=article.pk %}" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Article Content</h3>
+                      <div class="card-tools"><span class="badge text-bg-secondary">Currently v{{ article.version }} — saving creates v{{ article.version|add:"1" }}</span></div>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label for="articleTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="articleTitle" name="title" value="{{ form.title.value|default:article.title }}" required minlength="8" />
+                          {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleSummary" class="form-label">Summary <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="articleSummary" name="summary" rows="2" maxlength="220" required>{{ form.summary.value|default:article.summary }}</textarea>
+                          {% if form.summary.errors %}<div class="text-danger small mt-1">{{ form.summary.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleBody" class="form-label">Body <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="articleBody" name="body" rows="12" required>{{ form.body.value|default:article.body }}</textarea>
+                          {% if form.body.errors %}<div class="text-danger small mt-1">{{ form.body.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                          <label for="articleTags" class="form-label">Tags</label>
+                          <input type="text" class="form-control" id="articleTags" name="tags" value="{{ form.tags.value|default:article.tags }}" placeholder="password, account, login" />
+                          <div class="form-text">Comma-separated.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header"><h3 class="card-title">Publishing</h3></div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label for="articleCategory" class="form-label">Category</label>
+                        <select class="form-select" id="articleCategory" name="category">
+                          <option value="" {% if not article.category %}selected{% endif %}>No category</option>
+                          {% for cat in form.fields.category.queryset %}
+                            <option value="{{ cat.pk }}" {% if article.category_id == cat.pk %}selected{% endif %}>{{ cat.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="articleStatus" class="form-label">Status</label>
+                        <select class="form-select" id="articleStatus" name="status">
+                          <option value="DRAFT" {% if article.status == "DRAFT" %}selected{% endif %}>Draft</option>
+                          <option value="PUBLISHED" {% if article.status == "PUBLISHED" %}selected{% endif %}>Published</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="articlePublishDate" class="form-label">Publish Date</label>
+                        <input type="date" class="form-control" id="articlePublishDate" name="publish_date" value="{{ article.publish_date|date:'Y-m-d' }}" />
+                      </div>
+                      <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" role="switch" id="visibleToRequesters" name="is_public" {% if article.is_public %}checked{% endif %}>
+                        <label class="form-check-label" for="visibleToRequesters">Visible to requesters</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="includeInAiKb" name="is_ai_indexed" {% if article.is_ai_indexed %}checked{% endif %}>
+                        <label class="form-check-label" for="includeInAiKb">Include in AI knowledge base</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
+                    <a href="{% url 'article_detail' pk=article.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+{% endblock %}
+
+
+
+
+
+{% comment %} <!doctype html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -595,4 +693,4 @@
     <script src="../assets/js/resolve-ai.js"></script>
   </body>
   <!--end::Body-->
-</html>
+</html> {% endcomment %}

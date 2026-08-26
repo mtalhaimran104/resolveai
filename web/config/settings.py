@@ -20,7 +20,10 @@ def env_bool(name, default="False"):
 SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
 
 DEBUG = env_bool("DEBUG", "True")
-
+AI_SERVICE_URL = os.getenv(
+    "AI_SERVICE_URL",
+    "http://ai_service:8000",
+)
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")

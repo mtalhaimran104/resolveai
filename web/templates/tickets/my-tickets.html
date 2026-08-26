@@ -6,8 +6,9 @@
 {% block page_title %}My Tickets{% endblock %}
 {% block breadcrumbs %}
   <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'my_tickets' %}">Tickets</a></li>
-  <li class="breadcrumb-item active" aria-current="page">My Tickets</li>
+<li class="breadcrumb-item">
+    <a href="{% url 'tickets:my_tickets' %}">Tickets</a>
+</li>  <li class="breadcrumb-item active" aria-current="page">My Tickets</li>
 {% endblock %}
 
 {% block content %}
