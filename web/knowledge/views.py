@@ -6,12 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.text import slugify
+from accounts.decorators import agent_or_supervisor_required
 
-from accounts.decorators import supervisor_or_admin_required
 from .models import KnowledgeArticle
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_list(request):
     articles = KnowledgeArticle.objects.select_related(
         "author"
@@ -19,7 +19,7 @@ def article_list(request):
 
     return render(
         request,
-        "knowledge/articles.html",
+        "knowledge-base/article-list.html",
         {
             "articles": articles,
             "current": "knowledge_article_list",
@@ -27,7 +27,7 @@ def article_list(request):
     )
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_create(request):
     if request.method == "POST":
         title = request.POST.get("title", "").strip()
@@ -89,14 +89,14 @@ def article_create(request):
 
     return render(
         request,
-        "knowledge/article-create.html",
+        "knowledge-base/article-create.html",
         {
             "current": "knowledge_article_create",
         },
     )
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_detail(request, pk):
     article = get_object_or_404(
         KnowledgeArticle.objects.select_related("author"),
@@ -113,7 +113,7 @@ def article_detail(request, pk):
     )
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_edit(request, pk):
     article = get_object_or_404(KnowledgeArticle, pk=pk)
 
@@ -185,7 +185,7 @@ def article_edit(request, pk):
     )
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_delete(request, pk):
     article = get_object_or_404(KnowledgeArticle, pk=pk)
 
@@ -201,7 +201,7 @@ def article_delete(request, pk):
     return redirect("knowledge_article_list")
 
 
-@supervisor_or_admin_required
+@agent_or_supervisor_required
 def article_publish(request, pk):
     article = get_object_or_404(KnowledgeArticle, pk=pk)
 
@@ -238,7 +238,7 @@ def public_knowledge_base(request):
 
     return render(
         request,
-        "knowledge/public-knowledge-base.html",
+        "knowledge-base/public-knowledge-base.html",
         {
             "articles": articles,
             "current": "public_knowledge_base",

@@ -1,6 +1,666 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Dashboard | ResolveAI{% endblock %}
+
+{% block content %}
+
+<!--begin::App Content Header-->
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Dashboard</h1>
+            </div>
+
+            <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'dashboard' %}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Dashboard
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::App Content Header-->
+
+
+<!--begin::App Content-->
+<div class="app-content">
+    <div class="container-fluid">
+
+        <!--begin::Welcome Banner-->
+        <div class="mb-4">
+            <h4 class="mb-1">
+                Welcome back,
+                {% if request.user.get_full_name %}
+                    {{ request.user.get_full_name }}
+                {% else %}
+                    {{ request.user.username }}
+                {% endif %}
+            </h4>
+
+            <p class="text-secondary mb-0">
+                Team workload, escalations and AI accuracy at a glance.
+            </p>
+        </div>
+        <!--end::Welcome Banner-->
+
+
+        <!--begin::Stat Cards-->
+        <div class="row">
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-primary shadow-sm">
+                        <i class="bi bi-inbox-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Open Queue</span>
+                        <span class="info-box-number">
+                            {{ total_open_queue|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-secondary shadow-sm">
+                        <i class="bi bi-question-circle-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Unassigned Tickets</span>
+                        <span class="info-box-number">
+                            {{ unassigned_tickets|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-danger shadow-sm">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Critical Tickets</span>
+                        <span class="info-box-number">
+                            {{ critical_tickets|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-warning shadow-sm">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">SLA Warning</span>
+                        <span class="info-box-number">
+                            {{ sla_warning|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-success shadow-sm">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Active Agents</span>
+                        <span class="info-box-number">
+                            {{ active_agents|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-indigo shadow-sm">
+                        <i class="bi bi-stopwatch-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Avg. Team Resolution</span>
+                        <span class="info-box-number">
+                            {{ avg_team_resolution|default:"0" }}<small>h</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end::Stat Cards-->
+
+
+        <!--begin::Charts-->
+        <div class="row">
+
+            <!--begin::Department Workload Chart-->
+            <div class="col-lg-6">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Department Workload
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="deptWorkloadChart" style="height:280px;"></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--end::Department Workload Chart-->
+
+
+            <!--begin::Ticket Volume Trend-->
+            <div class="col-lg-6">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Ticket Volume Trend
+                            <small class="text-secondary fs-7">
+                                (last 8 weeks)
+                            </small>
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="volumeTrendChart" style="height:280px;"></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--end::Ticket Volume Trend-->
+
+        </div>
+        <!--end::Charts-->
+
+
+        <!--begin::Agent Workload Table-->
+        <div class="card mb-4">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">
+                    Agent Workload
+                </h3>
+
+                <a href="{% url 'agent_performance' %}" class="fs-7">
+                    Full Report
+                </a>
+            </div>
+
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Department</th>
+                                <th>Assigned</th>
+                                <th>Resolved (This Month)</th>
+                                <th>Avg. Resolution Time</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% if agent_workload %}
+
+                                {% for agent in agent_workload %}
+
+                                    <tr>
+
+                                        <td>
+                                            {% if agent.profile_image %}
+                                                <img
+                                                    src="{{ agent.profile_image.url }}"
+                                                    class="img-size-32 rounded-circle me-2"
+                                                    alt="{{ agent.name }}"
+                                                />
+                                            {% else %}
+                                                <span class="img-size-32 rounded-circle me-2 d-inline-flex align-items-center justify-content-center bg-secondary text-white">
+                                                    <i class="bi bi-person"></i>
+                                                </span>
+                                            {% endif %}
+
+                                            {{ agent.name }}
+                                        </td>
+
+                                        <td>
+                                            {{ agent.department }}
+                                        </td>
+
+                                        <td>
+                                            {{ agent.assigned|default:"0" }}
+                                        </td>
+
+                                        <td>
+                                            {{ agent.resolved_this_month|default:"0" }}
+                                        </td>
+
+                                        <td>
+                                            {{ agent.avg_resolution|default:"0" }}h
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <tr>
+                                    <td colspan="5" class="text-center text-secondary py-4">
+                                        No agent workload data available.
+                                    </td>
+                                </tr>
+
+                            {% endif %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!--end::Agent Workload Table-->
+
+
+        <div class="row">
+
+            <!--begin::Escalated Tickets-->
+            <div class="col-lg-7">
+
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Escalated Tickets
+                        </h3>
+                    </div>
+
+
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-hover align-middle mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Subject</th>
+                                        <th>Department</th>
+                                        <th>Priority</th>
+                                        <th>Escalated To</th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+
+                                    {% if escalated_tickets %}
+
+                                        {% for ticket in escalated_tickets %}
+
+                                            <tr>
+
+                                                <td>
+                                                    <a href="{% url 'tickets:ticket_detail' ticket.pk %}">
+                                                        {{ ticket.ticket_number }}
+                                                    </a>
+                                                </td>
+
+                                                <td>
+                                                    {{ ticket.subject }}
+                                                </td>
+
+                                                <td>
+                                                    {{ ticket.department }}
+                                                </td>
+
+                                                <td>
+
+                                                    {% if ticket.priority == "CRITICAL" %}
+                                                        <span class="badge badge-priority-critical">
+                                                            Critical
+                                                        </span>
+
+                                                    {% elif ticket.priority == "HIGH" %}
+                                                        <span class="badge badge-priority-high">
+                                                            High
+                                                        </span>
+
+                                                    {% elif ticket.priority == "MEDIUM" %}
+                                                        <span class="badge badge-priority-medium">
+                                                            Medium
+                                                        </span>
+
+                                                    {% else %}
+                                                        <span class="badge badge-priority-low">
+                                                            Low
+                                                        </span>
+                                                    {% endif %}
+
+                                                </td>
+
+                                                <td>
+                                                    {% if ticket.assigned_to %}
+                                                        {% if ticket.assigned_to.get_full_name %}
+                                                            {{ ticket.assigned_to.get_full_name }}
+                                                        {% else %}
+                                                            {{ ticket.assigned_to.username }}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        Unassigned
+                                                    {% endif %}
+                                                </td>
+
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    {% else %}
+
+                                        <tr>
+                                            <td colspan="5" class="text-center text-secondary py-4">
+                                                No escalated tickets found.
+                                            </td>
+                                        </tr>
+
+                                    {% endif %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!--end::Escalated Tickets-->
+
+
+            <!--begin::Low Confidence AI Classifications-->
+            <div class="col-lg-5">
+
+                <div class="card mb-4 ra-ai-card">
+
+                    <div class="card-header d-flex justify-content-between align-items-center">
+
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-question-diamond me-1"></i>
+                            Low-Confidence AI Classifications
+                        </h3>
+
+                    </div>
+
+
+                    <div class="card-body p-0">
+
+                        <ul class="list-group list-group-flush">
+
+                            {% if low_confidence_tickets %}
+
+                                {% for item in low_confidence_tickets %}
+
+                                    <li class="list-group-item">
+
+                                        <a
+                                            href="{% url 'tickets:ticket_detail' item.ticket.pk %}"
+                                            class="text-decoration-none d-block"
+                                        >
+
+                                            <strong>
+                                                {{ item.ticket.ticket_number }}
+                                            </strong>
+
+                                            &mdash;
+
+                                            {{ item.ticket.subject }}
+
+                                            <span class="d-block">
+
+                                                <span class="
+                                                    ra-confidence
+                                                    {% if item.confidence < 55 %}
+                                                        ra-confidence-low
+                                                    {% else %}
+                                                        ra-confidence-medium
+                                                    {% endif %}
+                                                ">
+
+                                                    {{ item.confidence }}%
+
+                                                    <span class="ra-confidence-bar">
+                                                        <span
+                                                            style="width:{{ item.confidence }}%"
+                                                        ></span>
+                                                    </span>
+
+                                                </span>
+
+                                            </span>
+
+                                        </a>
+
+                                    </li>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <li class="list-group-item text-center text-secondary py-4">
+                                    No low-confidence AI classifications.
+                                </li>
+
+                            {% endif %}
+
+                        </ul>
+
+                    </div>
+
+
+                    <div class="card-footer text-center">
+
+                        <a
+                            href="{% url 'low_confidence_results' %}"
+                            class="fs-7"
+                        >
+                            Review All Low-Confidence Results
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!--end::Low Confidence AI Classifications-->
+
+        </div>
+
+    </div>
+</div>
+<!--end::App Content-->
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+    crossorigin="anonymous">
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       DEPARTMENT WORKLOAD
+       ========================================================= */
+
+    const deptWorkloadChartEl =
+        document.querySelector("#deptWorkloadChart");
+
+    if (deptWorkloadChartEl) {
+
+        new ApexCharts(deptWorkloadChartEl, {
+
+            chart: {
+                type: "bar",
+                height: 280,
+                toolbar: {
+                    show: false
+                }
+            },
+
+            series: [{
+                name: "Open Tickets",
+                data: [
+                    {% for item in department_workload %}
+                        {{ item.count|default:"0" }}{% if not forloop.last %},{% endif %}
+                    {% empty %}
+                        0
+                    {% endfor %}
+                ]
+            }],
+
+            xaxis: {
+                categories: [
+                    {% for item in department_workload %}
+                        "{{ item.department|escapejs }}"{% if not forloop.last %},{% endif %}
+                    {% empty %}
+                        "No Data"
+                    {% endfor %}
+                ]
+            },
+
+            colors: ["#0b3d91"],
+
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    columnWidth: "50%"
+                }
+            },
+
+            dataLabels: {
+                enabled: true
+            }
+
+        }).render();
+    }
+
+
+    /* =========================================================
+       TICKET VOLUME TREND
+       ========================================================= */
+
+    const volumeTrendChartEl =
+        document.querySelector("#volumeTrendChart");
+
+    if (volumeTrendChartEl) {
+
+        new ApexCharts(volumeTrendChartEl, {
+
+            chart: {
+                type: "area",
+                height: 280,
+                toolbar: {
+                    show: false
+                }
+            },
+
+            series: [{
+                name: "Tickets Created",
+                data: [
+                    {% for item in ticket_volume %}
+                        {{ item.count|default:"0" }}{% if not forloop.last %},{% endif %}
+                    {% empty %}
+                        0
+                    {% endfor %}
+                ]
+            }],
+
+            xaxis: {
+                categories: [
+                    {% for item in ticket_volume %}
+                        "{{ item.label|escapejs }}"{% if not forloop.last %},{% endif %}
+                    {% empty %}
+                        "No Data"
+                    {% endfor %}
+                ]
+            },
+
+            colors: ["#4b2ed1"],
+
+            stroke: {
+                curve: "smooth",
+                width: 2
+            },
+
+            fill: {
+                type: "gradient",
+                gradient: {
+                    opacityFrom: 0.4,
+                    opacityTo: 0.05
+                }
+            },
+
+            dataLabels: {
+                enabled: false
+            }
+
+        }).render();
+    }
+
+});
+</script>
+
+{% endblock %}
+
+
+
+{% comment %} {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
@@ -69,7 +729,8 @@
                 <td>{{ ticket.department.name|default:"—" }}</td>
                 <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
               </tr>
-            {% empty %}
+   
+         {% empty %}
               <tr><td colspan="5" class="text-center text-secondary py-4">No unassigned tickets right now.</td></tr>
             {% endfor %}
           </tbody>
@@ -94,4 +755,4 @@
     </div>
   </div>
 
-{% endblock %}
+{% endblock %} {% endcomment %}

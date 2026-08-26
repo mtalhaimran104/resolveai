@@ -12,7 +12,7 @@ urlpatterns = [
     path("", include("organization.urls")),
     path("", include("classification.urls")),
     path("assets/<path:path>", serve, {"document_root": settings.BASE_DIR / "assets"}),
-    path("", include("knowledge.urls")),
+    path("knowledge-base/", include("knowledge.urls")),
 ]
 
 if settings.DEBUG:

@@ -251,14 +251,12 @@ def _ticket_list_filter_context(request):
     #
     # These values are intentionally supplied from the model data
     # instead of hard-coding only one AI implementation.
-    sentiments = (
-        Ticket.objects
-        .exclude(sentiment__isnull=True)
-        .exclude(sentiment="")
-        .values_list("sentiment", flat=True)
-        .distinct()
-        .order_by("sentiment")
-    )
+    
+    sentiments = [
+    "positive",
+    "neutral",
+    "negative",
+]
 
     return {
         # Choices
