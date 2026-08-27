@@ -31,6 +31,7 @@ class KnowledgeArticle(TimeStampedModel):
     )
 
     category = models.ForeignKey(
+        
         TicketCategory,
         on_delete=models.SET_NULL,
         null=True,

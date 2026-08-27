@@ -164,34 +164,92 @@
                     <!--begin::Article Content Editor-->
                     <div class="card">
 
-                        <div class="card-header">
-                            <h3 class="card-title">Article Content</h3>
-                        </div>
+    <div class="card-header">
+        <h3 class="card-title">Article Content</h3>
+    </div>
 
-                        <div class="card-body">
-                      <label class="form-label" for="articleBody">Body <span class="text-danger">*</span></label>
-                      <!--begin::Formatting Toolbar (visual only — plain text is saved)-->
-                      <div class="btn-toolbar d-flex flex-wrap gap-1 mb-2" role="toolbar" aria-label="Formatting options">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Bold" disabled><i class="bi bi-type-bold"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Italic" disabled><i class="bi bi-type-italic"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Underline" disabled><i class="bi bi-type-underline"></i></button>
-                        <div class="vr mx-1"></div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Heading" disabled><i class="bi bi-type-h2"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Quote" disabled><i class="bi bi-quote"></i></button>
-                        <div class="vr mx-1"></div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Bulleted List" disabled><i class="bi bi-list-ul"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Numbered List" disabled><i class="bi bi-list-ol"></i></button>
-                        <div class="vr mx-1"></div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Insert Link" disabled><i class="bi bi-link-45deg"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Insert Image" disabled><i class="bi bi-image"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Code Block" disabled><i class="bi bi-code-slash"></i></button>
-                      </div>
-                      <!--end::Formatting Toolbar-->
-                      <textarea class="form-control" id="articleBody" name="body" rows="14" required placeholder="Write the full article content here…">{{ form.body.value|default:'' }}</textarea>
-                      <div class="form-text">Formatting buttons are visual only for now — content is saved as plain text.</div>
-                      {% if form.body.errors %}<div class="text-danger small mt-1">{{ form.body.errors|striptags }}</div>{% endif %}
-                    </div>
-                    </div>
+    <div class="card-body">
+
+        <label class="form-label" for="articleBody">
+            Body <span class="text-danger">*</span>
+        </label>
+
+        <!-- Formatting Toolbar -->
+        <div
+            class="btn-toolbar d-flex flex-wrap gap-1 mb-2"
+            role="toolbar"
+            aria-label="Formatting options"
+        >
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Bold" disabled>
+                <i class="bi bi-type-bold"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Italic" disabled>
+                <i class="bi bi-type-italic"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Underline" disabled>
+                <i class="bi bi-type-underline"></i>
+            </button>
+
+            <div class="vr mx-1"></div>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Heading" disabled>
+                <i class="bi bi-type-h2"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Quote" disabled>
+                <i class="bi bi-quote"></i>
+            </button>
+
+            <div class="vr mx-1"></div>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Bulleted List" disabled>
+                <i class="bi bi-list-ul"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Numbered List" disabled>
+                <i class="bi bi-list-ol"></i>
+            </button>
+
+            <div class="vr mx-1"></div>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Insert Link" disabled>
+                <i class="bi bi-link-45deg"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Insert Image" disabled>
+                <i class="bi bi-image"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" title="Code Block" disabled>
+                <i class="bi bi-code-slash"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <textarea
+            class="form-control {% if form.body.errors %}is-invalid{% endif %}"
+            id="articleBody"
+            name="body"
+            rows="14"
+            required
+            placeholder="Write the full article content here..."
+        >{{ form.body.value|default:'' }}</textarea>
+
+        <div class="form-text">
+            Formatting buttons are visual only for now — content is saved as plain text.
+        </div>
+
+        {% if form.body.errors %}
+            <div class="text-danger small mt-1">
+                {{ form.body.errors|striptags }}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+                    
                     <!--end::Article Content Editor-->
 
 
