@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import KnowledgeArticle, KnowledgeArticleVersion
+
+from .forms import KnowledgeArticleForm
 # Create your views here.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -25,7 +27,85 @@ def article_list(request):
             "current": "knowledge_article_list",
         },
     )
+@agent_or_supervisor_required
+def article_create(request):
+    categories = TicketCategory.objects.filter(
+        is_active=True
+    ).order_by("name")
 
+    if request.method == "POST":
+        form = KnowledgeArticleForm(request.POST)
+
+        if form.is_valid():
+            article = form.save(commit=False)
+
+            article.author = request.user
+
+            # Generate slug if the user left it blank
+            if not article.slug:
+                slug = slugify(article.title)
+
+                original_slug = slug
+                counter = 2
+
+                while KnowledgeArticle.objects.filter(
+                    slug=slug
+                ).exists():
+                    slug = f"{original_slug}-{counter}"
+                    counter += 1
+
+                article.slug = slug
+
+            # Set publish information
+            if article.status == KnowledgeArticle.Status.PUBLISHED:
+                article.is_public = True
+                article.published_at = (
+                    article.published_at or timezone.now()
+                )
+            else:
+                article.published_at = None
+
+            article.save()
+
+            # Save tags if your model uses a normal field
+            form.save_m2m()
+
+            # Create first version
+            KnowledgeArticleVersion.objects.create(
+                article=article,
+                version_number=1,
+                title=article.title,
+                content=article.body,
+                created_by=request.user,
+            )
+
+            if article.status == KnowledgeArticle.Status.PUBLISHED:
+                messages.success(
+                    request,
+                    f"Article '{article.title}' published successfully.",
+                )
+            else:
+                messages.success(
+                    request,
+                    f"Article '{article.title}' saved as draft successfully.",
+                )
+
+            return redirect(
+                "knowledge_article_list"
+            )
+
+    else:
+        form = KnowledgeArticleForm()
+
+    return render(
+        request,
+        "knowledge-base/article-create.html",
+        {
+            "form": form,
+            "categories": categories,
+            "current": "knowledge_article_create",
+        },
+    )
 # @agent_or_supervisor_required
 # def article_create(request):
 #     if request.method == "POST":
@@ -115,125 +195,125 @@ def article_list(request):
 #         },
 #     )
 
-@agent_or_supervisor_required
-def article_create(request):
-    categories = TicketCategory.objects.filter(
-        is_active=True
-    ).order_by("name")
+# @agent_or_supervisor_required
+# def article_create(request):
+#     categories = TicketCategory.objects.filter(
+#         is_active=True
+#     ).order_by("name")
 
-    if request.method == "POST":
-        title = request.POST.get("title", "").strip()
-        content = request.POST.get("content", "").strip()
-        excerpt = request.POST.get("excerpt", "").strip()
+#     if request.method == "POST":
+#         title = request.POST.get("title", "").strip()
+#         content = request.POST.get("content", "").strip()
+#         excerpt = request.POST.get("excerpt", "").strip()
 
-        category_id = request.POST.get("category", "").strip()
+#         category_id = request.POST.get("category", "").strip()
 
-        action = request.POST.get("action", "draft")
+#         action = request.POST.get("action", "draft")
 
-        if action == "publish":
-            status = KnowledgeArticle.Status.PUBLISHED
-        else:
-            status = KnowledgeArticle.Status.DRAFT
+#         if action == "publish":
+#             status = KnowledgeArticle.Status.PUBLISHED
+#         else:
+#             status = KnowledgeArticle.Status.DRAFT
 
-        errors = []
+#         errors = []
 
-        if not title:
-            errors.append("Article title is required.")
+#         if not title:
+#             errors.append("Article title is required.")
 
-        if not content:
-            errors.append("Article content is required.")
+#         if not content:
+#             errors.append("Article content is required.")
 
-        if not category_id:
-            errors.append("Please choose a category.")
+#         if not category_id:
+#             errors.append("Please choose a category.")
 
-        category = None
+#         category = None
 
-        if category_id:
-            category = TicketCategory.objects.filter(
-                pk=category_id,
-                is_active=True,
-            ).first()
+#         if category_id:
+#             category = TicketCategory.objects.filter(
+#                 pk=category_id,
+#                 is_active=True,
+#             ).first()
 
-            if not category:
-                errors.append("Selected category is invalid.")
+#             if not category:
+#                 errors.append("Selected category is invalid.")
 
-        # If there are errors, return the same page
-        # with all entered data still populated.
-        if errors:
-            return render(
-                request,
-                "knowledge-base/article-create.html",
-                {
-                    "current": "knowledge_article_create",
-                    "title": title,
-                    "content": content,
-                    "excerpt": excerpt,
-                    "status": status,
-                    "selected_category": category_id,
-                    "categories": categories,
-                    "errors": errors,
-                },
-            )
+#         # If there are errors, return the same page
+#         # with all entered data still populated.
+#         if errors:
+#             return render(
+#                 request,
+#                 "knowledge-base/article-create.html",
+#                 {
+#                     "current": "knowledge_article_create",
+#                     "title": title,
+#                     "content": content,
+#                     "excerpt": excerpt,
+#                     "status": status,
+#                     "selected_category": category_id,
+#                     "categories": categories,
+#                     "errors": errors,
+#                 },
+#             )
 
-        # Generate unique slug
-        slug = slugify(title)
+#         # Generate unique slug
+#         slug = slugify(title)
 
-        original_slug = slug
-        counter = 2
+#         original_slug = slug
+#         counter = 2
 
-        while KnowledgeArticle.objects.filter(slug=slug).exists():
-            slug = f"{original_slug}-{counter}"
-            counter += 1
+#         while KnowledgeArticle.objects.filter(slug=slug).exists():
+#             slug = f"{original_slug}-{counter}"
+#             counter += 1
 
-        article = KnowledgeArticle.objects.create(
-            title=title,
-            slug=slug,
-            content=content,
-            excerpt=excerpt,
-            category=category,
-            status=status,
-            is_public=(
-                status == KnowledgeArticle.Status.PUBLISHED
-            ),
-            author=request.user,
-            published_at=(
-                timezone.now()
-                if status == KnowledgeArticle.Status.PUBLISHED
-                else None
-            ),
-        )
+#         article = KnowledgeArticle.objects.create(
+#             title=title,
+#             slug=slug,
+#             content=content,
+#             excerpt=excerpt,
+#             category=category,
+#             status=status,
+#             is_public=(
+#                 status == KnowledgeArticle.Status.PUBLISHED
+#             ),
+#             author=request.user,
+#             published_at=(
+#                 timezone.now()
+#                 if status == KnowledgeArticle.Status.PUBLISHED
+#                 else None
+#             ),
+#         )
 
-        KnowledgeArticleVersion.objects.create(
-            article=article,
-            version_number=1,
-            title=article.title,
-            content=article.content,
-            created_by=request.user,
-        )
+#         KnowledgeArticleVersion.objects.create(
+#             article=article,
+#             version_number=1,
+#             title=article.title,
+#             content=article.content,
+#             created_by=request.user,
+#         )
 
-        # SUCCESS MESSAGE
-        if status == KnowledgeArticle.Status.PUBLISHED:
-            messages.success(
-                request,
-                f"Article '{article.title}' published successfully.",
-            )
-        else:
-            messages.success(
-                request,
-                f"Article '{article.title}' saved as draft successfully.",
-            )
+#         # SUCCESS MESSAGE
+#         if status == KnowledgeArticle.Status.PUBLISHED:
+#             messages.success(
+#                 request,
+#                 f"Article '{article.title}' published successfully.",
+#             )
+#         else:
+#             messages.success(
+#                 request,
+#                 f"Article '{article.title}' saved as draft successfully.",
+#             )
 
-        # GO TO ARTICLE LIST
-        return redirect("knowledge_article_list")
+#         # GO TO ARTICLE LIST
+#         return redirect("knowledge_article_list")
 
-    return render(
-        request,
-        "knowledge-base/article-create.html",
-        {
-            "current": "knowledge_article_create",
-            "categories": categories,
-        },
-    )
+#     return render(
+#         request,
+#         "knowledge-base/article-create.html",
+#         {
+#             "current": "knowledge_article_create",
+#             "categories": categories,
+#         },
+#     )
 @agent_or_supervisor_required
 def article_detail(request, pk):
     article = get_object_or_404(

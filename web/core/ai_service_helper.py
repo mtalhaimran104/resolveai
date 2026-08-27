@@ -26,4 +26,19 @@ class AiServiceHelper:
             data=payload,
         )
 
-        return response
+        return{
+             "status": response.ok,
+            "response": response,
+
+        } 
+    # priority_prediction
+    @staticmethod
+    def predict_priority(ticket_id, text):
+        return AiServiceHelper.call_api(
+            endpoint="/api/v1/priority/predict",
+            request_type="POST",
+            payload={
+                "ticket_id": ticket_id,
+                "text": text,
+            },
+        )
