@@ -1,4 +1,495 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Users{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item">
+    <a href="{% url 'dashboard' %}">Home</a>
+</li>
+<li class="breadcrumb-item">Administration</li>
+<li class="breadcrumb-item active" aria-current="page">Users</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="app-content">
+    <div class="container-fluid">
+
+        <!-- Filters -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-funnel me-2"></i>Filters
+                </h3>
+            </div>
+
+            <div class="card-body">
+<form method="get" action="{% url 'accounts:user_list' %}" class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <label for="filterRole" class="form-label">Role</label>
+                        <select id="filterRole" name="role" class="form-select">
+                            <option value="">All roles</option>
+                            <option value="requester"
+                                {% if request.GET.role == 'requester' %}selected{% endif %}>
+                                Requester
+                            </option>
+                            <option value="support_agent"
+                                {% if request.GET.role == 'support_agent' %}selected{% endif %}>
+                                Support Agent
+                            </option>
+                            <option value="support_supervisor"
+                                {% if request.GET.role == 'support_supervisor' %}selected{% endif %}>
+                                Support Supervisor
+                            </option>
+                            <option value="system_administrator"
+                                {% if request.GET.role == 'system_administrator' %}selected{% endif %}>
+                                System Administrator
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6">
+                        <label for="filterDepartment" class="form-label">
+                            Department
+                        </label>
+
+                        <select id="filterDepartment"
+                                name="department"
+                                class="form-select">
+                            <option value="">All departments</option>
+
+                            <option value="its"
+                                {% if request.GET.department == 'its' %}selected{% endif %}>
+                                IT Support
+                            </option>
+
+                            <option value="fin"
+                                {% if request.GET.department == 'fin' %}selected{% endif %}>
+                                Finance
+                            </option>
+
+                            <option value="adm"
+                                {% if request.GET.department == 'adm' %}selected{% endif %}>
+                                Admissions
+                            </option>
+
+                            <option value="exm"
+                                {% if request.GET.department == 'exm' %}selected{% endif %}>
+                                Examination
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6">
+                        <label for="filterStatus" class="form-label">
+                            Status
+                        </label>
+
+                        <select id="filterStatus"
+                                name="status"
+                                class="form-select">
+
+                            <option value="">Active &amp; Inactive</option>
+
+                            <option value="active"
+                                {% if request.GET.status == 'active' %}selected{% endif %}>
+                                Active
+                            </option>
+
+                            <option value="inactive"
+                                {% if request.GET.status == 'inactive' %}selected{% endif %}>
+                                Inactive
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6">
+                        <label for="filterDateCreated" class="form-label">
+                            Date created
+                        </label>
+
+                        <input type="date"
+                               id="filterDateCreated"
+                               name="created_after"
+                               class="form-control"
+                               value="{{ request.GET.created_after }}">
+                    </div>
+
+                    <div class="col-md-1 col-sm-6 d-flex align-items-end">
+                        <button type="submit"
+                                class="btn btn-primary w-100"
+                                title="Apply filters">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Users Table -->
+        <div class="card">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-people me-2"></i>
+                    All Users
+
+                    <span class="badge text-bg-secondary ms-1">
+                        {{ page_obj.paginator.count }}
+                    </span>
+                </h3>
+
+                <a href="{% url 'accounts:user_create' %}"
+                  class="btn btn-primary btn-sm">
+                    <i class="bi bi-person-plus me-1"></i>
+                    New User
+                </a>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                <!-- Bulk toolbar -->
+                <div class="ra-bulk-toolbar mx-3 mt-3"
+                     data-ra-bulk-toolbar="[data-ra-row-check]">
+
+                    <span>
+                        <strong data-ra-bulk-count>0</strong>
+                        selected
+                    </span>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-toggle-on me-1"></i>
+                        Activate
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-toggle-off me-1"></i>
+                        Deactivate
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            data-ra-confirm="Delete the selected users? This cannot be undone.">
+                        <i class="bi bi-trash me-1"></i>
+                        Delete
+                    </button>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead>
+                            <tr>
+
+                                <th style="width:2.5rem">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           data-ra-select-all="[data-ra-row-check]"
+                                           aria-label="Select all users">
+                                </th>
+
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Last login</th>
+                                <th>Created</th>
+                                <th class="text-end">Actions</th>
+
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for u in users %}
+
+                            <tr>
+
+                                <td>
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           data-ra-row-check
+                                           value="{{ u.pk }}"
+                                           aria-label="Select {{ u.username }}">
+                                </td>
+
+
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <img src="{% static 'adminlte/img/user-avatar.jpg' %}"
+                                             class="img-size-32 rounded-circle me-2"
+                                             alt="{{ u.get_full_name }}">
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                {{ u.get_full_name|default:u.username }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </td>
+
+
+                                <td>
+                                    {{ u.email|default:"—" }}
+                                </td>
+
+
+                                <td>
+                                    {{ u.username }}
+                                </td>
+
+
+                                {% comment %} <td>
+
+                                    <span class="badge text-bg-secondary">
+
+                                        {% for role in u.role_list %}
+                                            {{ role }}
+                                            {% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            No role
+                                        {% endfor %}
+
+                                    </span>
+
+                                </td> {% endcomment %}
+                                <td>
+                                    {% for user_role in u.role_list %}
+                                        <span class="badge text-bg-secondary">
+                                            {{ user_role.role.name }}
+                                        </span>
+                                        {% if not forloop.last %} {% endif %}
+                                    {% empty %}
+                                        <span class="badge text-bg-secondary">No role</span>
+                                    {% endfor %}
+                                </td>
+
+
+                                <td>
+                                    {{ u.department|default:"—" }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if u.is_active %}
+
+                                        <span class="badge text-bg-success">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge text-bg-secondary">
+                                            Inactive
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if u.last_login %}
+                                        {{ u.last_login|date:"M d, Y · H:i" }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ u.created_at|date:"M d, Y" }}
+                                </td>
+
+
+                                <!-- Actions -->
+                                <td class="text-end text-nowrap">
+
+                                    <a href="{% url 'accounts:user_edit' pk=u.pk %}"
+                                      class="btn btn-sm btn-outline-secondary"
+                                      title="View user">                                        
+                                      <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <a href="{% url 'accounts:user_edit' pk=u.pk %}"
+                                       class="btn btn-sm btn-outline-secondary"
+                                       title="Edit user">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="10"
+                                    class="text-center py-5 text-secondary">
+
+                                    <i class="bi bi-people fs-2 d-block mb-2"></i>
+
+                                    No users found.
+
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pagination -->
+            <div class="card-footer">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <small class="text-secondary">
+
+                        {% if page_obj.paginator.count %}
+                            Showing
+                            {{ page_obj.start_index }}
+                            to
+                            {{ page_obj.end_index }}
+                            of
+                            {{ page_obj.paginator.count }}
+                            users
+                        {% else %}
+                            No users
+                        {% endif %}
+
+                    </small>
+
+
+                    {% if page_obj.has_other_pages %}
+
+                    <nav aria-label="User list pagination">
+
+                        <ul class="pagination pagination-sm mb-0">
+
+                            {% if page_obj.has_previous %}
+
+                                <li class="page-item">
+
+                                    <a class="page-link"
+                                       href="?page={{ page_obj.previous_page_number }}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.created_after %}&created_after={{ request.GET.created_after }}{% endif %}">
+
+                                        Previous
+
+                                    </a>
+
+                                </li>
+
+                            {% else %}
+
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+
+                            {% endif %}
+
+
+                            {% for num in page_obj.paginator.page_range %}
+
+                                {% if page_obj.number == num %}
+
+                                    <li class="page-item active"
+                                        aria-current="page">
+
+                                        <span class="page-link">
+                                            {{ num }}
+                                        </span>
+
+                                    </li>
+
+                                {% else %}
+
+                                    <li class="page-item">
+
+                                        <a class="page-link"
+                                           href="?page={{ num }}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.created_after %}&created_after={{ request.GET.created_after }}{% endif %}">
+
+                                            {{ num }}
+
+                                        </a>
+
+                                    </li>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+
+                            {% if page_obj.has_next %}
+
+                                <li class="page-item">
+
+                                    <a class="page-link"
+                                       href="?page={{ page_obj.next_page_number }}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.created_after %}&created_after={{ request.GET.created_after }}{% endif %}">
+
+                                        Next
+
+                                    </a>
+
+                                </li>
+
+                            {% else %}
+
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next</span>
+                                </li>
+
+                            {% endif %}
+
+                        </ul>
+
+                    </nav>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+{% comment %} {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
   <h4 class="mb-3">All Users</h4>
@@ -48,4 +539,4 @@
   </div>
   {% include "includes/pagination.html" %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}

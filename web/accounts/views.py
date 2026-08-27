@@ -24,7 +24,7 @@ class ResolveAILoginView(LoginView):
 
 
 class ResolveAILogoutView(LogoutView):
-    next_page = reverse_lazy("login")
+    next_page = reverse_lazy("accounts:login")
 
 
 @transaction.atomic
@@ -101,6 +101,15 @@ def user_list(request):
         },
     )
 @admin_required
+def agent_performance(request):
+    return render(
+        request,
+        "accounts/agent-performance.html",
+        {
+            "page_title": "Agent Performance",
+        },
+    )
+@admin_required
 def user_create(request):
     if request.method == "POST":
 
@@ -117,7 +126,7 @@ def user_create(request):
                 request,
                 "Username, email and password are required.",
             )
-            return redirect("accounts:user_create")
+            return redirect("users:user_create")
 
         # Username duplicate check
         if User.objects.filter(username=username).exists():
@@ -125,7 +134,7 @@ def user_create(request):
                 request,
                 "Username already exists.",
             )
-            return redirect("accounts:user_create")
+            return redirect("users:user_create")
 
         # Email duplicate check
         if User.objects.filter(email=email).exists():
@@ -133,7 +142,7 @@ def user_create(request):
                 request,
                 "Email already exists.",
             )
-            return redirect("accounts:user_create")
+            return redirect("users:user_create")
 
         # Create user
         user = User.objects.create_user(
@@ -164,7 +173,7 @@ def user_create(request):
 
     return render(
         request,
-        "accounts/user-create.html",
+        "users/user-create.html",
         {
             "roles": Role.objects.all().order_by("name"),
             "page_title": "Create User",
@@ -287,7 +296,7 @@ def user_edit(request, pk):
 
     return render(
         request,
-        "accounts/user-edit.html",
+        "users/user-edit.html",
         {
             "user_obj": target,
             "roles": Role.objects.all().order_by("name"),
@@ -373,6 +382,30 @@ def role_edit(request, pk):
         "page_title": f"Edit {role.name}",
     })
 
+@admin_required
+def role_delete(request, pk):
+    role = get_object_or_404(Role, pk=pk)
+
+    if request.method == "POST":
+
+        if role.is_system_role:
+            messages.error(
+                request,
+                "System roles cannot be deleted.",
+            )
+            return redirect("accounts:role_list")
+
+        role_name = role.name
+        role.delete()
+
+        messages.success(
+            request,
+            f"Role '{role_name}' deleted successfully.",
+        )
+
+        return redirect("accounts:role_list")
+
+    return redirect("accounts:role_list")
 
 @admin_required
 def permissions_list(request):

@@ -94,15 +94,22 @@
                     <tbody>
                       {% for ticket in tickets %}
                       <tr>
-                        <td><a href="{% url 'ticket_detail_requester' ticket.pk %}" class="text-decoration-none fw-semibold">{{ ticket.ticket_number }}</a></td>
-                        <td>{{ ticket.subject }}</td>
+<td>
+    <a href="{% url 'tickets:ticket_detail' pk=ticket.pk %}"
+       class="text-decoration-none fw-semibold">
+        {{ ticket.ticket_number }}
+    </a>
+</td>                       <td>{{ ticket.subject }}</td>
                         <td>{{ ticket.category.name|default:"—" }}</td>
                         <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
                         <td><span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span></td>
                         <td>{{ ticket.created_at|date:"Y-m-d" }}</td>
                         <td>{{ ticket.updated_at|date:"Y-m-d" }}</td>
-                        <td><a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a></td>
-                      </tr>
+<td>
+    <a href="{% url 'tickets:ticket_detail' ticket.pk %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-eye"></i> View
+    </a>
+</td>                      </tr>
                       {% empty %}
                       <tr>
                         <td colspan="8" class="text-center text-secondary py-4">You haven't created any tickets yet.</td>

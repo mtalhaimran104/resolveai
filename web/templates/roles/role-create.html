@@ -7,7 +7,7 @@
 <div class="app-content"><div class="container-fluid">
 
             <!--begin::Create Role Form-->
-            <form novalidate data-ra-validate action="{% url 'role_create' %}" method="post">
+            <form novalidate data-ra-validate action="{% url 'accounts:role_create' %}" method="post">
 {% csrf_token %}
               <div class="row">
                 <div class="col-lg-8">
@@ -268,13 +268,13 @@
                     </div>
                     <div class="card-body fs-7">
                       <p>Give a role only the permissions it needs &mdash; you can always grant more later.</p>
-                      <p class="mb-0">Compare against existing roles on the <a href="{% url 'permission_matrix' %}">Permission Matrix</a> before creating a new one.</p>
+                      <p class="mb-0">Compare against existing roles on the <a href="{% url 'accounts:permission_matrix' %}">Permission Matrix</a> before creating a new one.</p>
                     </div>
                   </div>
                   <div class="card">
                     <div class="card-body d-grid gap-2">
                       <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Role</button>
-                      <a href="{% url 'role_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                      <a href="{% url 'accounts:role_list' %}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                   </div>
                 </div>

@@ -130,8 +130,11 @@
 <a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-sm btn-outline-primary" title="Reassign">
     <i class="bi bi-arrow-repeat"></i>
 </a>                {% else %}
-                  <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-sm btn-primary" title="Assign"><i class="bi bi-person-plus me-1"></i>Assign</a>
-                {% endif %}
+<a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-sm btn-primary" title="Assign">
+    <i class="bi bi-person-plus me-1"></i>Assign
+</a>    <i class="bi bi-person-plus me-1"></i>Assign
+</a></a>
+</a>                {% endif %}
               {% endif %}
             </td>
           </tr>
