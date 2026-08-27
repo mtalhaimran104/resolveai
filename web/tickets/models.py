@@ -204,6 +204,8 @@ class TicketHistory(TimeStampedModel):
         REASSIGNED = "REASSIGNED", "Reassigned"
         UNASSIGNED = "UNASSIGNED", "Unassigned"
         STATUS_CHANGED = "STATUS_CHANGED", "Status changed"
+        PRIORITY_CHANGED = "PRIORITY_CHANGED", "Priority changed"
+        CATEGORY_CHANGED = "CATEGORY_CHANGED", "Category changed"
 
     ticket = models.ForeignKey(
         Ticket,

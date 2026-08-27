@@ -46,4 +46,9 @@ urlpatterns = [
         views.public_article_detail,
         name="public_article_detail",
     ),
+    path(
+    "knowledge/<int:pk>/versions/",
+    views.article_versions,
+    name="knowledge_article_versions",
+    ),
 ]
