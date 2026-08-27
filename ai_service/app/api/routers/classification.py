@@ -3,6 +3,7 @@ import json
 from fastapi import APIRouter
 from sqlalchemy import text
 from app.core.database import engine
+from app.core.ai_service_helper import AIServiceHelper
 from app.schemas.classification import (
     ClassificationData,
     ClassificationRequest,
@@ -20,18 +21,9 @@ router = APIRouter(
 def predict_classification(
     request: ClassificationRequest,
 ) -> ClassificationResponse:
-    ticket_query = text(
-        """
-        SELECT id, subject, description
-        FROM tickets
-        WHERE id = :ticket_id
-        """
+    ticket = AIServiceHelper.getTicketDetailsById(
+        request.ticket_id
     )
-    with engine.connect() as connection:
-        ticket = connection.execute(
-            ticket_query,
-            {"ticket_id": request.ticket_id},
-        ).mappings().first()
     if ticket is None:
         return ClassificationResponse(
             status=False,
@@ -129,3 +121,4 @@ def predict_classification(
             confidence=confidence,
         ),
     )
+

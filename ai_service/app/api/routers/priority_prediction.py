@@ -3,6 +3,7 @@ import json
 from fastapi import APIRouter
 from sqlalchemy import text
 from app.core.database import engine
+from app.core.ai_service_helper import AIServiceHelper
 from app.schemas.priority_prediction import (
     PriorityPredictionData,
     PriorityPredictionRequest,
@@ -22,18 +23,9 @@ router = APIRouter(
 def predict_ticket_priority(
     request: PriorityPredictionRequest,
 ) -> PriorityPredictionResponse:
-    ticket_query = text(
-        """
-        SELECT id, subject, description
-        FROM tickets
-        WHERE id = :ticket_id
-        """
+    ticket = AIServiceHelper.getTicketDetailsById(
+        request.ticket_id
     )
-    with engine.connect() as connection:
-        ticket = connection.execute(
-            ticket_query,
-            {"ticket_id": request.ticket_id},
-        ).mappings().first()
     if ticket is None:
         return PriorityPredictionResponse(
             status=False,
@@ -108,3 +100,4 @@ def predict_ticket_priority(
             confidence=confidence,
         ),
     )
+
