@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | ResolveAI{% endblock %}
+
+{% block content %}
+
+<!--begin::App Content Header-->
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Dashboard</h1>
+            </div>
+
+            <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'dashboard' %}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Dashboard
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::App Content Header-->
+
+
+<!--begin::App Content-->
+<div class="app-content">
+    <div class="container-fluid">
+
+        <!--begin::Welcome Banner-->
+        <div class="mb-4">
+            <h4 class="mb-1">
+                Welcome back,
+                {% if request.user.get_full_name %}
+                    {{ request.user.get_full_name }}
+                {% else %}
+                    {{ request.user.username }}
+                {% endif %}
+            </h4>
+
+            <p class="text-secondary mb-0">
+                System-wide overview: users, tickets, knowledge base and platform health.
+            </p>
+        </div>
+        <!--end::Welcome Banner-->
+
+
+        <!--begin::Stat Cards-->
+        <div class="row">
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-primary shadow-sm">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Users</span>
+                        <span class="info-box-number">
+                            {{ total_users|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-success shadow-sm">
+                        <i class="bi bi-headset"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Active Agents</span>
+                        <span class="info-box-number">
+                            {{ active_agents|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-indigo shadow-sm">
+                        <i class="bi bi-ticket-detailed-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Tickets</span>
+                        <span class="info-box-number">
+                            {{ total_tickets|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-info shadow-sm">
+                        <i class="bi bi-envelope-open-fill"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Open Tickets</span>
+                        <span class="info-box-number">
+                            {{ open_tickets|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-warning shadow-sm">
+                        <i class="bi bi-journal-text"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Knowledge Articles</span>
+                        <span class="info-box-number">
+                            {{ knowledge_articles|default:"0" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-lg-4 col-6">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-secondary shadow-sm">
+                        <i class="bi bi-robot"></i>
+                    </span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">AI Service Status</span>
+
+                        <span class="info-box-number fs-5">
+                            <span class="ra-health-dot degraded"></span>
+                            Degraded
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end::Stat Cards-->
+
+
+        <div class="row">
+
+            <!--begin::User Growth Chart-->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            User Growth
+                            <small class="text-secondary fs-7">
+                                (Jan–Jul 2026)
+                            </small>
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="userGrowthChart" style="height:260px;"></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--end::User Growth Chart-->
+
+
+            <!--begin::Ticket Trend Chart-->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Ticket Trend
+                            <small class="text-secondary fs-7">
+                                (Jan–Jul 2026)
+                            </small>
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="ticketTrendChart" style="height:260px;"></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--end::Ticket Trend Chart-->
+
+
+            <!--begin::Tickets by Department Chart-->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Tickets by Department
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="deptDonutChart" style="height:260px;"></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--end::Tickets by Department Chart-->
+
+        </div>
+
+
+        <div class="row">
+
+            <!--begin::System Activity Timeline-->
+            <div class="col-lg-7">
+
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            System Activity Timeline
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="timeline">
+
+                            {% if recent_history %}
+
+                                {% for event in recent_history %}
+
+                                    <div>
+                                        <i class="timeline-icon bi bi-clock-history text-bg-primary"></i>
+
+                                        <div class="timeline-item">
+
+                                            <span class="time">
+                                                <i class="bi bi-clock-fill"></i>
+                                                {{ event.created_at|date:"H:i" }}
+                                            </span>
+
+                                            <h3 class="timeline-header no-border">
+
+                                                {% if event.ticket %}
+                                                    Ticket
+                                                    <a href="{% url 'tickets:ticket_detail' event.ticket.pk %}">
+                                                        {{ event.ticket.ticket_number }}
+                                                    </a>
+                                                {% endif %}
+
+                                                {% if event.actor %}
+                                                    — {{ event.actor.get_full_name|default:event.actor.username }}
+                                                {% endif %}
+
+                                            </h3>
+
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <div>
+                                    <i class="timeline-icon bi bi-info-circle text-bg-secondary"></i>
+
+                                    <div class="timeline-item">
+                                        <h3 class="timeline-header no-border">
+                                            No recent activity.
+                                        </h3>
+                                    </div>
+                                </div>
+
+                            {% endif %}
+
+
+                            <div>
+                                <i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!--end::System Activity Timeline-->
+
+
+            <!--begin::Recent Audit Events + Health-->
+            <div class="col-lg-5">
+
+                <!--begin::Recent Audit Events-->
+                <div class="card mb-4">
+
+                    <div class="card-header d-flex justify-content-between align-items-center">
+
+                        <h3 class="card-title mb-0">
+                            Recent Audit Events
+                        </h3>
+
+                        <a href="{% url 'activity_log' %}" class="fs-7">
+                            View Full Log
+                        </a>
+
+                    </div>
+
+
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-hover align-middle mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>User</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    {% if recent_history %}
+
+                                        {% for event in recent_history|slice:":5" %}
+
+                                            <tr>
+
+                                                <td>
+                                                    {% if event.ticket %}
+                                                        <a href="{% url 'activity_log' %}">
+                                                            {{ event.action }}
+                                                        </a>
+                                                    {% else %}
+                                                        {{ event.action }}
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    {% if event.actor %}
+                                                        {{ event.actor.get_full_name|default:event.actor.username }}
+                                                    {% else %}
+                                                        System
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    {{ event.created_at|date:"H:i" }}
+                                                </td>
+
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    {% else %}
+
+                                        <tr>
+                                            <td colspan="3" class="text-center text-secondary py-4">
+                                                No audit events found.
+                                            </td>
+                                        </tr>
+
+                                    {% endif %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                <!--end::Recent Audit Events-->
+
+
+                <!--begin::Platform Health-->
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            Platform Health
+                        </h3>
+                    </div>
+
+                    <div class="card-body p-0">
+
+                        <ul class="list-group list-group-flush">
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span>
+                                    <i class="bi bi-diagram-2-fill me-2"></i>
+                                    Django Application Server
+                                </span>
+
+                                <span>
+                                    <span class="badge text-bg-success me-2">
+                                        <span class="ra-health-dot up"></span>
+                                        Operational
+                                    </span>
+                                    <span class="text-secondary fs-7">
+                                        42ms
+                                    </span>
+                                </span>
+
+                            </li>
+
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span>
+                                    <i class="bi bi-database-fill me-2"></i>
+                                    MySQL Database
+                                </span>
+
+                                <span>
+                                    <span class="badge text-bg-success me-2">
+                                        <span class="ra-health-dot up"></span>
+                                        Operational
+                                    </span>
+
+                                    <span class="text-secondary fs-7">
+                                        8ms
+                                    </span>
+                                </span>
+
+                            </li>
+
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span>
+                                    <i class="bi bi-robot me-2"></i>
+                                    FastAPI AI Service
+                                </span>
+
+                                <span>
+                                    <span class="badge text-bg-warning me-2">
+                                        <span class="ra-health-dot degraded"></span>
+                                        Degraded
+                                    </span>
+
+                                    <span class="text-secondary fs-7">
+                                        210ms
+                                    </span>
+                                </span>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <div class="card-footer text-center">
+
+                        <a href="{% url 'system_health' %}" class="fs-7">
+                            View System Health
+                        </a>
+
+                    </div>
+
+                </div>
+                <!--end::Platform Health-->
+
+            </div>
+            <!--end::Recent Audit Events + Health-->
+
+        </div>
+
+    </div>
+</div>
+<!--end::App Content-->
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+
+const userGrowthChartEl =
+    document.querySelector('#userGrowthChart');
+
+if (userGrowthChartEl) {
+
+    new ApexCharts(userGrowthChartEl, {
+
+        chart: {
+            type: 'line',
+            height: 260,
+            toolbar: {
+                show: false
+            }
+        },
+
+        series: [{
+            name: 'Total Users',
+            data: [95, 102, 110, 118, 126, 134, 142]
+        }],
+
+        xaxis: {
+            categories: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul'
+            ]
+        },
+
+        colors: ['#0b3d91'],
+
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+
+        markers: {
+            size: 4
+        },
+
+        dataLabels: {
+            enabled: false
+        }
+
+    }).render();
+}
+
+
+const ticketTrendChartEl =
+    document.querySelector('#ticketTrendChart');
+
+if (ticketTrendChartEl) {
+
+    new ApexCharts(ticketTrendChartEl, {
+
+        chart: {
+            type: 'area',
+            height: 260,
+            toolbar: {
+                show: false
+            }
+        },
+
+        series: [{
+            name: 'New Tickets',
+            data: [118, 132, 145, 139, 158, 167, 172]
+        }],
+
+        xaxis: {
+            categories: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul'
+            ]
+        },
+
+        colors: ['#4b2ed1'],
+
+        stroke: {
+            curve: 'smooth',
+            width: 2
+        },
+
+        fill: {
+            type: 'gradient',
+            gradient: {
+                opacityFrom: 0.4,
+                opacityTo: 0.05
+            }
+        },
+
+        dataLabels: {
+            enabled: false
+        }
+
+    }).render();
+}
+
+
+const deptDonutChartEl =
+    document.querySelector('#deptDonutChart');
+
+if (deptDonutChartEl) {
+
+    new ApexCharts(deptDonutChartEl, {
+
+        chart: {
+            type: 'donut',
+            height: 260
+        },
+
+        series: [512, 328, 260, 184],
+
+        labels: [
+            'IT Support',
+            'Finance',
+            'Admissions',
+            'Examination'
+        ],
+
+        colors: [
+            '#0b3d91',
+            '#1b8a5a',
+            '#d98c00',
+            '#4b2ed1'
+        ],
+
+        legend: {
+            position: 'bottom',
+            fontSize: '12px'
+        },
+
+        dataLabels: {
+            enabled: true
+        }
+
+    }).render();
+}
+
+</script>
+
+{% endblock %}

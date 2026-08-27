@@ -5,8 +5,7 @@
 {% block page_title %}{{ ticket.ticket_number }}{% endblock %}
 {% block breadcrumbs %}
   <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'agent_ticket_list' %}">Tickets</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{{ ticket.ticket_number }}</li>
+<li class="breadcrumb-item"><a href="{% url 'tickets:agent_ticket_list' %}">Tickets</a></li>  <li class="breadcrumb-item active" aria-current="page">{{ ticket.ticket_number }}</li>
 {% endblock %}
 
 {% block content %}
@@ -71,8 +70,7 @@
         <ul class="dropdown-menu">
           {% for value, label in statuses %}
             <li>
-              <form action="{% url 'ticket:ticket_update_status' ticket.pk %}" method="post">
-                {% csrf_token %}
+<form action="{% url 'tickets:ticket_update_status' ticket.pk %}" method="post">                {% csrf_token %}
                 <input type="hidden" name="status" value="{{ value }}" />
                 <button type="submit" class="dropdown-item {% if ticket.status == value %}active{% endif %}">{{ label }}</button>
               </form>
@@ -86,8 +84,7 @@
         <ul class="dropdown-menu">
           {% for value, label in priorities %}
             <li>
-              <form action="{% url 'ticket_update_priority' ticket.pk %}" method="post">
-                {% csrf_token %}
+<form action="{% url 'tickets:ticket_update_priority' ticket.pk %}" method="post">                {% csrf_token %}
                 <input type="hidden" name="priority" value="{{ value }}" />
                 <button type="submit" class="dropdown-item {% if ticket.priority == value %}active{% endif %}">{{ label }}</button>
               </form>
@@ -101,8 +98,7 @@
         <ul class="dropdown-menu">
           {% for category in categories %}
             <li>
-              <form action="{% url 'ticket_update_category' ticket.pk %}" method="post">
-                {% csrf_token %}
+<form action="{% url 'tickets:ticket_update_category' ticket.pk %}" method="post">                {% csrf_token %}
                 <input type="hidden" name="category" value="{{ category.pk }}" />
                 <button type="submit" class="dropdown-item {% if ticket.category_id == category.pk %}active{% endif %}">{{ category.name }}</button>
               </form>
@@ -111,8 +107,7 @@
         </ul>
       </div>
 
-      <form action="{% url 'ticket_resolve' ticket.pk %}" method="post" class="d-inline ms-auto">
-        {% csrf_token %}
+<form action="{% url 'tickets:ticket_resolve' ticket.pk %}" method="post" class="d-inline ms-auto">        {% csrf_token %}
         <button type="submit" class="btn btn-sm btn-success" data-ra-confirm="Mark this ticket as Resolved?"{% if ticket.status == 'RESOLVED' or ticket.status == 'CLOSED' %} disabled{% endif %}>
           <i class="bi bi-check-circle me-1"></i>Resolve Ticket
         </button>
@@ -169,8 +164,7 @@
             </div>
 
             <hr />
-            <form method="post" action="{% url 'ticket_add_comment' ticket.pk %}">
-              {% csrf_token %}
+<form method="post" action="{% url 'tickets:ticket_add_comment' ticket.pk %}">              {% csrf_token %}
               <input type="hidden" name="is_internal" value="false" />
               <div class="mb-3">
                 <label for="publicReplyQuick" class="form-label">Add Public Reply</label>
@@ -199,7 +193,7 @@
                 <p class="text-secondary mb-0">No internal notes yet.</p>
               {% endfor %}
             </div>
-            <form method="post" action="{% url 'ticket_add_comment' ticket.pk %}">
+            <form method="post" action="{% url 'tickets:ticket_add_comment' ticket.pk %}">
               {% csrf_token %}
               <input type="hidden" name="is_internal" value="true" />
               <div class="mb-3">
@@ -228,8 +222,7 @@
           <!--begin::Ticket History Tab-->
           <div class="tab-pane fade" id="history-pane" role="tabpanel" aria-labelledby="history-tab" tabindex="0">
             <div class="text-end mb-2">
-              <a href="{% url 'ticket_history' ticket.pk %}" class="small"><i class="bi bi-arrow-up-right-square me-1"></i>View full history</a>
-            </div>
+<a href="{% url 'tickets:ticket_history' ticket.pk %}" class="small"><i class="bi bi-arrow-up-right-square me-1"></i>View full history</a>            </div>
             {% if history %}
               <div class="timeline ra-ticket-timeline">
                 {% for entry in history %}
@@ -262,8 +255,7 @@
             {% else %}
               <p class="text-secondary">No attachments yet.</p>
             {% endif %}
-            <form method="POST" action="{% url 'ticket_add_attachment' ticket.pk %}" enctype="multipart/form-data" class="d-flex gap-2 align-items-start">
-              {% csrf_token %}
+<form method="POST" action="{% url 'tickets:ticket_add_attachment' ticket.pk %}" enctype="multipart/form-data" class="d-flex gap-2 align-items-start">              {% csrf_token %}
               {{ attachment_form.file }}
               <button type="submit" class="btn btn-outline-primary flex-shrink-0"><i class="bi bi-upload me-1"></i>Upload</button>
             </form>

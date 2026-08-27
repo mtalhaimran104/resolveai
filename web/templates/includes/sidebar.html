@@ -24,37 +24,48 @@
         {% if user.is_superuser %}
 
           <!-- ADMIN SIDEBAR -->
-          <li class="nav-header">TICKET MANAGEMENT</li>
           <li class="nav-item">
-            <a href="{% url 'admin_ticket_list' %}" class="nav-link {% if current == 'admin_ticket_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-ticket-detailed"></i><p>All Tickets</p>
-            </a>
-          </li>
+    <a href="{% url 'tickets:admin_ticket_list' %}"
+       class="nav-link {% if current == 'admin_ticket_list' %}active{% endif %}">
+        <i class="nav-icon bi bi-ticket-detailed"></i>
+        <p>All Tickets</p>
+    </a>
+</li>
           <li class="nav-item">
-            <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if current == 'unassigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
-            </a>
-          </li>
+    <a href="{% url 'tickets:unassigned_tickets' %}"
+       class="nav-link {% if current == 'unassigned_tickets' %}active{% endif %}">
+        <i class="nav-icon bi bi-inbox"></i>
+        <p>Unassigned Tickets</p>
+    </a>
+</li>
+         <li class="nav-item">
+    <a href="{% url 'tickets:assigned_tickets' %}"
+       class="nav-link {% if current == 'assigned_tickets' %}active{% endif %}">
+        <i class="nav-icon bi bi-person-check"></i>
+        <p>Assigned to Me</p>
+    </a>
+</li>
           <li class="nav-item">
-            <a href="{% url 'assigned_tickets' %}" class="nav-link {% if current == 'assigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-person-check"></i><p>Assigned Tickets</p>
-            </a>
-          </li>
+    <a href="{% url 'tickets:critical_tickets' %}"
+       class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
+        <i class="nav-icon bi bi-exclamation-octagon"></i>
+        <p>Critical Tickets</p>
+    </a>
+</li>
+         <li class="nav-item">
+    <a href="{% url 'tickets:waiting_for_user_tickets' %}"
+       class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
+        <i class="nav-icon bi bi-hourglass-split"></i>
+        <p>Waiting for User</p>
+    </a>
+</li>
           <li class="nav-item">
-            <a href="{% url 'critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
-            </a>
-          </li>
+    <a href="{% url 'tickets:resolved_tickets' %}"
+       class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
+        <i class="nav-icon bi bi-check-circle"></i>
+        <p>Resolved Tickets</p>
+    </a>
+</li>
 
           <li class="nav-header">ADMINISTRATION</li>
           <li class="nav-item">
@@ -85,17 +96,17 @@
 
           <li class="nav-header">KNOWLEDGE BASE</li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
+            <a href="{% url 'knowledge_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
               <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
+            <a href="{% url 'knowledge_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
               <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_public' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
+            <a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
               <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
             </a>
           </li>
@@ -142,6 +153,13 @@
             </a>
           </li>
           <li class="nav-item">
+    <a href="{% url 'tickets:supervisor_ticket_list' %}"
+       class="nav-link {% if current == 'supervisor_ticket_list' %}active{% endif %}">
+        <i class="nav-icon bi bi-ticket-detailed"></i>
+        <p>All Tickets</p>
+    </a>
+</li>
+          <li class="nav-item">
             <a href="{% url 'unassigned_tickets' %}" class="nav-link {% if current == 'unassigned_tickets' %}active{% endif %}">
               <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
             </a>
@@ -186,33 +204,33 @@
 
           <li class="nav-header">TICKET MANAGEMENT</li>
           <li class="nav-item">
-            <a href="{% url 'agent_ticket_list' %}" class="nav-link {% if current == 'agent_ticket_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-list-check"></i><p>All Tickets</p>
+            <li class="nav-item">
+    <a href="{% url 'tickets:agent_ticket_list' %}"
+       class="nav-link {% if current == 'agent_ticket_list' %}active{% endif %}">
+        <i class="nav-icon bi bi-ticket-detailed"></i>
+        <p>All Tickets</p>
+    </a>
+</li>
+{% comment %} <a href="{% url 'tickets:ticket_list' %}">  <i class="nav-icon bi bi-list-check"></i><p>All Tickets</p> {% endcomment %}
+            
+          <li class="nav-item">
+<a href="{% url 'tickets:agent_unassigned_tickets' %}" class="nav-link {% if current == 'agent_unassigned_tickets' %}active{% endif %}">              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'agent_unassigned_tickets' %}" class="nav-link {% if current == 'agent_unassigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p>
+<a href="{% url 'tickets:agent_assigned_tickets' %}" class="nav-link {% if current == 'agent_assigned_tickets' %}active{% endif %}">              <i class="nav-icon bi bi-person-check"></i><p>Assigned to Me</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'agent_assigned_tickets' %}" class="nav-link {% if current == 'agent_assigned_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-person-check"></i><p>Assigned to Me</p>
+<a href="{% url 'tickets:critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'critical_tickets' %}" class="nav-link {% if current == 'critical_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p>
+<a href="{% url 'tickets:waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'waiting_for_user_tickets' %}" class="nav-link {% if current == 'waiting_for_user_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">
-              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
+<a href="{% url 'tickets:resolved_tickets' %}" class="nav-link {% if current == 'resolved_tickets' %}active{% endif %}">              <i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p>
             </a>
           </li>
 
@@ -222,23 +240,19 @@
           <li class="nav-header">KNOWLEDGE BASE</li>
           
           <li class="nav-item">
-            <a href="{% url 'agent_faq_list' %}" class="nav-link {% if current == 'agent_faq_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-robot"></i><p>Suggested FAQs</p>
+<a href="{% url 'tickets:agent_faq_list' %}" class="nav-link {% if current == 'agent_faq_list' %}active{% endif %}">              <i class="nav-icon bi bi-robot"></i><p>Suggested FAQs</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
-              <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
+<a href="{% url 'knowledge_article_list' %}" class="nav-link {% if current == 'knowledge_article_list' %}active{% endif %}">              <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
-              <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
+<a href="{% url 'knowledge_article_create' %}" class="nav-link {% if current == 'knowledge_article_create' %}active{% endif %}">              <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'demo_kb_public' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
-              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
+<a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'public_knowledge_base' %}active{% endif %}">              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
             </a>
           </li>
 

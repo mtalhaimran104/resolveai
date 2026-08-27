@@ -1,4 +1,89 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Categories{% endblock %}
+{% block page_title %}Categories{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item">Administration</li>
+<li class="breadcrumb-item active" aria-current="page">Categories</li>
+{% endblock %}
+
+{% block content %}
+
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end mb-3">
+              {% if user.is_admin %}
+              <a href="{% url 'category_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>New Category
+              </a>
+              {% endif %}
+            </div>
+            <!--end::Toolbar-->
+
+            <!--begin::Categories Table-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">All Categories</h3>
+                <div class="card-tools">
+                  <span class="text-secondary fs-7">{{ categories|length }} categor{{ categories|length|pluralize:"y,ies" }}</span>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Department</th>
+                        <th class="text-center">Open Tickets</th>
+                        <th class="text-center">Active</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for category in categories %}
+                      <tr>
+                        <td><a href="{% url 'category_detail' pk=category.pk %}" class="fw-semibold text-decoration-none">{{ category.name }}</a></td>
+                        <td><code>{{ category.code }}</code></td>
+                        <td>
+                          {% if category.department %}
+                            <a href="{% url 'department_detail' pk=category.department.pk %}" class="text-decoration-none">{{ category.department.name }}</a>
+                          {% else %}
+                            <span class="text-secondary">—</span>
+                          {% endif %}
+                        </td>
+                        <td class="text-center"><span class="badge text-bg-primary">{{ category.tickets.count }}</span></td>
+                        <td class="text-center">
+                          <span class="badge text-bg-{% if category.is_active %}success{% else %}secondary{% endif %}">
+                            {% if category.is_active %}Active{% else %}Inactive{% endif %}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <a href="{% url 'category_detail' pk=category.pk %}" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          {% if user.is_admin %}
+                          <a href="{% url 'category_edit' pk=category.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr><td colspan="6" class="text-center text-secondary py-4">No categories found.</td></tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--end::Categories Table-->
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} {% extends "base.html" %}
 
 {% block title %}Categories{% endblock %}
 {% block page_title %}Categories{% endblock %}
@@ -209,54 +294,4 @@
 </div>
 
 {% endblock %}
-
-{% comment %} {% extends 'base.html' %}
-{% load static %}
-{% block title %}Categories{% endblock %}
-{% block page_title %}Categories{% endblock %}
-{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Categories</li>{% endblock %}
-{% block content %}
-<div class="app-content"><div class="container-fluid">
-
-            <!--begin::Toolbar-->
-            <div class="d-flex justify-content-end mb-3">
-              <a href="{% url 'category_create' %}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>New Category
-              </a>
-            </div>
-            <!--end::Toolbar-->
-
-            <!--begin::Categories Table-->
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">All Categories</h3>
-                <div class="card-tools">
-                  <span class="text-secondary fs-7">{{ page_obj.paginator.count }} categories</span>
-                </div>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Code</th>
-                        <th>Department</th>
-                        <th class="text-center">Open Tickets</th>
-                        <th>AI Usage</th>
-                        <th class="text-center">Active</th>
-                        <th class="text-end">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>{% for category in categories %}<tr><td><strong>{{ category.name }}</strong><div class="small text-secondary">{{ category.code }}</div></td><td>{{ category.department|default:'—' }}</td><td>{{ category.description|default:'—' }}</td><td><span class="badge text-bg-{% if category.is_active %}success{% else %}secondary{% endif %}">{% if category.is_active %}Active{% else %}Inactive{% endif %}</span></td><td>{{ category.tickets.count }}</td><td class="text-end"><a href="{% url 'category_detail' pk=category.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a> <a href="{% url 'category_edit' pk=category.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a></td></tr>{% empty %}<tr><td colspan="6" class="text-center py-4">No categories found.</td></tr>{% endfor %}</tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="card-footer">
-                {% include "includes/pagination.html" %}
-              </div>
-            </div>
-            <!--end::Categories Table-->
-
-          </div></div>
-{% endblock %} {% endcomment %}
+ {% endcomment %}

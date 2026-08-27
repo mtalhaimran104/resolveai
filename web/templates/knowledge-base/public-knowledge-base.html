@@ -1,4 +1,52 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Knowledge Base{% endblock %}
+{% block page_title %}Knowledge Base{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item active" aria-current="page">Knowledge Base</li>
+{% endblock %}
+
+{% block content %}
+
+            <div class="card mb-3">
+              <div class="card-body">
+                <form class="d-flex gap-2" method="get">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="q" value="{{ search_query }}" placeholder="Search help articles…">
+                  </div>
+                  <button type="submit" class="btn btn-primary flex-shrink-0">Search</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="row">
+              {% for article in articles %}
+              <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                  <div class="card-body d-flex flex-column">
+                    <h3 class="fs-6"><a href="{% url 'article_detail' pk=article.pk %}" class="text-decoration-none">{{ article.title }}</a></h3>
+                    <p class="text-secondary fs-7 flex-grow-1">{{ article.summary }}</p>
+                    {% if article.category %}<span class="badge text-bg-secondary align-self-start">{{ article.category.name }}</span>{% endif %}
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-12">
+                <div class="card"><div class="card-body text-center text-secondary py-4">No articles found.</div></div>
+              </div>
+              {% endfor %}
+            </div>
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} <!doctype html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -363,4 +411,4 @@
     <script src="../assets/js/resolve-ai.js"></script>
   </body>
   <!--end::Body-->
-</html>
+</html> {% endcomment %}

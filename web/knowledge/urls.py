@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path(
-        "knowledge/",
+        "article-list.html",
         views.article_list,
         name="knowledge_article_list",
     ),

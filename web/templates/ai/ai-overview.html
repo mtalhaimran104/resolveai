@@ -1,648 +1,518 @@
-<!doctype html>
-<html lang="en">
-  <!--begin::Head-->
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>AI Overview | ResolveAI</title>
+{% extends "base.html" %}
+{% load static %}
 
-    <!--begin::Theme Init (prevents flash of incorrect theme on load)-->
-    <script>
-      (() => {
-        'use strict';
-        const STORAGE_KEY = 'lte-theme';
-        let stored = null;
-        try {
-          stored = localStorage.getItem(STORAGE_KEY);
-        } catch {
-          // localStorage may be unavailable (private mode, sandboxed iframe).
-        }
-        const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
-        let resolved = 'light';
-        if (stored === 'dark' || stored === 'light') {
-          resolved = stored;
-        } else if (prefersDark) {
-          resolved = 'dark';
-        }
-        document.documentElement.setAttribute('data-bs-theme', resolved);
-        document.documentElement.style.colorScheme = resolved;
-      })();
-    </script>
-    <!--end::Theme Init-->
+{% block title %}AI Overview | ResolveAI{% endblock %}
+{% block page_title %}AI Overview{% endblock %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#0b3d91" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#10141f" media="(prefers-color-scheme: dark)" />
+{% block breadcrumbs %}
+<li class="breadcrumb-item">
+    <a href="{% url 'dashboard' %}">Home</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="{% url 'demo_ai_overview' %}">AI &amp; Automation</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    AI Overview
+</li>
+{% endblock %}
 
-    <meta name="description" content="ResolveAI — Intelligent Help Desk and Support Platform." />
-    <meta name="author" content="ResolveAI" />
+{% block content %}
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" media="print" onload="this.media = 'all'" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../assets/css/adminlte.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../assets/css/resolve-ai.css" />
-  </head>
-  <!--end::Head-->
+<!--begin::Service Health + Volume Stat Cards-->
+<div class="row g-3 mb-3">
 
-  <!--begin::Body-->
-  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
-    <!--begin::App Wrapper-->
-    <div class="app-wrapper">
-      <!--begin::Header-->
-      <nav class="app-header navbar navbar-expand bg-body">
-        <div class="container-fluid">
-          <!--begin::Start Navbar Links-->
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar">
-                <i class="bi bi-list"></i>
-              </a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <form class="d-flex" role="search" action="#" method="get">
-                <div class="input-group input-group-sm">
-                  <span class="input-group-text bg-body"><i class="bi bi-search"></i></span>
-                  <input id="globalSearch" class="form-control" type="search" placeholder="Search tickets, articles, users&hellip;" aria-label="Search" />
-                  <button class="btn btn-outline-secondary d-none" type="button" data-ra-search-clear="globalSearch">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
+    <div class="col-sm-6 col-lg-4 col-xl">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="ra-stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-hdd-network"></i>
+                </span>
+                <div>
+                    <div class="ra-stat-value">
+                        <span class="ra-health-dot up"></span>
+                        Operational
+                    </div>
+                    <div class="ra-stat-label">AI Service Health</div>
                 </div>
-              </form>
-            </li>
-          </ul>
-          <!--end::Start Navbar Links-->
-
-          <!--begin::End Navbar Links-->
-          <ul class="navbar-nav ms-auto align-items-center">
-            <!--begin::Quick Create Ticket-->
-            <li class="nav-item d-none d-sm-block me-2">
-              <a href="../tickets/create-ticket.html" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle me-1"></i> New Ticket
-              </a>
-            </li>
-            <!--end::Quick Create Ticket-->
-
-            <!--begin::AI Service Health Indicator-->
-            <li class="nav-item d-none d-lg-block me-2">
-              <a href="../ai/ai-service-status.html" class="nav-link border rounded px-2 py-1 fs-7 text-decoration-none">
-                <span class="ra-health-dot up"></span>AI Service: Operational
-              </a>
-            </li>
-            <!--end::AI Service Health Indicator-->
-
-            <!--begin::Messages Dropdown Menu-->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-label="Messages: 3 unread">
-                <i class="bi bi-chat-text"></i>
-                <span class="navbar-badge badge text-bg-danger">3</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <span class="dropdown-item dropdown-header">3 Recent Replies</span>
-                <div class="dropdown-divider"></div>
-                <a href="../tickets/ticket-detail-agent.html" class="dropdown-item">
-                  <div class="d-flex">
-                    <div class="flex-shrink-0"><img src="../assets/img/user2-160x160.jpg" alt="" class="img-size-50 rounded-circle me-3" /></div>
-                    <div class="flex-grow-1">
-                      <p class="dropdown-item-title">Ayesha Khan <span class="float-end fs-7 text-danger"><i class="bi bi-star-fill"></i></span></p>
-                      <p class="fs-7">Replied on RA-2026-000118 &mdash; still can't log in...</p>
-                      <p class="fs-7 text-secondary"><i class="bi bi-clock-fill me-1"></i> 12 mins ago</p>
-                    </div>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="../tickets/ticket-detail-agent.html" class="dropdown-item">
-                  <div class="d-flex">
-                    <div class="flex-shrink-0"><img src="../assets/img/user1-128x128.jpg" alt="" class="img-size-50 rounded-circle me-3" /></div>
-                    <div class="flex-grow-1">
-                      <p class="dropdown-item-title">Talha Ahmed <span class="float-end fs-7 text-secondary"><i class="bi bi-star-fill"></i></span></p>
-                      <p class="fs-7">Thanks, that resolved it!</p>
-                      <p class="fs-7 text-secondary"><i class="bi bi-clock-fill me-1"></i> 1 hour ago</p>
-                    </div>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="../tickets/ticket-detail-agent.html" class="dropdown-item">
-                  <div class="d-flex">
-                    <div class="flex-shrink-0"><img src="../assets/img/user4-128x128.jpg" alt="" class="img-size-50 rounded-circle me-3" /></div>
-                    <div class="flex-grow-1">
-                      <p class="dropdown-item-title">Maryam Waseem <span class="float-end fs-7 text-warning"><i class="bi bi-star-fill"></i></span></p>
-                      <p class="fs-7">Can someone escalate this please?</p>
-                      <p class="fs-7 text-secondary"><i class="bi bi-clock-fill me-1"></i> 3 hours ago</p>
-                    </div>
-                  </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="../notifications/notifications.html" class="dropdown-item dropdown-footer">See All Messages</a>
-              </div>
-            </li>
-            <!--end::Messages Dropdown Menu-->
-
-            <!--begin::Notifications Dropdown Menu-->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-label="Notifications: 5 unread">
-                <i class="bi bi-bell-fill"></i>
-                <span class="navbar-badge badge text-bg-warning">5</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <span class="dropdown-item dropdown-header">5 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="../notifications/notifications.html" class="dropdown-item"><i class="bi bi-ticket-detailed-fill me-2"></i> Ticket RA-2026-000142 assigned to you <span class="float-end text-secondary fs-7">5 mins</span></a>
-                <div class="dropdown-divider"></div>
-                <a href="../notifications/notifications.html" class="dropdown-item"><i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i> Critical ticket RA-2026-000139 breached SLA <span class="float-end text-secondary fs-7">22 mins</span></a>
-                <div class="dropdown-divider"></div>
-                <a href="../notifications/notifications.html" class="dropdown-item"><i class="bi bi-robot me-2"></i> AI service latency degraded <span class="float-end text-secondary fs-7">1 hour</span></a>
-                <div class="dropdown-divider"></div>
-                <a href="../notifications/notifications.html" class="dropdown-item dropdown-footer">See All Notifications</a>
-              </div>
-            </li>
-            <!--end::Notifications Dropdown Menu-->
-
-            <!--begin::Color Mode Toggle-->
-            <li class="nav-item dropdown">
-              <a class="nav-link" href="#" id="bd-theme" aria-label="Toggle color scheme" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-sun-fill" data-lte-theme-icon="light"></i>
-                <i class="bi bi-moon-fill d-none" data-lte-theme-icon="dark"></i>
-                <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme" style="--bs-dropdown-min-width: 8rem">
-                <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false"><i class="bi bi-sun-fill me-2"></i>Light<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
-                <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false"><i class="bi bi-moon-fill me-2"></i>Dark<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
-                <li><button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true"><i class="bi bi-circle-half me-2"></i>Auto<i class="bi bi-check-lg ms-auto d-none"></i></button></li>
-              </ul>
-            </li>
-            <!--end::Color Mode Toggle-->
-
-            <!--begin::User Menu Dropdown-->
-            <li class="nav-item dropdown user-menu">
-              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <img src="../assets/img/user5-128x128.jpg" class="user-image rounded-circle shadow" alt="Usman Raza" />
-                <span class="d-none d-md-inline">Usman Raza</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <li class="user-header text-bg-primary">
-                  <img src="../assets/img/user5-128x128.jpg" class="rounded-circle shadow" alt="Usman Raza" />
-                  <p>Usman Raza<small>Support Supervisor &middot; IT Support</small></p>
-                </li>
-                <li class="user-body">
-                  <a href="../profile/my-profile.html" class="dropdown-item"><i class="bi bi-person-fill me-2"></i>My Profile</a>
-                  <a href="../profile/edit-profile.html" class="dropdown-item"><i class="bi bi-gear-fill me-2"></i>Account Settings</a>
-                  <a href="../profile/activity-log.html" class="dropdown-item"><i class="bi bi-clock-history me-2"></i>Activity Log</a>
-                  <a href="../profile/change-password.html" class="dropdown-item"><i class="bi bi-key-fill me-2"></i>Change Password</a>
-                </li>
-                <li class="user-footer">
-                  <a href="../auth/login.html" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
-                </li>
-              </ul>
-            </li>
-            <!--end::User Menu Dropdown-->
-          </ul>
-          <!--end::End Navbar Links-->
-        </div>
-      </nav>
-      <!--end::Header-->
-
-      <!--begin::Sidebar-->
-      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-        <div class="sidebar-brand">
-          <a href="../index.html" class="brand-link">
-            <span class="ra-logo-icon"><i class="bi bi-headset"></i></span>
-            <span class="brand-text fw-light">ResolveAI</span>
-          </a>
-        </div>
-        <div class="sidebar-wrapper">
-          <nav class="mt-2" aria-label="Main navigation">
-            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false" id="navigation">
-              <li class="nav-header">MAIN</li>
-              <li class="nav-item">
-                <a href="../dashboard-supervisor.html" class="nav-link"><i class="nav-icon bi bi-speedometer2"></i><p>Dashboard</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../tickets/create-ticket.html" class="nav-link"><i class="nav-icon bi bi-plus-square"></i><p>Create Ticket</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../tickets/my-tickets.html" class="nav-link"><i class="nav-icon bi bi-ticket-detailed"></i><p>My Tickets</p></a>
-              </li>
-
-              <li class="nav-header">TICKET MANAGEMENT</li>
-              <li class="nav-item">
-                <a href="../tickets/ticket-list.html" class="nav-link"><i class="nav-icon bi bi-list-check"></i><p>All Tickets</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/unassigned-tickets.html" class="nav-link"><i class="nav-icon bi bi-inbox"></i><p>Unassigned Tickets</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/assigned-to-me.html" class="nav-link"><i class="nav-icon bi bi-person-check"></i><p>Assigned to Me</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/department-queue.html" class="nav-link"><i class="nav-icon bi bi-diagram-3"></i><p>Department Queue</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/critical-tickets.html" class="nav-link"><i class="nav-icon bi bi-exclamation-octagon"></i><p>Critical Tickets</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/waiting-for-user.html" class="nav-link"><i class="nav-icon bi bi-hourglass-split"></i><p>Waiting for User</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/resolved-tickets.html" class="nav-link"><i class="nav-icon bi bi-check-circle"></i><p>Resolved Tickets</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../queue/closed-tickets.html" class="nav-link"><i class="nav-icon bi bi-archive"></i><p>Closed Tickets</p></a>
-              </li>
-
-              <li class="nav-header">KNOWLEDGE BASE</li>
-              <li class="nav-item">
-                <a href="../knowledge-base/article-list.html" class="nav-link"><i class="nav-icon bi bi-journal-text"></i><p>Articles</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../knowledge-base/article-create.html" class="nav-link"><i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../knowledge-base/public-knowledge-base.html" class="nav-link"><i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p></a>
-              </li>
-
-              <li class="nav-header">AI &amp; AUTOMATION</li>
-              <li class="nav-item">
-                <a href="../ai/ai-overview.html" class="nav-link active"><i class="nav-icon bi bi-robot"></i><p>AI Overview</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../ai/ai-analysis-list.html" class="nav-link"><i class="nav-icon bi bi-cpu"></i><p>AI Analyses</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../ai/ai-suggestions.html" class="nav-link"><i class="nav-icon bi bi-lightbulb"></i><p>AI Suggestions</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../ai/low-confidence-results.html" class="nav-link"><i class="nav-icon bi bi-question-diamond"></i><p>Low Confidence Results</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../ai/model-performance.html" class="nav-link"><i class="nav-icon bi bi-graph-up-arrow"></i><p>Model Performance</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../ai/ai-service-status.html" class="nav-link"><i class="nav-icon bi bi-hdd-network"></i><p>AI Service Status</p></a>
-              </li>
-
-              <li class="nav-header">ADMINISTRATION</li>
-              <li class="nav-item">
-                <a href="../users/user-list.html" class="nav-link"><i class="nav-icon bi bi-people"></i><p>Users</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../roles/role-list.html" class="nav-link"><i class="nav-icon bi bi-shield-lock"></i><p>Roles</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../roles/permissions.html" class="nav-link"><i class="nav-icon bi bi-key"></i><p>Permissions</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../departments/department-list.html" class="nav-link"><i class="nav-icon bi bi-building"></i><p>Departments</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../categories/category-list.html" class="nav-link"><i class="nav-icon bi bi-tags"></i><p>Categories</p></a>
-              </li>
-
-              <li class="nav-header">REPORTS</li>
-              <li class="nav-item">
-                <a href="../reports/reports-dashboard.html" class="nav-link"><i class="nav-icon bi bi-bar-chart-line"></i><p>Reports Dashboard</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/ticket-volume.html" class="nav-link"><i class="nav-icon bi bi-graph-up"></i><p>Ticket Volume</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/resolution-time.html" class="nav-link"><i class="nav-icon bi bi-stopwatch"></i><p>Resolution Time</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/agent-performance.html" class="nav-link"><i class="nav-icon bi bi-person-lines-fill"></i><p>Agent Performance</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/department-report.html" class="nav-link"><i class="nav-icon bi bi-building-check"></i><p>Department Report</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/category-report.html" class="nav-link"><i class="nav-icon bi bi-pie-chart"></i><p>Category Report</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../reports/ai-accuracy-report.html" class="nav-link"><i class="nav-icon bi bi-check2-circle"></i><p>AI Accuracy</p></a>
-              </li>
-
-              <li class="nav-header">SYSTEM</li>
-              <li class="nav-item">
-                <a href="../notifications/notifications.html" class="nav-link"><i class="nav-icon bi bi-bell"></i><p>Notifications</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../settings/general-settings.html" class="nav-link"><i class="nav-icon bi bi-sliders"></i><p>Settings</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../settings/system-health.html" class="nav-link"><i class="nav-icon bi bi-heart-pulse"></i><p>System Health</p></a>
-              </li>
-              <li class="nav-item">
-                <a href="../profile/activity-log.html" class="nav-link"><i class="nav-icon bi bi-journal-check"></i><p>Audit / Activity Log</p></a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
-      <!--end::Sidebar-->
-
-      <!--begin::App Main-->
-      <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">AI Overview</h1>
-              </div>
-              <div class="col-sm-6">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="../dashboard-supervisor.html">Home</a></li>
-                    <li class="breadcrumb-item"><a href="ai-overview.html">AI &amp; Automation</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">AI Overview</li>
-                  </ol>
-                </nav>
-              </div>
             </div>
-          </div>
         </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
-        <div class="app-content">
-          <div class="container-fluid">
+    </div>
 
-            <!--begin::Service Health + Volume Stat Cards-->
-            <div class="row g-3 mb-3">
-              <div class="col-sm-6 col-lg-4 col-xl">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-hdd-network"></i></span>
-                    <div>
-                      <div class="ra-stat-value"><span class="ra-health-dot up"></span>Operational</div>
-                      <div class="ra-stat-label">AI Service Health</div>
-                    </div>
-                  </div>
+    <div class="col-sm-6 col-lg-4 col-xl">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="ra-stat-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-cpu"></i>
+                </span>
+                <div>
+                    <div class="ra-stat-value">4,820</div>
+                    <div class="ra-stat-label">Total Analyses (30d)</div>
                 </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 col-xl">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-cpu"></i></span>
-                    <div>
-                      <div class="ra-stat-value">4,820</div>
-                      <div class="ra-stat-label">Total Analyses (30d)</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 col-xl">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i></span>
-                    <div>
-                      <div class="ra-stat-value">4,562</div>
-                      <div class="ra-stat-label">Successful Analyses</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 col-xl">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-circle"></i></span>
-                    <div>
-                      <div class="ra-stat-value">258</div>
-                      <div class="ra-stat-label">Failed Analyses</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 col-xl">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-question-diamond"></i></span>
-                    <div>
-                      <div class="ra-stat-value">386</div>
-                      <div class="ra-stat-label">Low-Confidence Analyses</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <!--end::Service Health + Volume Stat Cards-->
+        </div>
+    </div>
 
-            <!--begin::Accuracy + Adoption Stat Cards-->
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body">
-                    <div class="ra-stat-label mb-1">Classification Accuracy</div>
-                    <div class="ra-stat-value text-success">93.4%</div>
-                    <div class="fs-7 text-secondary"><i class="bi bi-arrow-up-short text-success"></i>+1.2 pts vs. last month &middot; ticket-classifier-v2.3</div>
-                  </div>
+    <div class="col-sm-6 col-lg-4 col-xl">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="ra-stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-check-circle"></i>
+                </span>
+                <div>
+                    <div class="ra-stat-value">4,562</div>
+                    <div class="ra-stat-label">Successful Analyses</div>
                 </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body">
-                    <div class="ra-stat-label mb-1">Priority Recommendation Accuracy</div>
-                    <div class="ra-stat-value text-success">88.7%</div>
-                    <div class="fs-7 text-secondary"><i class="bi bi-arrow-up-short text-success"></i>+0.6 pts vs. last month &middot; priority-recommender-v1.8</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card ra-stat-card h-100">
-                  <div class="card-body">
-                    <div class="ra-stat-label mb-1">Suggestions Used by Agents</div>
-                    <div class="ra-stat-value">1,240</div>
-                    <div class="fs-7 text-secondary"><i class="bi bi-arrow-up-short text-success"></i>+12% vs. last month &middot; 68% acceptance rate</div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <!--end::Accuracy + Adoption Stat Cards-->
+        </div>
+    </div>
 
-            <!--begin::Sentiment Distribution + Model Accuracy Charts-->
-            <div class="row g-3 mb-3">
-              <div class="col-lg-5">
-                <div class="card h-100">
-                  <div class="card-header">
-                    <h3 class="card-title">Sentiment Distribution</h3>
-                  </div>
-                  <div class="card-body">
-                    <div id="sentimentDonutChart" style="height: 300px;"></div>
-                  </div>
+    <div class="col-sm-6 col-lg-4 col-xl">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="ra-stat-icon bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-x-circle"></i>
+                </span>
+                <div>
+                    <div class="ra-stat-value">258</div>
+                    <div class="ra-stat-label">Failed Analyses</div>
                 </div>
-              </div>
-              <div class="col-lg-7">
-                <div class="card h-100">
-                  <div class="card-header">
-                    <h3 class="card-title">Model Accuracy Comparison</h3>
-                  </div>
-                  <div class="card-body">
-                    <div id="modelAccuracyBarChart" style="height: 300px;"></div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <!--end::Sentiment Distribution + Model Accuracy Charts-->
+        </div>
+    </div>
 
-            <!--begin::Recent AI Activity-->
-            <div class="card mb-3">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title">Recent AI Activity</h3>
-                <a href="ai-analysis-list.html" class="btn btn-sm btn-outline-primary">View All Analyses</a>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead>
-                      <tr>
+    <div class="col-sm-6 col-lg-4 col-xl">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="ra-stat-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-question-diamond"></i>
+                </span>
+                <div>
+                    <div class="ra-stat-value">386</div>
+                    <div class="ra-stat-label">Low-Confidence Analyses</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--end::Service Health + Volume Stat Cards-->
+
+
+<!--begin::Accuracy + Adoption Stat Cards-->
+<div class="row g-3 mb-3">
+
+    <div class="col-md-4">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body">
+                <div class="ra-stat-label mb-1">
+                    Classification Accuracy
+                </div>
+
+                <div class="ra-stat-value text-success">
+                    93.4%
+                </div>
+
+                <div class="fs-7 text-secondary">
+                    <i class="bi bi-arrow-up-short text-success"></i>
+                    +1.2 pts vs. last month &middot;
+                    ticket-classifier-v2.3
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body">
+                <div class="ra-stat-label mb-1">
+                    Priority Recommendation Accuracy
+                </div>
+
+                <div class="ra-stat-value text-success">
+                    88.7%
+                </div>
+
+                <div class="fs-7 text-secondary">
+                    <i class="bi bi-arrow-up-short text-success"></i>
+                    +0.6 pts vs. last month &middot;
+                    priority-recommender-v1.8
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card ra-stat-card h-100">
+            <div class="card-body">
+                <div class="ra-stat-label mb-1">
+                    Suggestions Used by Agents
+                </div>
+
+                <div class="ra-stat-value">
+                    1,240
+                </div>
+
+                <div class="fs-7 text-secondary">
+                    <i class="bi bi-arrow-up-short text-success"></i>
+                    +12% vs. last month &middot;
+                    68% acceptance rate
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--end::Accuracy + Adoption Stat Cards-->
+
+
+<!--begin::Sentiment Distribution + Model Accuracy Charts-->
+<div class="row g-3 mb-3">
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+
+            <div class="card-header">
+                <h3 class="card-title">
+                    Sentiment Distribution
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div id="sentimentDonutChart" style="height: 300px;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card h-100">
+
+            <div class="card-header">
+                <h3 class="card-title">
+                    Model Accuracy Comparison
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div id="modelAccuracyBarChart" style="height: 300px;"></div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!--end::Sentiment Distribution + Model Accuracy Charts-->
+
+
+<!--begin::Recent AI Activity-->
+<div class="card mb-3">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h3 class="card-title">
+            Recent AI Activity
+        </h3>
+
+        <a href="{% url 'demo_ai_analysis_list' %}"
+           class="btn btn-sm btn-outline-primary">
+            View All Analyses
+        </a>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+                    <tr>
                         <th>Ticket #</th>
                         <th>Analysis Type</th>
                         <th>Model</th>
                         <th>Confidence</th>
                         <th>Timestamp</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000139</a></td>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000139</a>
+                        </td>
                         <td>Priority</td>
                         <td>priority-recommender-v1.8</td>
-                        <td><span class="ra-confidence ra-confidence-high">96%<span class="ra-confidence-bar"><span style="width:96%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-high">
+                                96%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:96%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 09:52</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000145</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000145</a>
+                        </td>
                         <td>Summarization</td>
                         <td>summarizer-v1.2</td>
-                        <td><span class="ra-confidence ra-confidence-high">95%<span class="ra-confidence-bar"><span style="width:95%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-high">
+                                95%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:95%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 09:31</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000118</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000118</a>
+                        </td>
                         <td>Classification</td>
                         <td>ticket-classifier-v2.3</td>
-                        <td><span class="ra-confidence ra-confidence-high">91%<span class="ra-confidence-bar"><span style="width:91%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-high">
+                                91%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:91%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 09:14</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000150</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000150</a>
+                        </td>
                         <td>Suggestion</td>
                         <td>response-suggester-v2.0</td>
-                        <td><span class="ra-confidence ra-confidence-high">90%<span class="ra-confidence-bar"><span style="width:90%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-high">
+                                90%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:90%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 08:47</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000133</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000133</a>
+                        </td>
                         <td>Classification</td>
                         <td>ticket-classifier-v2.3</td>
-                        <td><span class="ra-confidence ra-confidence-high">88%<span class="ra-confidence-bar"><span style="width:88%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-high">
+                                88%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:88%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 08:20</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000142</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000142</a>
+                        </td>
                         <td>Classification</td>
                         <td>ticket-classifier-v2.3</td>
-                        <td><span class="ra-confidence ra-confidence-medium">82%<span class="ra-confidence-bar"><span style="width:82%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-medium">
+                                82%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:82%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 07:58</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000121</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000121</a>
+                        </td>
                         <td>Sentiment</td>
                         <td>sentiment-analyzer-v1.4</td>
-                        <td><span class="ra-confidence ra-confidence-medium">77%<span class="ra-confidence-bar"><span style="width:77%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-medium">
+                                77%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:77%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 07:12</td>
-                      </tr>
-                      <tr>
-                        <td><a href="../tickets/ticket-detail-agent.html">RA-2026-000127</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="#">RA-2026-000127</a>
+                        </td>
                         <td>Sentiment</td>
                         <td>sentiment-analyzer-v1.4</td>
-                        <td><span class="ra-confidence ra-confidence-low">54%<span class="ra-confidence-bar"><span style="width:54%"></span></span></span></td>
+                        <td>
+                            <span class="ra-confidence ra-confidence-low">
+                                54%
+                                <span class="ra-confidence-bar">
+                                    <span style="width:54%"></span>
+                                </span>
+                            </span>
+                        </td>
                         <td>2026-07-30 06:40</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <!--end::Recent AI Activity-->
+                    </tr>
 
-          </div>
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!--end::App Main-->
+                </tbody>
 
-      <!--begin::Footer-->
-      <footer class="app-footer">
-        <div class="float-end d-none d-sm-inline">
-          <a href="../knowledge-base/public-knowledge-base.html" class="text-decoration-none">Help Center</a>
+            </table>
+
         </div>
-        <strong>Copyright &copy; 2026&nbsp;<a href="../index.html" class="text-decoration-none">ResolveAI</a>.</strong>
-        All rights reserved.
-      </footer>
-      <!--end::Footer-->
+
     </div>
-    <!--end::App Wrapper-->
 
-    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-    <script src="../assets/js/adminlte.js"></script>
-    <script>
-      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-        const isMobile = window.innerWidth <= 992;
-        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined && !isMobile) {
-          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-            scrollbars: { theme: 'os-theme-light', autoHide: 'leave', clickScroll: true },
-          });
-        }
-      });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" crossorigin="anonymous"></script>
-    <script>
-      // AI Overview — Sentiment donut + model accuracy bar charts (static demo data).
-      document.addEventListener('DOMContentLoaded', function () {
-        if (typeof ApexCharts === 'undefined') return;
+</div>
+<!--end::Recent AI Activity-->
 
-        const sentimentEl = document.querySelector('#sentimentDonutChart');
-        if (sentimentEl) {
-          new ApexCharts(sentimentEl, {
-            chart: { type: 'donut', height: 300 },
-            series: [42, 35, 23],
-            labels: ['Positive', 'Neutral', 'Negative'],
-            colors: ['#1b8a5a', '#6c757d', '#c0293e'],
-            legend: { position: 'bottom' },
-            dataLabels: { formatter: (val) => val.toFixed(0) + '%' },
-          }).render();
-        }
+{% endblock %}
 
-        const modelBarEl = document.querySelector('#modelAccuracyBarChart');
-        if (modelBarEl) {
-          new ApexCharts(modelBarEl, {
-            chart: { type: 'bar', height: 300, toolbar: { show: false } },
-            plotOptions: { bar: { borderRadius: 4, horizontal: true, distributed: true } },
-            series: [{ name: 'Accuracy', data: [93.4, 88.7, 90.2, 85.6, 91.8] }],
-            xaxis: {
-              categories: [
-                'ticket-classifier-v2.3',
-                'priority-recommender-v1.8',
-                'sentiment-analyzer-v1.4',
-                'response-suggester-v2.0',
-                'summarizer-v1.2',
-              ],
-              max: 100,
-              labels: { formatter: (v) => v + '%' },
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    if (typeof ApexCharts === 'undefined') {
+        return;
+    }
+
+    const sentimentEl =
+        document.querySelector('#sentimentDonutChart');
+
+    if (sentimentEl) {
+
+        new ApexCharts(sentimentEl, {
+            chart: {
+                type: 'donut',
+                height: 300
             },
-            colors: ['#0b3d91', '#4b2ed1', '#1b8a5a', '#d98c00', '#0dcaf0'],
-            legend: { show: false },
-            dataLabels: { formatter: (v) => v + '%' },
-          }).render();
-        }
-      });
-    </script>
-    <script src="../assets/js/resolve-ai.js"></script>
-  </body>
-  <!--end::Body-->
-</html>
+
+            series: [42, 35, 23],
+
+            labels: [
+                'Positive',
+                'Neutral',
+                'Negative'
+            ],
+
+            colors: [
+                '#1b8a5a',
+                '#6c757d',
+                '#c0293e'
+            ],
+
+            legend: {
+                position: 'bottom'
+            },
+
+            dataLabels: {
+                formatter: function (val) {
+                    return val.toFixed(0) + '%';
+                }
+            }
+
+        }).render();
+    }
+
+
+    const modelBarEl =
+        document.querySelector('#modelAccuracyBarChart');
+
+    if (modelBarEl) {
+
+        new ApexCharts(modelBarEl, {
+
+            chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: {
+                    show: false
+                }
+            },
+
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                    distributed: true
+                }
+            },
+
+            series: [{
+                name: 'Accuracy',
+                data: [
+                    93.4,
+                    88.7,
+                    90.2,
+                    85.6,
+                    91.8
+                ]
+            }],
+
+            xaxis: {
+                categories: [
+                    'ticket-classifier-v2.3',
+                    'priority-recommender-v1.8',
+                    'sentiment-analyzer-v1.4',
+                    'response-suggester-v2.0',
+                    'summarizer-v1.2'
+                ],
+
+                max: 100,
+
+                labels: {
+                    formatter: function (v) {
+                        return v + '%';
+                    }
+                }
+            },
+
+            colors: [
+                '#0b3d91',
+                '#4b2ed1',
+                '#1b8a5a',
+                '#d98c00',
+                '#0dcaf0'
+            ],
+
+            legend: {
+                show: false
+            },
+
+            dataLabels: {
+                formatter: function (v) {
+                    return v + '%';
+                }
+            }
+
+        }).render();
+    }
+
+});
+</script>
+
+{% endblock %}
