@@ -152,8 +152,9 @@ def predict_ticket_priority(request):
             ticket_id=ticket.id,
             text=text,
         )
-        priority = result["priority"]
-        confidence = result["confidence"]
+        result_data = result["data"]
+        priority = result_data["priority"]
+        confidence = result_data["confidence"]
     except AIServiceError as exc:
         _record_failed_analysis(
             ticket=ticket,
@@ -300,6 +301,43 @@ def review_ai_analysis(request):
             status=400,
         )
     feedback_type = data["feedback_type"]
+    corrected_prediction = data["corrected_prediction"]
+    if feedback_type == AIFeedback.FeedbackType.CORRECTED:
+        if analysis.analysis_type == AIAnalysis.AnalysisType.CLASSIFICATION:
+            category_id = corrected_prediction.get("category_id")
+            if (
+                not isinstance(category_id, int)
+                or isinstance(category_id, bool)
+                or category_id <= 0
+            ):
+                return JsonResponse(
+                    {
+                        "error": (
+                            "Classification corrections must contain "
+                            "a positive integer category_id."
+                        )
+                    },
+                    status=400,
+                )
+        elif analysis.analysis_type == AIAnalysis.AnalysisType.PRIORITY:
+            priority = corrected_prediction.get("priority")
+            valid_priorities = {
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL",
+            }
+            if priority not in valid_priorities:
+                return JsonResponse(
+                    {
+                        "error": (
+                            "Priority corrections must contain one of: "
+                            "LOW, MEDIUM, HIGH, CRITICAL."
+                        )
+                    },
+                    status=400,
+                )
+    feedback_type = data["feedback_type"]
     is_retraining_eligible = feedback_type in {
         AIFeedback.FeedbackType.ACCEPTED,
         AIFeedback.FeedbackType.CORRECTED,
@@ -333,5 +371,7 @@ def review_ai_analysis(request):
         },
         status=201,
     )
+
+
 
 

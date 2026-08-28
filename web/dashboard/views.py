@@ -1,10 +1,14 @@
 from datetime import timedelta
+from pathlib import Path
+import json
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponseForbidden
 from django.utils import timezone
-
+from django.db.models import Count
+User = get_user_model()
 from accounts.decorators import admin_required
 from tickets.models import Ticket, TicketHistory
 
@@ -40,15 +44,61 @@ def dashboard(request):
 
 
 def _admin_dashboard(request):
-    tickets = Ticket.objects.select_related("requester", "assigned_to").all()
+    tickets = Ticket.objects.select_related(
+        "requester",
+        "assigned_to",
+        "department",
+        "category",
+    ).all()
+
     total = tickets.count()
+
+    # ---------------------------------------------------------------
+    # DEMO DASHBOARD CHART DATA
+    # ---------------------------------------------------------------
+
+    # User Growth
+    user_growth_labels = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"
+    ]
+
+    user_growth_data = [
+        42, 58, 76, 103, 141, 188, 235
+    ]
+
+    # Ticket Trend
+    ticket_trend_labels = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"
+    ]
+
+    ticket_trend_data = [
+        24, 31, 45, 39, 57, 68, 82
+    ]
+
+    # Tickets by Department
+    department_labels = [
+        "IT Support",
+        "Finance",
+        "Examination",
+        "General",
+    ]
+
+    department_ticket_data = [
+        82, 64, 78, 55
+    ]
+
+    # ---------------------------------------------------------------
+    # EXISTING TICKET STATISTICS
+    # ---------------------------------------------------------------
 
     def pct(count):
         return round((count / total) * 100) if total else 0
 
     status_counts = {
-        code: tickets.filter(status=code).count() for code, _ in Ticket.Status.choices
+        code: tickets.filter(status=code).count()
+        for code, _ in Ticket.Status.choices
     }
+
     status_colors = {
         Ticket.Status.OPEN: "primary",
         Ticket.Status.IN_PROGRESS: "info",
@@ -56,6 +106,7 @@ def _admin_dashboard(request):
         Ticket.Status.RESOLVED: "success",
         Ticket.Status.CLOSED: "secondary",
     }
+
     status_summary = [
         {
             "label": label,
@@ -72,36 +123,94 @@ def _admin_dashboard(request):
     ).count()
 
     summary_cards = [
-        {"label": "Open Tickets", "value": status_counts[Ticket.Status.OPEN],
-         "icon": "bi-envelope-open-fill", "color": "primary"},
-        {"label": "In Progress", "value": status_counts[Ticket.Status.IN_PROGRESS],
-         "icon": "bi-arrow-repeat", "color": "info"},
-        {"label": "Waiting for User", "value": status_counts[Ticket.Status.WAITING_FOR_USER],
-         "icon": "bi-hourglass-split", "color": "warning"},
-        {"label": "Resolved Today", "value": resolved_today,
-         "icon": "bi-check-circle-fill", "color": "success"},
+        {
+            "label": "Open Tickets",
+            "value": status_counts[Ticket.Status.OPEN],
+            "icon": "bi-envelope-open-fill",
+            "color": "primary",
+        },
+        {
+            "label": "In Progress",
+            "value": status_counts[Ticket.Status.IN_PROGRESS],
+            "icon": "bi-arrow-repeat",
+            "color": "info",
+        },
+        {
+            "label": "Waiting for User",
+            "value": status_counts[Ticket.Status.WAITING_FOR_USER],
+            "icon": "bi-hourglass-split",
+            "color": "warning",
+        },
+        {
+            "label": "Resolved Today",
+            "value": resolved_today,
+            "icon": "bi-check-circle-fill",
+            "color": "success",
+        },
     ]
 
     recent_tickets = [
         {
             "number": t.ticket_number,
             "subject": t.subject,
-            "requester": t.requester.get_full_name() or t.requester.username,
+            "requester": (
+                t.requester.get_full_name()
+                or t.requester.username
+            ),
             "priority": t.get_priority_display(),
             "status": t.get_status_display(),
             "status_class": t.status.lower().replace("_", "-"),
-            "assigned_to": (t.assigned_to.get_full_name() or t.assigned_to.username) if t.assigned_to else "Unassigned",
+            "assigned_to": (
+                t.assigned_to.get_full_name()
+                or t.assigned_to.username
+            ) if t.assigned_to else "Unassigned",
             "updated": t.updated_at,
         }
         for t in tickets.order_by("-updated_at")[:8]
+        
     ]
-
+    activities = (
+    TicketHistory.objects
+    .select_related("ticket", "actor")
+    .order_by("-created_at")[:10]
+)
     return render(request, "dashboard/index.html", {
         "page_title": "Dashboard",
+        
         "summary_cards": summary_cards,
         "recent_tickets": recent_tickets,
         "status_summary": status_summary,
+
+        # Stat cards
+        "total_users": User.objects.count(),
+        "active_agents": 18,
+        "total_tickets": total,
+        "open_tickets": 82,
+        "knowledge_articles": 64,
+        "ai_status": "Operational",
+        "ai_status_class": "up",
+
+        # User Growth chart
+        "user_growth_labels": user_growth_labels,
+        "user_growth_data": user_growth_data,
+
+        # Ticket Trend chart
+        "ticket_trend_labels": ticket_trend_labels,
+        "ticket_trend_data": ticket_trend_data,
+
+        # Department donut chart
+        "department_labels": department_labels,
+        "department_ticket_data": department_ticket_data,
+
+        # Timeline
+        "activities": activities,
     })
+    # return render(request, "dashboard/index.html", {
+    #     "page_title": "Dashboard",
+    #     "summary_cards": summary_cards,
+    #     "recent_tickets": recent_tickets,
+    #     "status_summary": status_summary,
+    # })
 
 
 def _supervisor_dashboard(request):
@@ -293,8 +402,34 @@ def demo_ai_low_confidence(request):
 
 
 def demo_ai_model_performance(request):
-    return _demo_page(request, "ai/model-performance.html")
-
+    project_root = Path(__file__).resolve().parent.parent.parent
+    metrics_path = (
+        project_root
+        / "ai_service"
+        / "app"
+        / "models"
+        / "priority_prediction"
+        / "model_metrics.json"
+    )
+    try:
+        with open(
+            metrics_path,
+            "r",
+            encoding="utf-8",
+        ) as metrics_file:
+            priority_model = json.load(metrics_file)
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+    ):
+        priority_model = {}
+    return render(
+        request,
+        "ai/model-performance.html",
+        {
+            "priority_model": priority_model,
+        },
+    )
 
 def demo_ai_service_status(request):
     return _demo_page(request, "ai/ai-service-status.html")
@@ -617,3 +752,9 @@ def demo_ai_service_status(request):
 
 # def demo_ai_service_status(request):
 #     return _demo_page(request, "ai/ai-service-status.html")
+
+
+
+
+
+

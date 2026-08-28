@@ -222,7 +222,7 @@ class TicketHistory(TimeStampedModel):
     )
 
     action = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=Action.choices,
     )
 
@@ -240,3 +240,5 @@ class TicketHistory(TimeStampedModel):
             f"{self.get_action_display()} "
             f"on {self.ticket.ticket_number}"
         )
+
+
