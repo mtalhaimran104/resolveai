@@ -302,15 +302,20 @@ class User(AbstractBaseUser, TimeStampedModel):
 
 
 class UserRole(models.Model):
-    """Which roles a user has — the `user_roles` mapping table.
+    """Exactly one role per user."""
 
-    A plain `ManyToManyField` would have been enough for user + role, but
-    the schema requires recording *who* granted the role and *when*, so the
-    join table is an explicit model.
-    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user_roles",
+    )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_roles")
-    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="user_roles")
+    role = models.ForeignKey(
+        Role,
+        on_delete=models.PROTECT,
+        related_name="user_roles",
+    )
+
     assigned_by = models.ForeignKey(
         User,
         null=True,
@@ -319,13 +324,11 @@ class UserRole(models.Model):
         related_name="role_assignments_made",
         help_text="Admin who granted the role; NULL when granted by the system",
     )
+
     assigned_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         db_table = "user_roles"
-        constraints = [
-            models.UniqueConstraint(fields=["user", "role"], name="uniq_user_role"),
-        ]
 
     def __str__(self):
         return f"{self.user} -> {self.role}"

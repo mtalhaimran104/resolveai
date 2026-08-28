@@ -35,7 +35,7 @@
                 </h3>
 
                 <a
-                    href="{% url 'role_create' %}"
+                    href="{% url 'accounts:role_create' %}"
                     class="btn btn-primary btn-sm"
                 >
                     <i class="bi bi-plus-lg me-1"></i>
@@ -117,7 +117,7 @@
 
                                     <!-- Edit -->
                                     <a
-                                        href="{% url 'role_edit' pk=role.pk %}"
+                                        href="{% url 'accounts:role_edit' pk=role.pk %}"
                                         class="btn btn-sm btn-outline-secondary"
                                         aria-label="Edit {{ role.name }} role"
                                     >
@@ -140,23 +140,22 @@
 
                                         <form
                                             method="post"
-                                            action="{% url 'role_delete' pk=role.pk %}"
+                                            action="{% url 'accounts:role_delete' pk=role.pk %}"
                                             class="d-inline"
+                                            onsubmit="return confirm('Delete the {{ role.name|escapejs }} role? Users with this role will lose its permissions.');"
                                         >
                                             {% csrf_token %}
 
                                             <button
                                                 type="submit"
                                                 class="btn btn-sm btn-outline-danger"
-                                                data-ra-confirm="Delete the {{ role.name }} role? Users with this role will lose its permissions."
                                                 title="Delete role"
                                             >
                                                 <i class="bi bi-trash"></i>
                                             </button>
-
                                         </form>
 
-                                    {% endif %}
+                                    {% endif %} 
 
                                 </td>
 
@@ -189,42 +188,3 @@
 </div>
 
 {% endblock %}
-
-{% comment %} {% extends 'base.html' %}
-{% load static %}
-{% block title %}Roles{% endblock %}
-{% block page_title %}Roles{% endblock %}
-{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Roles</li>{% endblock %}
-{% block content %}
-<div class="app-content"><div class="container-fluid">
-
-            <!--begin::Roles Table-->
-            <div class="card">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title mb-0"><i class="bi bi-shield-lock me-2"></i>All Roles <span class="badge text-bg-secondary ms-1">{{ page_obj.paginator.count }}</span></h3>
-                <a href="{% url 'role_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New Role</a>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead>
-                      <tr>
-                        <th>Role name</th>
-                        <th>Code</th>
-                        <th>Description</th>
-                        <th class="text-center"># Users</th>
-                        <th class="text-center"># Permissions</th>
-                        <th class="text-center">System role</th>
-                        <th class="text-end">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>{% for role in roles %}<tr><td>{{ role.name }}</td><td><code>{{ role.code }}</code></td><td>{{ role.description|default:'—' }}</td><td><span class="badge text-bg-secondary">{{ role.user_count }}</span></td><td>{% if role.is_system_role %}<span class="badge text-bg-info">System</span>{% else %}<span class="badge text-bg-light">Custom</span>{% endif %}</td><td class="text-end"><a href="{% url 'role_edit' pk=role.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a></td></tr>{% empty %}<tr><td colspan="6" class="text-center py-4">No roles found.</td></tr>{% endfor %}</tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <!--end::Roles Table-->
-            {% include "includes/pagination.html" %}
-
-          </div></div>
-{% endblock %} {% endcomment %}

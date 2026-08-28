@@ -24,7 +24,7 @@ class ResolveAILoginView(LoginView):
 
 
 class ResolveAILogoutView(LogoutView):
-    next_page = reverse_lazy("login")
+    next_page = reverse_lazy("accounts:login")
 
 
 @transaction.atomic
@@ -49,15 +49,261 @@ def signup_view(request):
 
 @admin_required
 def user_list(request):
-    users = User.objects.all().order_by("username")
+    users = User.objects.all().order_by("-created_at")
+
+    # Filters
+    role = request.GET.get("role", "").strip()
+    department = request.GET.get("department", "").strip()
+    status = request.GET.get("status", "").strip()
+    created_after = request.GET.get("created_after", "").strip()
+
+    if role:
+        users = users.filter(
+            user_roles__role__code=role
+        ).distinct()
+
+    if status == "active":
+        users = users.filter(is_active=True)
+    elif status == "inactive":
+        users = users.filter(is_active=False)
+
+    if created_after:
+        users = users.filter(
+            created_at__date__gte=created_after
+        )
+
+    # Add role information to each user
+    for u in users:
+        u.role_list = list(
+            UserRole.objects.filter(user=u)
+            .select_related("role")
+        )
+
     page_obj = paginate_queryset(users, request)
-    for u in page_obj:
-        u.role_list = list(UserRole.objects.filter(user=u).values_list("role__code", flat=True))
-    return render(request, "accounts/user_list.html", {
-        "users": page_obj,
-        "page_obj": page_obj,
-        "page_title": "All Users",
-    })
+
+    return render(
+        request,
+        "accounts/user_list.html",
+        {
+            "users": page_obj,
+            "page_obj": page_obj,
+            "user_count": users.count(),
+            "page_title": "All Users",
+
+            # Filter values
+            "selected_role": role,
+            "selected_department": department,
+            "selected_status": status,
+            "selected_created_after": created_after,
+
+            # For filter dropdowns
+            "roles": Role.objects.all().order_by("name"),
+        },
+    )
+@admin_required
+def agent_performance(request):
+    return render(
+        request,
+        "accounts/agent-performance.html",
+        {
+            "page_title": "Agent Performance",
+        },
+    )
+@admin_required
+def user_create(request):
+    if request.method == "POST":
+
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
+        role_id = request.POST.get("role")
+
+        # Required fields
+        if not username or not email or not password:
+            messages.error(
+                request,
+                "Username, email and password are required.",
+            )
+            return redirect("users:user_create")
+
+        # Username duplicate check
+        if User.objects.filter(username=username).exists():
+            messages.error(
+                request,
+                "Username already exists.",
+            )
+            return redirect("users:user_create")
+
+        # Email duplicate check
+        if User.objects.filter(email=email).exists():
+            messages.error(
+                request,
+                "Email already exists.",
+            )
+            return redirect("users:user_create")
+
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=True,
+        )
+
+        # Assign role
+        if role_id:
+            role = get_object_or_404(Role, pk=role_id)
+
+            UserRole.objects.create(
+                user=user,
+                role=role,
+                assigned_by=request.user,
+            )
+
+        messages.success(
+            request,
+            f"User '{username}' created successfully.",
+        )
+
+        return redirect("accounts:user_list")
+
+    return render(
+        request,
+        "users/user-create.html",
+        {
+            "roles": Role.objects.all().order_by("name"),
+            "page_title": "Create User",
+        },
+    )
+@admin_required
+def user_edit(request, pk):
+    target = get_object_or_404(User, pk=pk)
+
+    if request.method == "POST":
+
+        first_name = request.POST.get(
+            "first_name",
+            "",
+        ).strip()
+
+        last_name = request.POST.get(
+            "last_name",
+            "",
+        ).strip()
+
+        username = request.POST.get(
+            "username",
+            "",
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            "",
+        ).strip().lower()
+
+        role_id = request.POST.get("role")
+
+        # Required fields
+        if not username or not email:
+            messages.error(
+                request,
+                "Username and email are required.",
+            )
+            return redirect(
+                "accounts:user_edit",
+                pk=target.pk,
+            )
+
+        # Check duplicate username
+        if User.objects.filter(
+            username=username
+        ).exclude(pk=target.pk).exists():
+
+            messages.error(
+                request,
+                "Username already exists.",
+            )
+
+            return redirect(
+                "accounts:user_edit",
+                pk=target.pk,
+            )
+
+        # Check duplicate email
+        if User.objects.filter(
+            email=email
+        ).exclude(pk=target.pk).exists():
+
+            messages.error(
+                request,
+                "Email already exists.",
+            )
+
+            return redirect(
+                "accounts:user_edit",
+                pk=target.pk,
+            )
+
+        # Update user
+        target.first_name = first_name
+        target.last_name = last_name
+        target.username = username
+        target.email = email
+
+        # Active / inactive
+        target.is_active = (
+            request.POST.get("is_active") == "on"
+        )
+
+        target.save()
+
+        # Update role
+        if role_id:
+
+            role = get_object_or_404(
+                Role,
+                pk=role_id,
+            )
+
+            UserRole.objects.filter(
+                user=target
+            ).delete()
+
+            UserRole.objects.create(
+                user=target,
+                role=role,
+                assigned_by=request.user,
+            )
+
+        messages.success(
+            request,
+            f"User '{target.username}' updated successfully.",
+        )
+
+        return redirect("accounts:user_list")
+
+    # Current role
+    current_role = (
+        UserRole.objects
+        .filter(user=target)
+        .select_related("role")
+        .first()
+    )
+
+    return render(
+        request,
+        "users/user-edit.html",
+        {
+            "user_obj": target,
+            "roles": Role.objects.all().order_by("name"),
+            "current_role": current_role,
+            "page_title": f"Edit {target.username}",
+        },
+    )
 
 
 @admin_required
@@ -70,7 +316,7 @@ def toggle_user_active(request, pk):
             messages.success(request, f"{target.username} is now {'active' if target.is_active else 'inactive'}.")
         else:
             messages.error(request, "You cannot deactivate your own account.")
-    return redirect("user_list")
+    return redirect("accounts:user_list")
 
 
 # ---------------------------------------------------------------------
@@ -136,6 +382,30 @@ def role_edit(request, pk):
         "page_title": f"Edit {role.name}",
     })
 
+@admin_required
+def role_delete(request, pk):
+    role = get_object_or_404(Role, pk=pk)
+
+    if request.method == "POST":
+
+        if role.is_system_role:
+            messages.error(
+                request,
+                "System roles cannot be deleted.",
+            )
+            return redirect("accounts:role_list")
+
+        role_name = role.name
+        role.delete()
+
+        messages.success(
+            request,
+            f"Role '{role_name}' deleted successfully.",
+        )
+
+        return redirect("accounts:role_list")
+
+    return redirect("accounts:role_list")
 
 @admin_required
 def permissions_list(request):

@@ -1,0 +1,11 @@
+{
+    "accuracy": 98.31,
+    "precision": 98.36,
+    "recall": 98.32,
+    "f1_score": 98.34,
+    "training_samples": 1657,
+    "test_samples": 415,
+    "total_samples": 2072,
+    "cv_macro_f1": 97.38,
+    "classes": 4
+}

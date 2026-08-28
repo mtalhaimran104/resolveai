@@ -29,56 +29,119 @@
 
   <div class="card-body d-none" id="filterOptions">
     <form method="get">
+
       <div class="row g-3">
+
+        <!-- Ticket Number -->
+        <div class="col-md-3">
+          <label for="filterTicketNumber" class="form-label">
+            Ticket Number
+          </label>
+
+          <input
+            type="text"
+            class="form-control"
+            id="filterTicketNumber"
+            name="ticket_number"
+            value="{{ selected_ticket_number }}"
+            placeholder="e.g. TKT-0003"
+          >
+        </div>
 
         <!-- Search -->
         <div class="col-md-3">
-          <label for="filterSearch" class="form-label">Search</label>
+          <label for="filterSearch" class="form-label">
+            Search
+          </label>
+
           <input
             type="text"
             class="form-control"
             id="filterSearch"
             name="q"
             value="{{ search_query }}"
-            placeholder="Ticket #, subject, requester…"
+            placeholder="Subject, requester..."
           >
         </div>
 
-        <!-- Status -->
-        <div class="col-md-2">
-          <label for="filterStatus" class="form-label">Status</label>
-          <select class="form-select" id="filterStatus" name="status">
-            <option value="">All statuses</option>
-            {% for value, label in statuses %}
-              <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
-                {{ label }}
+        <!-- Requester -->
+        <div class="col-md-3">
+          <label for="filterRequester" class="form-label">
+            Requester
+          </label>
+
+          <select
+            class="form-select"
+            id="filterRequester"
+            name="requester"
+          >
+            <option value="">All requesters</option>
+
+            {% for requester in filter_requesters %}
+              <option
+                value="{{ requester.pk }}"
+                {% if selected_requester == requester.pk|stringformat:"s" %}
+                  selected
+                {% endif %}
+              >
+                {{ requester.get_full_name|default:requester.username }}
               </option>
             {% endfor %}
           </select>
         </div>
 
-        <!-- Priority -->
-        <div class="col-md-2">
-          <label for="filterPriority" class="form-label">Priority</label>
-          <select class="form-select" id="filterPriority" name="priority">
-            <option value="">All priorities</option>
-            {% for value, label in priorities %}
-              <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>
-                {{ label }}
+        <!-- Assigned Agent -->
+        <div class="col-md-3">
+          <label for="filterAssignedAgent" class="form-label">
+            Assigned Agent
+          </label>
+
+          <select
+            class="form-select"
+            id="filterAssignedAgent"
+            name="assigned_agent"
+          >
+            <option value="">All agents</option>
+
+            <option
+              value="unassigned"
+              {% if selected_assigned_agent == "unassigned" %}selected{% endif %}
+            >
+              Unassigned
+            </option>
+
+            {% for agent in filter_agents %}
+              <option
+                value="{{ agent.pk }}"
+                {% if selected_assigned_agent == agent.pk|stringformat:"s" %}
+                  selected
+                {% endif %}
+              >
+                {{ agent.get_full_name|default:agent.username }}
               </option>
             {% endfor %}
           </select>
         </div>
 
         <!-- Department -->
-        <div class="col-md-2">
-          <label for="filterDepartment" class="form-label">Department</label>
-          <select class="form-select" id="filterDepartment" name="department">
+        <div class="col-md-3">
+          <label for="filterDepartment" class="form-label">
+            Department
+          </label>
+
+          <select
+            class="form-select"
+            id="filterDepartment"
+            name="department"
+          >
             <option value="">All departments</option>
+
             {% for dept in filter_departments %}
               <option
                 value="{{ dept.pk }}"
-                {% if selected_department == dept.pk|stringformat:"s" %}selected{% endif %}
+                {% if selected_department == dept.pk|stringformat:"s" %}
+                  selected
+                {% endif %}
               >
                 {{ dept.name }}
               </option>
@@ -87,14 +150,24 @@
         </div>
 
         <!-- Category -->
-        <div class="col-md-2">
-          <label for="filterCategory" class="form-label">Category</label>
-          <select class="form-select" id="filterCategory" name="category">
+        <div class="col-md-3">
+          <label for="filterCategory" class="form-label">
+            Category
+          </label>
+
+          <select
+            class="form-select"
+            id="filterCategory"
+            name="category"
+          >
             <option value="">All categories</option>
+
             {% for cat in filter_categories %}
               <option
                 value="{{ cat.pk }}"
-                {% if selected_category == cat.pk|stringformat:"s" %}selected{% endif %}
+                {% if selected_category == cat.pk|stringformat:"s" %}
+                  selected
+                {% endif %}
               >
                 {{ cat.name }}
               </option>
@@ -102,31 +175,195 @@
           </select>
         </div>
 
-        <!-- Buttons -->
-        <div class="col-12 d-flex gap-2">
+        <!-- Priority -->
+        <div class="col-md-3">
+          <label for="filterPriority" class="form-label">
+            Priority
+          </label>
 
-          <button type="submit" class="btn btn-primary">
+          <select
+            class="form-select"
+            id="filterPriority"
+            name="priority"
+          >
+            <option value="">All priorities</option>
+
+            {% for value, label in priorities %}
+              <option
+                value="{{ value }}"
+                {% if selected_priority == value %}selected{% endif %}
+              >
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-3">
+          <label for="filterStatus" class="form-label">
+            Status
+          </label>
+
+          <select
+            class="form-select"
+            id="filterStatus"
+            name="status"
+          >
+            <option value="">All statuses</option>
+
+            {% for value, label in statuses %}
+              <option
+                value="{{ value }}"
+                {% if selected_status == value %}selected{% endif %}
+              >
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Created Date -->
+        <div class="col-md-3">
+          <label for="filterCreatedDate" class="form-label">
+            Created Date
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            id="filterCreatedDate"
+            name="created_date"
+            value="{{ selected_created_date }}"
+          >
+        </div>
+
+        <!-- Updated Date -->
+        <div class="col-md-3">
+          <label for="filterUpdatedDate" class="form-label">
+            Updated Date
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            id="filterUpdatedDate"
+            name="updated_date"
+            value="{{ selected_updated_date }}"
+          >
+        </div>
+
+        <!-- AI Confidence Minimum -->
+        <div class="col-md-3">
+          <label for="filterAIConfidenceMin" class="form-label">
+            AI Confidence Min
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            id="filterAIConfidenceMin"
+            name="ai_confidence_min"
+            value="{{ selected_ai_confidence_min }}"
+            min="0"
+            max="1"
+            step="0.01"
+            placeholder="0.00"
+          >
+        </div>
+
+        <!-- AI Confidence Maximum -->
+        <div class="col-md-3">
+          <label for="filterAIConfidenceMax" class="form-label">
+            AI Confidence Max
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            id="filterAIConfidenceMax"
+            name="ai_confidence_max"
+            value="{{ selected_ai_confidence_max }}"
+            min="0"
+            max="1"
+            step="0.01"
+            placeholder="1.00"
+          >
+        </div>
+
+        <!-- Sentiment -->
+        <div class="col-md-3">
+          <label for="filterSentiment" class="form-label">
+            Sentiment
+          </label>
+
+          <select
+            class="form-select"
+            id="filterSentiment"
+            name="sentiment"
+          >
+            <option value="">All sentiments</option>
+
+            {% for sentiment in filter_sentiments %}
+              <option
+                value="{{ sentiment }}"
+                {% if selected_sentiment == sentiment %}selected{% endif %}
+              >
+                {{ sentiment|title }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 d-flex gap-2 pt-2">
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
             <i class="bi bi-funnel me-1"></i>
             Apply Filters
           </button>
 
-          {% if search_query or selected_status or selected_priority or selected_department or selected_category %}
-            <a
-              href="{{ request.path }}"
-              class="btn btn-outline-secondary"
-            >
-              <i class="bi bi-x-circle me-1"></i>
-              Clear Filters
-            </a>
-          {% endif %}
+          <a
+            href="{{ request.path }}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-x-circle me-1"></i>
+            Clear Filters
+          </a>
 
         </div>
 
       </div>
+
     </form>
   </div>
 </div>
 <!--end::Filters-->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.getElementById("toggleFilters");
+    const filterOptions = document.getElementById("filterOptions");
+
+    if (!toggleButton || !filterOptions) {
+        return;
+    }
+
+    toggleButton.addEventListener("click", function () {
+        const isHidden = filterOptions.classList.contains("d-none");
+
+        filterOptions.classList.toggle("d-none");
+
+        toggleButton.setAttribute(
+            "aria-expanded",
+            isHidden ? "true" : "false"
+        );
+    });
+});
+</script>
 
 <div class="card">
   <div class="card-body p-0">
@@ -149,8 +386,12 @@
         <tbody>
           {% for ticket in tickets %}
           <tr>
-            <td><a href="{% url 'ticket_detail_requester' ticket.pk %}" class="fw-semibold text-decoration-none">{{ ticket.ticket_number }}</a></td>
-            <td>{{ ticket.subject }}</td>
+<td>
+<a href="{% url 'tickets:ticket_detail' ticket.pk %}"
+   class="fw-semibold text-decoration-none">
+    {{ ticket.ticket_number }}
+</a>    </a>
+</td>            <td>{{ ticket.subject }}</td>
             <td>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</td>
             <td>{{ ticket.department.name|default:"—" }}</td>
             <td>{{ ticket.category.name|default:"—" }}</td>
@@ -166,14 +407,19 @@
             <td>{{ ticket.created_at|date:"M d, Y" }}</td>
             <td>
               <div class="btn-group btn-group-sm">
-                <a href="{% url 'ticket_detail_requester' ticket.pk %}" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
-                {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
+<a href="{% url 'tickets:ticket_detail' ticket.pk %}" class="btn btn-outline-primary" title="View">
+    <i class="bi bi-eye"></i>
+</a>                {% if user.is_superuser or user.has_role_supervisor or user.has_role_agent %}
                   {% if not ticket.assigned_to %}
-                    <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Assign"><i class="bi bi-person-plus"></i></a>
-                  {% elif user.is_superuser or user.has_role_supervisor or ticket.assigned_to_id == user.id %}
-                    <a href="{% url 'ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Reassign"><i class="bi bi-person-plus"></i></a>
-                    <form action="{% url 'ticket_unassign' ticket.pk %}" method="post" class="d-inline">
-                      {% csrf_token %}
+<a href="{% url 'tickets:ticket_assign' ticket.pk %}"
+   class="btn btn-outline-secondary"
+   title="Assign">
+    <i class="bi bi-person-plus"></i>
+</a>                  {% elif user.is_superuser or user.has_role_supervisor or ticket.assigned_to_id == user.id %}
+<a href="{% url 'tickets:ticket_assign' ticket.pk %}" class="btn btn-outline-secondary" title="Reassign">
+    <i class="bi bi-person-plus"></i>
+</a>
+<form action="{% url 'tickets:ticket_unassign' ticket.pk %}" method="post" class="d-inline">                      {% csrf_token %}
                       <button type="submit" class="btn btn-outline-danger" title="Unassign" data-ra-confirm="Unassign this ticket?"><i class="bi bi-person-dash"></i></button>
                     </form>
                   {% endif %}

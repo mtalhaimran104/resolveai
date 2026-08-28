@@ -52,12 +52,12 @@ def predict_priority(
         text_tfidf
     )
     confidence = round(
-        float(
-            probabilities[0].max() * 100
-        ),
-        2,
+        float(probabilities[0].max()),
+        4,
     )
     return (
         str(prediction[0]),
         confidence,
     )
+
+

@@ -1,4 +1,156 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Articles{% endblock %}
+{% block page_title %}Articles{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item">Knowledge Base</li>
+<li class="breadcrumb-item active" aria-current="page">Articles</li>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+        >
+            {{ message }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+            ></button>
+        </div>
+    {% endfor %}
+{% endif %}
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end mb-3">
+              {% if user.is_admin %}
+              <a href="{% url 'knowledge_article_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>New Article
+              </a>
+              {% endif %}
+            </div>
+            <!--end::Toolbar-->
+
+            <!--begin::Filters-->
+            <div class="card mb-3">
+              <div class="card-body">
+                <form class="row g-3 align-items-end" method="get">
+                  <div class="col-md-3">
+                    <label class="form-label" for="filterSearch">Search</label>
+                    <input type="text" class="form-control" id="filterSearch" name="q" value="{{ search_query }}" placeholder="Title, summary, tags…">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="filterCategory">Category</label>
+                    <select class="form-select" id="filterCategory" name="category">
+                      <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
+                      {% for cat in categories %}
+                        <option value="{{ cat.pk }}" {% if selected_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="filterStatus">Status</label>
+                    <select class="form-select" id="filterStatus" name="status">
+                      <option value="" {% if not selected_status %}selected{% endif %}>All Statuses</option>
+                      {% for value, label in statuses %}
+                        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="filterAuthor">Author</label>
+                    <select class="form-select" id="filterAuthor" name="author">
+                      <option value="" {% if not selected_author %}selected{% endif %}>All Authors</option>
+                      {% for a in authors %}
+                        <option value="{{ a.pk }}" {% if selected_author == a.pk|stringformat:"s" %}selected{% endif %}>{{ a.get_full_name|default:a.username }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="filterUpdated">Updated</label>
+                    <input type="date" class="form-control" id="filterUpdated" name="updated" value="{{ selected_updated }}">
+                  </div>
+                  <div class="col-md-1 d-flex">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i></button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!--end::Filters-->
+
+            <!--begin::Articles Table-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">All Articles</h3>
+                <div class="card-tools">
+                  <span class="text-secondary fs-7">{{ page_obj.paginator.count }} article{{ page_obj.paginator.count|pluralize }}</span>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Version</th>
+                        <th>Author</th>
+                        <th>Last Updated</th>
+                        <th>Published</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for article in articles %}
+                      <tr>
+                        <td><a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="fw-semibold text-decoration-none">{{ article.title }}</a></td>
+                        <td>{{ article.category.name|default:"—" }}</td>
+                        <td>
+                          {% if article.status == "PUBLISHED" %}
+                            <span class="badge text-bg-success">Published</span>
+                          {% else %}
+                            <span class="badge text-bg-secondary">Draft</span>
+                          {% endif %}
+                        </td>
+                        <td>v{{ article.version }}</td>
+                        <td>{{ article.author.get_full_name|default:article.author.username }}</td>
+                        <td>{{ article.updated_at|date:"Y-m-d" }}</td>
+                        <td>{{ article.publish_date|date:"Y-m-d"|default:"—" }}</td>
+                        <td class="text-end">
+                          <a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="btn btn-sm btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
+                          {% if user.is_admin %}
+                          <a href="{% url 'knowledge_article_edit' pk=article.pk %}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr><td colspan="8" class="text-center text-secondary py-4">No articles found.</td></tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer">
+                {% include "includes/pagination.html" with page_obj=page_obj %}
+              </div>
+            </div>
+            <!--end::Articles Table-->
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} {% extends "base.html" %}
 {% block title %}Articles{% endblock %}
 
 {% block page_title %}Articles{% endblock %}
@@ -308,4 +460,4 @@
 </div>
 <!--end::Articles Table-->
 
-{% endblock %}
+{% endblock %} {% endcomment %}

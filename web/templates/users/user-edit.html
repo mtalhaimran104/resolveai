@@ -1,166 +1,539 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Edit User{% endblock %}
 {% block page_title %}Edit User{% endblock %}
-{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li><li class="breadcrumb-item active">Edit User</li>{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item">
+    <a href="{% url 'dashboard' %}">Home</a>
+</li>
+<li class="breadcrumb-item active">Edit User</li>
+{% endblock %}
+
 {% block content %}
-<div class="app-content"><div class="container-fluid">
 
-            <!--begin::Edit User Form-->
-            <div class="row">
-              <div class="col-lg-9">
+<div class="app-content">
+    <div class="container-fluid">
+
+        <!--begin::Edit User Form-->
+        <div class="row">
+
+            <div class="col-lg-9">
                 <div class="card">
-                  <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0"><i class="bi bi-pencil-square me-2"></i>Edit User &mdash; {{ target_user.get_full_name }}</h3>
-                    <a href="{% url 'admin_user_detail' pk=target_user.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye me-1"></i>View Profile</a>
-                  </div>
-                  <form novalidate data-ra-validate action="{% url 'admin_user_edit' pk=target_user.pk %}" method="post">
-{% csrf_token %}
-                    <div class="card-body">
-                      <!--begin::Identity Fields-->
-                      <div class="row g-3">
-                        <div class="col-md-6">
-                          <label for="firstName" class="form-label">First name <span class="text-danger">*</span></label>
-                          <input type="text" class="form-control" id="firstName" name="first_name" required minlength="2" value="{{ target_user.first_name }}" />
-                          <div class="invalid-feedback">Please enter a first name.</div>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="lastName" class="form-label">Last name <span class="text-danger">*</span></label>
-                          <input type="text" class="form-control" id="lastName" name="last_name" required minlength="2" value="{{ target_user.last_name }}" />
-                          <div class="invalid-feedback">Please enter a last name.</div>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                          <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-at"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" required pattern="[a-z0-9.]{3,30}" value="{{ target_user.username }}" />
-                            <div class="invalid-feedback">Username must be 3&ndash;30 characters, lowercase letters, numbers and periods only.</div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                          <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" required value="{{ target_user.email }}" />
-                            <div class="invalid-feedback">Please enter a valid email address.</div>
-                          </div>
-                        </div>
-                      </div>
-                      <!--end::Identity Fields-->
 
-                      <hr class="my-4" />
+                    <!--begin::Card Header-->
+                    <div class="card-header d-flex justify-content-between align-items-center">
 
-                      <!--begin::Password Reset-->
-                      <div class="alert alert-light border d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div>
-                          <i class="bi bi-key-fill me-2"></i>
-                          <strong>Password</strong>
-                          <span class="text-secondary">&mdash; last changed Jun 2, 2026</span>
-                        </div>
-                        <a href="#" class="btn btn-outline-secondary btn-sm" data-ra-confirm="Send a password reset link to {{ target_user.email }}?">
-                          <i class="bi bi-arrow-repeat me-1"></i>Reset Password
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            Edit User &mdash;
+                            {{ user_obj.get_full_name|default:user_obj.username }}
+                        </h3>
+
+                        <a href="{% url 'accounts:user_list' %}"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Back to Users
                         </a>
-                      </div>
-                      <!--end::Password Reset-->
 
-                      <hr class="my-4" />
-
-                      <!--begin::Role & Department Fields-->
-                      <div class="row g-3">
-                        <div class="col-md-6">
-                          <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                          <select id="role" name="role" class="form-select" required>
-                            <option value="requester">Requester</option>
-                            <option value="support_agent" selected>Agent</option>
-                            <option value="support_supervisor">Supervisor</option>
-                            <option value="system_administrator">Administrator</option>
-                          </select>
-                          <div class="invalid-feedback">Please select a role.</div>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                          <select id="department" name="department" class="form-select" required>
-                            <option value="its" selected>IT Support</option>
-                            <option value="fin">Finance</option>
-                            <option value="adm">Admissions</option>
-                            <option value="exm">Examination</option>
-                          </select>
-                          <div class="invalid-feedback">Please select a department.</div>
-                        </div>
-                      </div>
-                      <!--end::Role & Department Fields-->
-
-                      <hr class="my-4" />
-
-                      <!--begin::Status Toggles-->
-                      <div class="row g-3">
-                        <div class="col-md-4">
-                          <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="activeStatus" name="is_active" checked />
-                            <label class="form-check-label" for="activeStatus">Active status</label>
-                          </div>
-                          <small class="text-secondary">Inactive users cannot sign in.</small>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="staffStatus" name="is_staff" checked />
-                            <label class="form-check-label" for="staffStatus">Staff status</label>
-                          </div>
-                          <small class="text-secondary">Grants access to internal-only tooling.</small>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="emailVerified" name="email_verified" checked />
-                            <label class="form-check-label" for="emailVerified">Email verified</label>
-                          </div>
-                          <small class="text-secondary">Skips the verification email step.</small>
-                        </div>
-                      </div>
-                      <!--end::Status Toggles-->
-
-                      <hr class="my-4" />
-
-                      <!--begin::Welcome Email-->
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" name="send_welcome_email" />
-                        <label class="form-check-label" for="sendWelcomeEmail">
-                          Send welcome email with account setup instructions
-                        </label>
-                      </div>
-                      <!--end::Welcome Email-->
                     </div>
-                    <div class="card-footer d-flex justify-content-end gap-2">
-                      <a href="{% url 'admin_user_detail' pk=target_user.pk %}" class="btn btn-outline-secondary">Cancel</a>
-                      <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+                    <!--end::Card Header-->
 
-              <!--begin::Help Sidebar-->
-              <div class="col-lg-3">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title fs-6"><i class="bi bi-person-badge me-2"></i>Account snapshot</h3>
-                  </div>
-                  <div class="card-body fs-7">
-                    <dl class="mb-0">
-                      <dt>Current role</dt>
-                      <dd><span class="badge text-bg-info">Support Agent</span></dd>
-                      <dt>Created</dt>
-                      <dd>Apr 18, 2025</dd>
-                      <dt>Last login</dt>
-                      <dd>Jul 30, 2026 &middot; 08:02</dd>
-                      <dt class="mb-0">Status</dt>
-                      <dd class="mb-0"><span class="badge text-bg-success">Active</span></dd>
-                    </dl>
-                  </div>
+
+                    <!--begin::Form-->
+                    <form
+                        novalidate
+                        data-ra-validate
+                        action="{% url 'accounts:user_edit' pk=user_obj.pk %}"
+                        method="post">
+
+                        {% csrf_token %}
+
+                        <!--begin::Card Body-->
+                        <div class="card-body">
+
+                            <!--begin::Identity Fields-->
+                            <div class="row g-3">
+
+                                <!-- First Name -->
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">
+                                        First name
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="firstName"
+                                        name="first_name"
+                                        required
+                                        minlength="2"
+                                        value="{{ user_obj.first_name }}"
+                                    />
+
+                                    <div class="invalid-feedback">
+                                        Please enter a first name.
+                                    </div>
+                                </div>
+
+
+                                <!-- Last Name -->
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">
+                                        Last name
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="lastName"
+                                        name="last_name"
+                                        required
+                                        minlength="2"
+                                        value="{{ user_obj.last_name }}"
+                                    />
+
+                                    <div class="invalid-feedback">
+                                        Please enter a last name.
+                                    </div>
+                                </div>
+
+
+                                <!-- Username -->
+                                <div class="col-md-6">
+                                    <label for="username" class="form-label">
+                                        Username
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-at"></i>
+                                        </span>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="username"
+                                            name="username"
+                                            required
+                                            minlength="3"
+                                            maxlength="30"
+                                            value="{{ user_obj.username }}"
+                                        />
+
+                                        <div class="invalid-feedback">
+                                            Username is required.
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                <!-- Email -->
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">
+                                        Email
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-envelope"></i>
+                                        </span>
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            id="email"
+                                            name="email"
+                                            required
+                                            value="{{ user_obj.email }}"
+                                        />
+
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--end::Identity Fields-->
+
+
+                            <hr class="my-4" />
+
+
+                            <!--begin::Password Reset-->
+                            <div class="alert alert-light border d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                <div>
+                                    <i class="bi bi-key-fill me-2"></i>
+
+                                    <strong>Password</strong>
+
+                                    <span class="text-secondary">
+                                        &mdash; password management
+                                    </span>
+                                </div>
+
+                                <a
+                                    href="#"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    data-ra-confirm="Send a password reset link to {{ user_obj.email }}?">
+
+                                    <i class="bi bi-arrow-repeat me-1"></i>
+                                    Reset Password
+
+                                </a>
+
+                            </div>
+                            <!--end::Password Reset-->
+
+
+                            <hr class="my-4" />
+
+
+                            <!--begin::Role & Department Fields-->
+                            <div class="row g-3">
+
+                                <!-- Role -->
+                                <div class="col-md-6">
+
+                                    <label for="role" class="form-label">
+                                        Role
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <select
+                                        id="role"
+                                        name="role"
+                                        class="form-select"
+                                        required>
+
+                                        <option value="">
+                                            Select role
+                                        </option>
+
+                                        {% for role in roles %}
+                                            <option
+                                                value="{{ role.pk }}"
+                                                {% if current_role and current_role.role.pk == role.pk %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                {{ role.name }}
+                                            </option>
+                                        {% endfor %}
+
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Please select a role.
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Department -->
+                                <div class="col-md-6">
+
+                                    <label for="department" class="form-label">
+                                        Department
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <select
+                                        id="department"
+                                        name="department"
+                                        class="form-select"
+                                        required>
+
+                                        <option value="its" selected>
+                                            IT Support
+                                        </option>
+
+                                        <option value="fin">
+                                            Finance
+                                        </option>
+
+                                        <option value="adm">
+                                            Admissions
+                                        </option>
+
+                                        <option value="exm">
+                                            Examination
+                                        </option>
+
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Please select a department.
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <!--end::Role & Department Fields-->
+
+
+                            <hr class="my-4" />
+
+
+                            <!--begin::Status Toggles-->
+                            <div class="row g-3">
+
+                                <!-- Active Status -->
+                                <div class="col-md-4">
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="activeStatus"
+                                            name="is_active"
+                                            {% if user_obj.is_active %}checked{% endif %}
+                                        />
+
+                                        <label
+                                            class="form-check-label"
+                                            for="activeStatus">
+
+                                            Active status
+
+                                        </label>
+
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        Inactive users cannot sign in.
+                                    </small>
+
+                                </div>
+
+
+                                <!-- Staff Status -->
+                                <div class="col-md-4">
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="staffStatus"
+                                            name="is_staff"
+                                            {% if user_obj.is_staff %}checked{% endif %}
+                                        />
+
+                                        <label
+                                            class="form-check-label"
+                                            for="staffStatus">
+
+                                            Staff status
+
+                                        </label>
+
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        Grants access to internal-only tooling.
+                                    </small>
+
+                                </div>
+
+
+                                <!-- Email Verified -->
+                                <div class="col-md-4">
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="emailVerified"
+                                            name="email_verified"
+                                            {% if user_obj.email_verified %}checked{% endif %}
+                                        />
+
+                                        <label
+                                            class="form-check-label"
+                                            for="emailVerified">
+
+                                            Email verified
+
+                                        </label>
+
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        Skips the verification email step.
+                                    </small>
+
+                                </div>
+
+                            </div>
+                            <!--end::Status Toggles-->
+
+
+                            <hr class="my-4" />
+
+
+                            <!--begin::Welcome Email-->
+                            <div class="form-check">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="sendWelcomeEmail"
+                                    name="send_welcome_email"
+                                />
+
+                                <label
+                                    class="form-check-label"
+                                    for="sendWelcomeEmail">
+
+                                    Send welcome email with account setup instructions
+
+                                </label>
+
+                            </div>
+                            <!--end::Welcome Email-->
+
+                        </div>
+                        <!--end::Card Body-->
+
+
+                        <!--begin::Card Footer-->
+                        <div class="card-footer d-flex justify-content-end gap-2">
+
+                            <a
+                                href="{% url 'accounts:user_list' %}"
+                                class="btn btn-outline-secondary">
+
+                                Cancel
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="bi bi-check-lg me-1"></i>
+                                Save Changes
+
+                            </button>
+
+                        </div>
+                        <!--end::Card Footer-->
+
+                    </form>
+                    <!--end::Form-->
+
                 </div>
-              </div>
-              <!--end::Help Sidebar-->
             </div>
-            <!--end::Edit User Form-->
 
 
-          </div></div>
+            <!--begin::Help Sidebar-->
+            <div class="col-lg-3">
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title fs-6">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Account snapshot
+                        </h3>
+
+                    </div>
+
+
+                    <div class="card-body fs-7">
+
+                        <dl class="mb-0">
+
+                            <!-- Current Role -->
+                            <dt>Current role</dt>
+
+                            <dd>
+                                {% if current_role %}
+                                    <span class="badge text-bg-info">
+                                        {{ current_role.role.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">
+                                        No role assigned
+                                    </span>
+                                {% endif %}
+                            </dd>
+
+
+                            <!-- Created -->
+                            <dt>Created</dt>
+
+                            <dd>
+                                {{ user_obj.created_at|date:"M d, Y" }}
+                            </dd>
+
+
+                            <!-- Last Login -->
+                            <dt>Last login</dt>
+
+                            <dd>
+                                {% if user_obj.last_login %}
+                                    {{ user_obj.last_login|date:"M d, Y · H:i" }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </dd>
+
+
+                            <!-- Status -->
+                            <dt class="mb-0">
+                                Status
+                            </dt>
+
+                            <dd class="mb-0">
+
+                                {% if user_obj.is_active %}
+
+                                    <span class="badge text-bg-success">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge text-bg-danger">
+                                        Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </dd>
+
+                        </dl>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!--end::Help Sidebar-->
+
+        </div>
+        <!--end::Edit User Form-->
+
+    </div>
+</div>
+
 {% endblock %}

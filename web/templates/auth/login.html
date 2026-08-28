@@ -31,8 +31,7 @@
           {% endif %}
 
           <!--begin::Login Form-->
-          <form action="{% url 'login' %}" method="post" novalidate data-ra-validate>
-          {% csrf_token %}
+<form action="{% url 'accounts:login' %}" method="post" novalidate data-ra-validate>          {% csrf_token %}
             <label class="visually-hidden" for="loginUsername">Username</label>
             <div class="input-group mb-1">
               <div class="input-group-text"><span class="bi bi-person-fill"></span></div>
@@ -94,11 +93,8 @@
           <!--end::Login Form-->
 
           <p class="mb-1">
-            <a href="{% url 'password_reset' %}">Forgot password?</a>
-          </p>
-          <p class="mb-0">
-            <a href="{% url 'register' %}" class="text-center"> Register a new account </a>
-          </p>
+<a href="{% url 'accounts:password_reset' %}">Forgot password?</a>          <p class="mb-0">
+<a href="{% url 'accounts:register' %}" class="text-center">Register a new account</a>          </p>
         </div>
         <!-- /.login-card-body -->
       </div>

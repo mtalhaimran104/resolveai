@@ -1,4 +1,53 @@
-<!doctype html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Version History — {{ article.title }}{% endblock %}
+{% block page_title %}Version History{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+<li class="breadcrumb-item"><a href="{% url 'demo_kb_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item"><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a></li>
+<li class="breadcrumb-item active" aria-current="page">Version History</li>
+{% endblock %}
+
+{% block content %}
+
+            <div class="card mb-3">
+              <div class="card-header">
+                <h3 class="card-title mb-0">{{ article.title }} — <span class="text-secondary">Current: v{{ article.version }}</span></h3>
+              </div>
+            </div>
+
+            {% if versions %}
+              <div class="accordion" id="versionAccordion">
+                {% for v in versions %}
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#v{{ v.pk }}">
+                      v{{ v.version_number }} &mdash; {{ v.title }}
+                      <span class="text-secondary fs-7 ms-2">edited by {{ v.edited_by.get_full_name|default:v.edited_by.username }} on {{ v.created_at|date:"M d, Y g:i A" }}</span>
+                    </button>
+                  </h2>
+                  <div id="v{{ v.pk }}" class="accordion-collapse collapse" data-bs-parent="#versionAccordion">
+                    <div class="accordion-body">
+                      <p class="text-secondary">{{ v.summary }}</p>
+                      <div>{{ v.body|linebreaksbr }}</div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="card"><div class="card-body text-secondary">No prior versions yet — this article hasn't been edited since it was created.</div></div>
+            {% endif %}
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} <!doctype html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -501,4 +550,4 @@
     <script src="../assets/js/resolve-ai.js"></script>
   </body>
   <!--end::Body-->
-</html>
+</html> {% endcomment %}

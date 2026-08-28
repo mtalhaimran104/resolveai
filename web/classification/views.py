@@ -1,16 +1,13 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-
-from accounts.decorators import admin_required
+from accounts.decorators import supervisor_or_admin_required
+# from accounts.decorators import admin_required
 from core.pagination import paginate_queryset
 from organization.models import Department
 from .models import TicketCategory
 
 
-@admin_required
+@supervisor_or_admin_required
 def category_list(request):
     categories = TicketCategory.objects.select_related("department").all().order_by("name")
     page_obj = paginate_queryset(categories, request)
@@ -21,7 +18,7 @@ def category_list(request):
     })
 
 
-@admin_required
+@supervisor_or_admin_required
 def category_detail(request, pk):
     category = get_object_or_404(TicketCategory, pk=pk)
     return render(request, "categories/category-detail.html", {
@@ -34,7 +31,7 @@ def _department_from_code(code):
     return Department.objects.filter(code__iexact=code).first()
 
 
-@admin_required
+@supervisor_or_admin_required
 def category_create(request):
     if request.method == "POST":
         name = request.POST.get("catName", "").strip()
@@ -63,7 +60,7 @@ def category_create(request):
     return render(request, "categories/category-create.html", {"current": "category-create"})
 
 
-@admin_required
+@supervisor_or_admin_required
 def category_edit(request, pk):
     category = get_object_or_404(TicketCategory, pk=pk)
 
@@ -96,7 +93,7 @@ def category_edit(request, pk):
     })
 
 
-@admin_required
+@supervisor_or_admin_required
 def category_toggle_status(request, pk):
     category = get_object_or_404(TicketCategory, pk=pk)
 

@@ -204,6 +204,11 @@ class TicketHistory(TimeStampedModel):
         REASSIGNED = "REASSIGNED", "Reassigned"
         UNASSIGNED = "UNASSIGNED", "Unassigned"
         STATUS_CHANGED = "STATUS_CHANGED", "Status changed"
+        PRIORITY_CHANGED = "PRIORITY_CHANGED", "Priority changed"
+        CATEGORY_CHANGED = "CATEGORY_CHANGED", "Category changed"
+        INTERNAL_NOTE = "INTERNAL_NOTE", "Internal note"
+        PUBLIC_REPLY = "PUBLIC_REPLY", "Public reply"
+        ATTACHMENT_ADDED = "ATTACHMENT_ADDED", "Attachment added"
 
     ticket = models.ForeignKey(
         Ticket,
@@ -220,7 +225,7 @@ class TicketHistory(TimeStampedModel):
     )
 
     action = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=Action.choices,
     )
 
@@ -238,3 +243,5 @@ class TicketHistory(TimeStampedModel):
             f"{self.get_action_display()} "
             f"on {self.ticket.ticket_number}"
         )
+
+
