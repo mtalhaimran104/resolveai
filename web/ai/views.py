@@ -152,8 +152,9 @@ def predict_ticket_priority(request):
             ticket_id=ticket.id,
             text=text,
         )
-        priority = result["priority"]
-        confidence = result["confidence"]
+        result_data = result["data"]
+        priority = result_data["priority"]
+        confidence = result_data["confidence"]
     except AIServiceError as exc:
         _record_failed_analysis(
             ticket=ticket,

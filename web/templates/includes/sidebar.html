@@ -292,12 +292,12 @@
 
           <!-- REQUESTER SIDEBAR -->
           <li class="nav-item">
-            <a href="{% url 'create_ticket' %}" class="nav-link {% if current == 'create_ticket' %}active{% endif %}">
+            <a href="{% url 'tickets:create_ticket' %}" class="nav-link {% if current == 'create_ticket' %}active{% endif %}">
               <i class="nav-icon bi bi-plus-square"></i><p>Create Ticket</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'my_tickets' %}" class="nav-link {% if current == 'my_tickets' %}active{% endif %}">
+            <a href="{% url 'tickets:my_tickets' %}" class="nav-link {% if current == 'my_tickets' %}active{% endif %}">
               <i class="nav-icon bi bi-ticket-detailed"></i><p>My Tickets</p>
             </a>
           </li>
@@ -321,3 +321,5 @@
   </div>
 </aside>
 <!--end::Sidebar-->
+
+

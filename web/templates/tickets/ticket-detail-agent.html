@@ -206,14 +206,68 @@
           <!--end::Internal Notes Tab-->
 
           <!--begin::AI Analysis Tab-->
-          <div class="tab-pane fade" id="ai-analysis-pane" role="tabpanel" aria-labelledby="ai-analysis-tab" tabindex="0">
+          <div class="tab-pane fade"
+               id="ai-analysis-pane"
+               role="tabpanel"
+               aria-labelledby="ai-analysis-tab"
+               tabindex="0">
             <div class="card ra-ai-card mb-0">
               <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-robot me-1"></i>AI Analysis</span>
-                <span class="badge text-bg-secondary">Not configured</span>
+                <span>
+                  <i class="bi bi-robot me-1"></i>
+                  AI Priority Analysis
+                </span>
+                <span id="ai-priority-status"
+                      class="badge text-bg-secondary">
+                  Ready
+                </span>
               </div>
               <div class="card-body">
-                <p class="mb-0 text-secondary">The AI/ML service will be added in a later phase. Once connected, ResolveAI will show sentiment, category and priority predictions, and suggested replies for this ticket here.</p>
+                <p class="text-secondary">
+                  Use the trained AI model to predict the priority of this ticket.
+                </p>
+                <button
+                  type="button"
+                  id="predict-priority-btn"
+                  class="btn btn-primary btn-sm"
+                  data-ticket-id="{{ ticket.id }}"
+                  data-priority-url="{% url 'ai:predict_ticket_priority' %}">
+                  <i class="bi bi-cpu me-1"></i>
+                  Analyze Priority
+                </button>
+                <div
+                  id="priority-analysis-result"
+                  class="mt-4 d-none">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="border rounded p-3">
+                        <div class="fs-7 text-secondary mb-1">
+                          Predicted Priority
+                        </div>
+                        <div
+                          id="predicted-priority"
+                          class="fw-bold fs-5">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="border rounded p-3">
+                        <div class="fs-7 text-secondary mb-1">
+                          AI Confidence
+                        </div>
+                        <div
+                          id="priority-confidence"
+                          class="fw-bold fs-5">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="priority-analysis-error"
+                  class="alert alert-danger mt-3 d-none"
+                  role="alert">
+                </div>
               </div>
             </div>
           </div>
@@ -434,5 +488,81 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("predict-priority-btn");
+    if (!button) {
+        return;
+    }
+    const statusBadge = document.getElementById("ai-priority-status");
+    const resultContainer = document.getElementById(
+        "priority-analysis-result"
+    );
+    const errorContainer = document.getElementById(
+        "priority-analysis-error"
+    );
+    const predictedPriority = document.getElementById(
+        "predicted-priority"
+    );
+    const confidenceElement = document.getElementById(
+        "priority-confidence"
+    );
+    button.addEventListener("click", async function () {
+        const ticketId = Number(button.dataset.ticketId);
+        const priorityUrl = button.dataset.priorityUrl;
+        errorContainer.classList.add("d-none");
+        errorContainer.textContent = "";
+        resultContainer.classList.add("d-none");
+        button.disabled = true;
+        button.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1" ' +
+            'role="status" aria-hidden="true"></span>' +
+            'Analyzing...';
+        statusBadge.className = "badge text-bg-info";
+        statusBadge.textContent = "Analyzing";
+        try {
+            const response = await fetch(priorityUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ticket_id: ticketId
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    "Priority prediction failed."
+                );
+            }
+            predictedPriority.textContent =
+                data.priority || "Unavailable";
+            const confidence = Number(data.confidence);
+            confidenceElement.textContent =
+                Number.isFinite(confidence)
+                    ? `${(confidence * 100).toFixed(2)}%`
+                    : "Unavailable";
+            resultContainer.classList.remove("d-none");
+            statusBadge.className = "badge text-bg-success";
+            statusBadge.textContent = "Completed";
+        } catch (error) {
+            errorContainer.textContent =
+                error.message ||
+                "Unable to complete priority analysis.";
+            errorContainer.classList.remove("d-none");
+            statusBadge.className = "badge text-bg-danger";
+            statusBadge.textContent = "Failed";
+        } finally {
+            button.disabled = false;
+            button.innerHTML =
+                '<i class="bi bi-cpu me-1"></i>' +
+                'Analyze Priority';
+        }
+    });
+});
+</script>
 
 {% endblock %}
