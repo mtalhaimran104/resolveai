@@ -1,4 +1,6 @@
 from datetime import timedelta
+from pathlib import Path
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -293,8 +295,34 @@ def demo_ai_low_confidence(request):
 
 
 def demo_ai_model_performance(request):
-    return _demo_page(request, "ai/model-performance.html")
-
+    project_root = Path(__file__).resolve().parent.parent.parent
+    metrics_path = (
+        project_root
+        / "ai_service"
+        / "app"
+        / "models"
+        / "priority_prediction"
+        / "model_metrics.json"
+    )
+    try:
+        with open(
+            metrics_path,
+            "r",
+            encoding="utf-8",
+        ) as metrics_file:
+            priority_model = json.load(metrics_file)
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+    ):
+        priority_model = {}
+    return render(
+        request,
+        "ai/model-performance.html",
+        {
+            "priority_model": priority_model,
+        },
+    )
 
 def demo_ai_service_status(request):
     return _demo_page(request, "ai/ai-service-status.html")
@@ -617,3 +645,9 @@ def demo_ai_service_status(request):
 
 # def demo_ai_service_status(request):
 #     return _demo_page(request, "ai/ai-service-status.html")
+
+
+
+
+
+
