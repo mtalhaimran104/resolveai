@@ -39,11 +39,11 @@ services:
     ports:
       - "8001:8000"
     volumes:
-<<<<<<< HEAD
+     HEAD
       - ./data:/app/data
-=======
+
       - ./ai_service/app/models:/app/app/models
->>>>>>> main
+     main
 
 volumes:
   mysql_data:
