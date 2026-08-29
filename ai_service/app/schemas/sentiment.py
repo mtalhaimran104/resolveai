@@ -1,19 +1,21 @@
-from typing import Optional
-
 from pydantic import BaseModel, Field
 
 
 class SentimentRequest(BaseModel):
-    text: str = Field(
+    ticket_id: int = Field(
         ...,
-        min_length=1,
-        description="Student query for sentiment analysis"
+        description="ID of the ticket for sentiment analysis",
     )
 
 
-class SentimentResponse(BaseModel):
-    text: str
+class SentimentData(BaseModel):
+    ticket_id: int
     sentiment: str
+    model_version: str
+    confidence_score: float | None = None
 
-    model_version: str = "v1"
-    confidence_score: Optional[float] = None
+
+class SentimentResponse(BaseModel):
+    status: bool
+    message: str
+    data: SentimentData | None = None

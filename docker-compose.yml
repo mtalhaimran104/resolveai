@@ -40,6 +40,9 @@ services:
       - "8001:8000"
     volumes:
       - ./ai_service/app/models:/app/app/models
+      - ./data:/data:ro
+    environment:
+      FAQ_DATA_PATH: /data/faq_dataset.csv
 
 volumes:
   mysql_data:
