@@ -1,5 +1,5 @@
 from django.db import models
-from tickets.models import TicketCategory
+from classification.models import TicketCategory
 # Create your models here.
 from django.conf import settings
 from django.db import models
@@ -48,7 +48,10 @@ class KnowledgeArticle(TimeStampedModel):
     is_public = models.BooleanField(
         default=False,
     )
-
+    
+    include_in_ai_knowledge_base = models.BooleanField(
+        default=False,
+    )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
