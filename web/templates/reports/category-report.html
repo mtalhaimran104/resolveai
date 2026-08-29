@@ -1,0 +1,297 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Category Report | ResolveAI{% endblock %}
+
+{% block content %}
+
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Category Report</h1>
+      </div>
+
+      <div class="col-sm-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item">
+<a href="{% url 'dashboard' %}">Home</a><a href="{% url 'reports:dashboard' %}">Reports</a>            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Category Report
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-content">
+  <div class="container-fluid">
+
+    <!-- Category Chart -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">Tickets by Category</h3>
+
+        <div class="card-tools">
+<a href="{% url 'category_list' %}"><a href="{% url 'category_list' %}"
+   class="btn btn-sm btn-outline-secondary">
+    Manage Categories
+</a>          </a>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div id="categoryVolumeChart" style="height: 340px"></div>
+      </div>
+    </div>
+
+    <!-- Category Detail Table -->
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Category Detail</h3>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+
+
+  <table class="table table-hover align-middle mb-0">
+
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Department</th>
+        <th class="text-end">Open</th>
+        <th class="text-end">Resolved</th>
+        <th class="text-end">Avg. Resolution Time</th>
+        <th class="text-end">AI Classification Accuracy</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for item in category_reports %}
+
+      <tr>
+
+        <td>
+          {% if item.category.id %}
+            <a
+              href="{% url 'category_list' %}"
+              class="text-decoration-none"
+            >
+              {{ item.category.name }}
+            </a>
+          {% else %}
+            {{ item.category.name }}
+          {% endif %}
+        </td>
+
+        <td>
+            {{ item.department|default:"—" }}
+        </td>
+
+        <td class="text-end">
+          {{ item.open_count }}
+        </td>
+
+        <td class="text-end">
+          {{ item.resolved_count }}
+        </td>
+
+        <td class="text-end">
+          {% if item.avg_resolution_time %}
+            {{ item.avg_resolution_time }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+
+        <td class="text-end">
+
+          {% if item.ai_disabled %}
+
+            <span
+              class="badge text-bg-secondary"
+              title="AI classification disabled for this category"
+            >
+              AI Disabled
+            </span>
+
+          {% elif item.ai_accuracy is not None %}
+
+            {% if item.ai_accuracy >= 85 %}
+
+              {% with confidence_class="ra-confidence-high" %}
+                <span class="ra-confidence {{ confidence_class }}">
+                  {{ item.ai_accuracy|floatformat:0 }}%
+
+                  <span class="ra-confidence-bar">
+                    <span style="width: {{ item.ai_accuracy }}%"></span>
+                  </span>
+                </span>
+              {% endwith %}
+
+            {% elif item.ai_accuracy >= 70 %}
+
+              <span class="ra-confidence ra-confidence-medium">
+                {{ item.ai_accuracy|floatformat:0 }}%
+
+                <span class="ra-confidence-bar">
+                  <span style="width: {{ item.ai_accuracy }}%"></span>
+                </span>
+              </span>
+
+            {% else %}
+
+              <span class="ra-confidence ra-confidence-low">
+                {{ item.ai_accuracy|floatformat:0 }}%
+
+                <span class="ra-confidence-bar">
+                  <span style="width: {{ item.ai_accuracy }}%"></span>
+                </span>
+              </span>
+
+            {% endif %}
+
+          {% else %}
+
+            <span class="text-secondary">—</span>
+
+          {% endif %}
+
+        </td>
+
+      </tr>
+
+      {% empty %}
+
+      <tr>
+        <td colspan="6" class="text-center py-4 text-secondary">
+          No category report data available.
+        </td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+
+  </div>
+</div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script
+  src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+  crossorigin="anonymous">
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  const isDark =
+    document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+  const foreColor = isDark ? '#c3c2b7' : '#52514e';
+  const gridColor = isDark ? '#2b3040' : '#e7e9ee';
+
+  const categories = [
+    {% for item in category_reports %}
+      "{{ item.category.name|escapejs }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  const ticketCounts = [
+    {% for item in category_reports %}
+      {{ item.total_count|default:0 }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  const chartElement =
+    document.querySelector('#categoryVolumeChart');
+
+  if (chartElement) {
+
+    new ApexCharts(chartElement, {
+
+      series: [
+        {
+          name: 'Tickets',
+          data: ticketCounts
+        }
+      ],
+
+      chart: {
+        type: 'bar',
+        height: 340,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: ['#2a78d6'],
+
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          borderRadius: 4,
+          barHeight: '60%'
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      xaxis: {
+        categories: categories,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+})();
+</script>
+
+{% endblock %}
+
