@@ -3,6 +3,8 @@
 from fastapi import FastAPI
 
 from app.api.routers import (
+    priority_prediction,
+    classification,
     faq,
     sentiment,
     summarization,
@@ -26,6 +28,13 @@ app = FastAPI(
 # ============================================================
 # AI ENDPOINTS
 # ============================================================
+
+app.include_router(
+    classification.router
+)
+app.include_router(
+    priority_prediction.router
+)
 
 app.include_router(
     faq.router
@@ -61,3 +70,5 @@ def hello():
     return {
         "message": "Hello World"
     }
+
+
