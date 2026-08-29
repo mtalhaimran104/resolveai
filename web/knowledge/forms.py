@@ -78,15 +78,14 @@ class KnowledgeArticleForm(forms.ModelForm):
 #                 "class": "form-control", "rows": 2, "maxlength": 220,
 #                 "placeholder": "One or two sentences shown in search results and article lists.",
 #             }),
-#             "body": forms.Textarea(attrs={"class": "form-control", "rows": 12}),
+#             "content": forms.Textarea(attrs={"class": "form-control", "rows": 12}),
 #             "category": forms.Select(attrs={"class": "form-select"}),
 #             "tags": forms.TextInput(attrs={
 #                 "class": "form-control", "placeholder": "password, account, login",
 #             }),
 #             "status": forms.Select(attrs={"class": "form-select"}),
 #             "is_public": forms.CheckboxInput(attrs={"class": "form-check-input", "role": "switch"}),
-#             "is_ai_indexed": forms.CheckboxInput(attrs={"class": "form-check-input", "role": "switch"}),
-#             "publish_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+# #             "published_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
 #         }
 
 

@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tickethistory',
             name='action',
-            field=models.CharField(choices=[('CREATED', 'Created'), ('ASSIGNED', 'Assigned'), ('REASSIGNED', 'Reassigned'), ('UNASSIGNED', 'Unassigned'), ('STATUS_CHANGED', 'Status changed'), ('PRIORITY_CHANGED', 'Priority changed')], max_length=20),
+            field=models.CharField(choices=[('CREATED', 'Created'), ('ASSIGNED', 'Assigned'), ('REASSIGNED', 'Reassigned'), ('UNASSIGNED', 'Unassigned'), ('STATUS_CHANGED', 'Status changed'), ('PRIORITY_CHANGED', 'Priority changed'), ('CATEGORY_CHANGED', 'Category changed'), ('INTERNAL_NOTE', 'Internal note'), ('PUBLIC_REPLY', 'Public reply'), ('ATTACHMENT_ADDED', 'Attachment added')], max_length=30),
         ),
     ]

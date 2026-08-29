@@ -1,4 +1,5 @@
 services:
+
   web:
     build:
       context: ./web
@@ -27,15 +28,11 @@ services:
       - mysql_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
     healthcheck:
-      # --protocol=tcp forces a real TCP check. Without it, "-h localhost"
-      # connects over the unix socket, which comes up before MySQL is
-      # actually listening on the network — reporting healthy too early
-      # for the web container, which connects over TCP.
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--protocol=tcp"]
       interval: 5s
       timeout: 5s
       retries: 10
-      
+
   ai_service:
     build:
       context: ./ai_service
@@ -43,6 +40,9 @@ services:
       - "8001:8000"
     volumes:
       - ./ai_service/app/models:/app/app/models
+      - ./data:/data:ro
+    environment:
+      FAQ_DATA_PATH: /data/faq_dataset.csv
 
 volumes:
   mysql_data:
