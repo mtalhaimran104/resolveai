@@ -1,0 +1,675 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Customer Satisfaction | ResolveAI{% endblock %}
+
+{% block content %}
+
+<!--begin::App Content Header-->
+
+<div class="app-content-header">
+
+  <div class="container-fluid">
+
+
+<div class="row">
+
+  <div class="col-sm-6">
+    <h1 class="mb-0 fs-3">
+      Customer Satisfaction
+    </h1>
+  </div>
+
+  <div class="col-sm-6">
+
+    <nav aria-label="breadcrumb">
+
+      <ol class="breadcrumb float-sm-end">
+
+        <li class="breadcrumb-item">
+          <a href="{% url 'dashboard' %}">
+            Home
+          </a>
+        </li>
+
+        <li class="breadcrumb-item">
+          <a href="{% url 'reports_dashboard' %}">
+            Reports
+          </a>
+        </li>
+
+        <li
+          class="breadcrumb-item active"
+          aria-current="page"
+        >
+          Customer Satisfaction
+        </li>
+
+      </ol>
+
+    </nav>
+
+  </div>
+
+</div>
+```
+
+  </div>
+
+</div>
+<!--end::App Content Header-->
+
+<!--begin::App Content-->
+
+<div class="app-content">
+
+  <div class="container-fluid">
+
+```
+<!--begin::Overall Score-->
+<div class="row g-3 mb-3">
+
+  <div class="col-lg-4">
+
+    <div class="card ra-stat-card h-100">
+
+      <div
+        class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100"
+      >
+
+        <div class="ra-stat-label mb-1">
+          Overall Satisfaction Score
+        </div>
+
+        <div class="ra-stat-value display-5">
+
+          {{ overall_satisfaction|default:"4.4" }}
+
+          <span class="fs-5 text-secondary">
+            / 5
+          </span>
+
+        </div>
+
+        <div
+          class="text-warning fs-4 mt-1"
+          aria-hidden="true"
+        >
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-half"></i>
+        </div>
+
+        <p class="text-secondary fs-7 mb-0 mt-2">
+          Based on
+          {{ survey_count|default:"214" }}
+          post-resolution surveys
+          (last 30 days)
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="col-lg-8">
+
+    <div class="card h-100">
+
+      <div class="card-header">
+
+        <h3 class="card-title">
+          Satisfaction Trend &mdash; Last 8 Weeks
+        </h3>
+
+      </div>
+
+      <div class="card-body">
+
+        <div
+          id="satisfactionTrendChart"
+          style="height: 260px"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!--end::Overall Score-->
+
+
+<!--begin::By Department + By Agent-->
+<div class="row g-3 mb-3">
+
+  <!--begin::Department-->
+  <div class="col-lg-6">
+
+    <div class="card h-100">
+
+      <div class="card-header">
+
+        <h3 class="card-title">
+          Satisfaction by Department
+        </h3>
+
+      </div>
+
+      <div class="card-body">
+
+        <div
+          id="satisfactionByDepartmentChart"
+          style="height: 300px"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+  <!--end::Department-->
+
+
+  <!--begin::Agent-->
+  <div class="col-lg-6">
+
+    <div class="card h-100">
+
+      <div class="card-header">
+
+        <h3 class="card-title">
+          Satisfaction by Agent
+        </h3>
+
+      </div>
+
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+          <table class="table table-hover align-middle mb-0">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Agent
+                </th>
+
+                <th class="text-end">
+                  Satisfaction
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {% for agent in agents %}
+
+              <tr>
+
+                <td>
+
+                  {% if agent.id %}
+                    <a
+                      href="{% url 'user_detail' agent.id %}"
+                      class="text-decoration-none"
+                    >
+                      {{ agent.name }}
+                    </a>
+                  {% else %}
+                    {{ agent.name }}
+                  {% endif %}
+
+                </td>
+
+                <td class="text-end">
+                  {{ agent.satisfaction }} / 5
+                </td>
+
+              </tr>
+
+              {% empty %}
+
+              <tr>
+
+                <td
+                  colspan="2"
+                  class="text-center text-secondary py-4"
+                >
+                  No agent satisfaction data available.
+                </td>
+
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+  <!--end::Agent-->
+
+</div>
+<!--end::By Department + By Agent-->
+
+
+<!--begin::Recent Feedback-->
+<div class="card">
+
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Recent Feedback Comments
+    </h3>
+
+  </div>
+
+  <div class="card-body p-0">
+
+    <ul class="list-group list-group-flush">
+
+      {% for feedback in recent_feedback %}
+
+      <li class="list-group-item">
+
+        <div
+          class="d-flex justify-content-between align-items-start"
+        >
+
+          <div>
+
+            <p class="mb-1">
+              &ldquo;{{ feedback.comment }}&rdquo;
+            </p>
+
+            <p class="fs-7 text-secondary mb-0">
+
+              {{ feedback.customer }}
+
+              &middot;
+
+              {{ feedback.ticket_number }}
+
+              &middot;
+
+              {{ feedback.department }}
+
+            </p>
+
+          </div>
+
+          <div
+            class="text-warning flex-shrink-0 ms-3"
+            aria-label="{{ feedback.rating }} out of 5 stars"
+          >
+
+            {% for star in "12345" %}
+
+              {% if forloop.counter <= feedback.rating %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star"></i>
+              {% endif %}
+
+            {% endfor %}
+
+          </div>
+
+        </div>
+
+      </li>
+
+      {% empty %}
+
+      <li class="list-group-item text-center text-secondary py-4">
+        No recent feedback available.
+      </li>
+
+      {% endfor %}
+
+    </ul>
+
+  </div>
+
+</div>
+<!--end::Recent Feedback-->
+```
+
+  </div>
+
+</div>
+<!--end::App Content-->
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+
+(function () {
+
+  'use strict';
+
+  /*
+   * ResolveAI
+   * Customer Satisfaction Report
+   */
+
+  const isDark =
+    document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+  const foreColor =
+    isDark ? '#c3c2b7' : '#52514e';
+
+  const gridColor =
+    isDark ? '#2b3040' : '#e7e9ee';
+
+  const categorical = [
+    '#2a78d6',
+    '#eb6834',
+    '#1baf7a',
+    '#eda100'
+  ];
+
+
+  /* -----------------------------------------
+     Satisfaction Trend
+  ----------------------------------------- */
+
+  const trendCategories = [
+
+    {% if trend_labels %}
+
+      {% for label in trend_labels %}
+
+        "{{ label|escapejs }}"{% if not forloop.last %},{% endif %}
+
+      {% endfor %}
+
+    {% else %}
+
+      'Jun 8',
+      'Jun 15',
+      'Jun 22',
+      'Jun 29',
+      'Jul 6',
+      'Jul 13',
+      'Jul 20',
+      'Jul 27'
+
+    {% endif %}
+
+  ];
+
+
+  const trendData = [
+
+    {% if trend_values %}
+
+      {% for value in trend_values %}
+
+        {{ value }}{% if not forloop.last %},{% endif %}
+
+      {% endfor %}
+
+    {% else %}
+
+      4.1,
+      4.2,
+      4.3,
+      4.2,
+      4.4,
+      4.5,
+      4.4,
+      4.4
+
+    {% endif %}
+
+  ];
+
+
+  const trendElement =
+    document.querySelector('#satisfactionTrendChart');
+
+
+  if (trendElement) {
+
+    new ApexCharts(
+      trendElement,
+      {
+
+        series: [
+          {
+            name: 'Satisfaction Score',
+            data: trendData
+          }
+        ],
+
+        chart: {
+          type: 'line',
+          height: 260,
+          foreColor: foreColor,
+          toolbar: {
+            show: false
+          }
+        },
+
+        colors: [
+          categorical[0]
+        ],
+
+        stroke: {
+          curve: 'smooth',
+          width: 3
+        },
+
+        markers: {
+          size: 4
+        },
+
+        dataLabels: {
+          enabled: false
+        },
+
+        grid: {
+          borderColor: gridColor
+        },
+
+        xaxis: {
+
+          categories: trendCategories,
+
+          labels: {
+            style: {
+              colors: foreColor
+            }
+          }
+
+        },
+
+        yaxis: {
+
+          min: 3.5,
+          max: 5,
+
+          title: {
+            text: 'Score / 5',
+            style: {
+              color: foreColor
+            }
+          },
+
+          labels: {
+            style: {
+              colors: foreColor
+            }
+          }
+
+        }
+
+      }
+    ).render();
+
+  }
+
+
+  /* -----------------------------------------
+     Satisfaction by Department
+  ----------------------------------------- */
+
+  const departmentCategories = [
+
+    {% if department_labels %}
+
+      {% for label in department_labels %}
+
+        "{{ label|escapejs }}"{% if not forloop.last %},{% endif %}
+
+      {% endfor %}
+
+    {% else %}
+
+      'IT Support',
+      'Finance',
+      'Admissions',
+      'Examination'
+
+    {% endif %}
+
+  ];
+
+
+  const departmentValues = [
+
+    {% if department_values %}
+
+      {% for value in department_values %}
+
+        {{ value }}{% if not forloop.last %},{% endif %}
+
+      {% endfor %}
+
+    {% else %}
+
+      4.5,
+      4.2,
+      4.6,
+      4.0
+
+    {% endif %}
+
+  ];
+
+
+  const departmentElement =
+    document.querySelector(
+      '#satisfactionByDepartmentChart'
+    );
+
+
+  if (departmentElement) {
+
+    new ApexCharts(
+      departmentElement,
+      {
+
+        series: [
+          {
+            name: 'Satisfaction',
+            data: departmentValues
+          }
+        ],
+
+        chart: {
+          type: 'bar',
+          height: 300,
+          foreColor: foreColor,
+          toolbar: {
+            show: false
+          }
+        },
+
+        colors: categorical,
+
+        plotOptions: {
+          bar: {
+            distributed: true,
+            borderRadius: 4,
+            columnWidth: '50%'
+          }
+        },
+
+        dataLabels: {
+          enabled: false
+        },
+
+        legend: {
+          show: false
+        },
+
+        grid: {
+          borderColor: gridColor
+        },
+
+        xaxis: {
+
+          categories: departmentCategories,
+
+          labels: {
+            style: {
+              colors: foreColor
+            }
+          }
+
+        },
+
+        yaxis: {
+
+          min: 0,
+          max: 5,
+
+          title: {
+            text: 'Score / 5',
+            style: {
+              color: foreColor
+            }
+          },
+
+          labels: {
+            style: {
+              colors: foreColor
+            }
+          }
+
+        }
+
+      }
+    ).render();
+
+  }
+
+})();
+
+</script>
+
+{% endblock %}
