@@ -38,3 +38,17 @@ def call_priority_service(ticket_id: int, text: str) -> dict:
         raise AIServiceError(
             "Priority prediction service is unavailable."
         ) from exc
+def get_priority_model_metrics() -> dict:
+    """Get priority model performance metrics from the AI service."""
+    url = f"{settings.AI_SERVICE_URL}/api/v1/priority/metrics"
+    try:
+        response = requests.get(
+            url,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Priority model metrics service is unavailable."
+        ) from exc

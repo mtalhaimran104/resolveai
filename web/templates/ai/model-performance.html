@@ -99,10 +99,10 @@
                             <dd class="col-5 text-end fw-semibold">{{ priority_model.f1_score }}%</dd>
 
                             <dt class="col-7">Total Predictions</dt>
-                            <dd class="col-5 text-end fw-semibold">3,940</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ priority_total_predictions }}</dd>
 
                             <dt class="col-7">Avg. Response Time</dt>
-                            <dd class="col-5 text-end fw-semibold">156 ms</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ priority_avg_response_time|default_if_none:0|floatformat:2 }} ms</dd>
 
                         </dl>
                     </div>
@@ -538,3 +538,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 {% endblock %}
+

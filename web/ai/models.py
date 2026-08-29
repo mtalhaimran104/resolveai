@@ -27,6 +27,7 @@ class AIAnalysis(TimeStampedModel):
     input_hash = models.CharField(max_length=128)
     result_json = models.JSONField()
     confidence_score = models.FloatField(null=True, blank=True)
+    response_time_ms = models.FloatField(null=True, blank=True)
     status = models.CharField(
         max_length=30,
         choices=Status.choices,
@@ -133,5 +134,8 @@ class AIFeedback(TimeStampedModel):
         verbose_name_plural = "AI feedback"
     def __str__(self):
         return f"{self.get_feedback_type_display()} feedback for {self.ticket.ticket_number}"
+
+
+
 
 

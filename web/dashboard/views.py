@@ -4,11 +4,14 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.db.models import Avg
 from django.http import HttpResponseForbidden
 from django.utils import timezone
 
 from accounts.decorators import admin_required
 from tickets.models import Ticket, TicketHistory
+from ai.models import AIAnalysis
+from ai.services import get_priority_model_metrics, AIServiceError
 
 
 # ---------------------------------------------------------------------
@@ -295,32 +298,29 @@ def demo_ai_low_confidence(request):
 
 
 def demo_ai_model_performance(request):
-    project_root = Path(__file__).resolve().parent.parent.parent
-    metrics_path = (
-        project_root
-        / "ai_service"
-        / "app"
-        / "models"
-        / "priority_prediction"
-        / "model_metrics.json"
-    )
     try:
-        with open(
-            metrics_path,
-            "r",
-            encoding="utf-8",
-        ) as metrics_file:
-            priority_model = json.load(metrics_file)
-    except (
-        FileNotFoundError,
-        json.JSONDecodeError,
-    ):
+        metrics_response = get_priority_model_metrics()
+        if metrics_response.get("status"):
+            priority_model = metrics_response.get("data", {})
+        else:
+            priority_model = {}
+    except AIServiceError:
         priority_model = {}
+    priority_analyses = AIAnalysis.objects.filter(
+        analysis_type=AIAnalysis.AnalysisType.PRIORITY,
+        status=AIAnalysis.Status.SUCCESS,
+    )
+    priority_total_predictions = priority_analyses.count()
+    priority_avg_response_time = priority_analyses.aggregate(
+        average=Avg("response_time_ms")
+    )["average"]
     return render(
         request,
         "ai/model-performance.html",
         {
             "priority_model": priority_model,
+            "priority_total_predictions": priority_total_predictions,
+            "priority_avg_response_time": priority_avg_response_time,
         },
     )
 
@@ -334,11 +334,14 @@ def demo_ai_service_status(request):
 
 # from django.contrib.auth.decorators import login_required
 # from django.shortcuts import render
+from django.db.models import Avg
 # from django.http import HttpResponseForbidden
 # from django.utils import timezone
 
 # from accounts.decorators import admin_required
 # from tickets.models import Ticket, TicketHistory
+from ai.models import AIAnalysis
+from ai.services import get_priority_model_metrics, AIServiceError
 # from core.pagination import paginate_queryset
 
 
@@ -645,6 +648,17 @@ def demo_ai_service_status(request):
 
 # def demo_ai_service_status(request):
 #     return _demo_page(request, "ai/ai-service-status.html")
+
+
+
+
+
+
+
+
+
+
+
 
 
 

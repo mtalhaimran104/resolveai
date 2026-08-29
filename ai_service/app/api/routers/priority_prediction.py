@@ -1,5 +1,7 @@
 import hashlib
 import json
+import time
+from pathlib import Path
 from fastapi import APIRouter
 from sqlalchemy import text
 from app.core.database import engine
@@ -8,6 +10,8 @@ from app.schemas.priority_prediction import (
     PriorityPredictionData,
     PriorityPredictionRequest,
     PriorityPredictionResponse,
+    PriorityModelMetricsData,
+    PriorityModelMetricsResponse,
 )
 from app.services.priority_prediction_service import (
     predict_priority,
@@ -36,8 +40,13 @@ def predict_ticket_priority(
         f"{ticket['subject']}\n\n"
         f"{ticket['description']}"
     ).strip()
+    start_time = time.perf_counter()
     priority, confidence = predict_priority(
         ticket_text
+    )
+    response_time_ms = round(
+        (time.perf_counter() - start_time) * 1000,
+        2,
     )
     input_hash = hashlib.sha256(
         ticket_text.encode("utf-8")
@@ -56,6 +65,7 @@ def predict_ticket_priority(
             input_hash,
             result_json,
             confidence_score,
+            response_time_ms,
             status,
             error_message,
             created_at,
@@ -69,6 +79,7 @@ def predict_ticket_priority(
             :input_hash,
             :result_json,
             :confidence_score,
+            :response_time_ms,
             :status,
             :error_message,
             NOW(),
@@ -87,6 +98,7 @@ def predict_ticket_priority(
                 "input_hash": input_hash,
                 "result_json": json.dumps(result_json),
                 "confidence_score": confidence,
+                "response_time_ms": response_time_ms,
                 "status": "SUCCESS",
                 "error_message": "",
             },
@@ -101,3 +113,48 @@ def predict_ticket_priority(
         ),
     )
 
+
+
+
+
+
+
+
+
+@router.get(
+    "/metrics",
+    response_model=PriorityModelMetricsResponse,
+)
+def get_priority_model_metrics() -> PriorityModelMetricsResponse:
+    metrics_path = (
+        Path(__file__).resolve().parent.parent.parent
+        / "models"
+        / "priority_prediction"
+        / "model_metrics.json"
+    )
+    try:
+        with open(
+            metrics_path,
+            "r",
+            encoding="utf-8",
+        ) as metrics_file:
+            metrics = json.load(metrics_file)
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+    ):
+        return PriorityModelMetricsResponse(
+            status=False,
+            message="Priority model metrics not available",
+            data=None,
+        )
+    return PriorityModelMetricsResponse(
+        status=True,
+        message="Success",
+        data=PriorityModelMetricsData(
+            accuracy=metrics["accuracy"],
+            precision=metrics["precision"],
+            recall=metrics["recall"],
+            f1_score=metrics["f1_score"],
+        ),
+    )
