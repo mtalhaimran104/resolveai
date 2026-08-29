@@ -1,25 +1,63 @@
-﻿from fastapi import FastAPI
-from app.api.routers.classification import (
-    router as classification_router,
+# app/main.py
+
+from fastapi import FastAPI
+
+from app.api.routers import (
+    faq,
+    sentiment,
+    summarization,
 )
-from app.api.routers.priority_prediction import (
-    router as priority_router,
-)
+
+
+# ============================================================
+# FASTAPI APPLICATION
+# ============================================================
+
 app = FastAPI(
-    title="ResolveAI ML Service",
+    title="ResolveAI AI Service",
     description=(
-        "AI-powered ticket classification and priority "
-        "prediction service for ResolveAI Help Desk."
+        "AI-powered student support service "
+        "for The Islamia University of Bahawalpur"
     ),
-    version="1.0.0",
+    version="2.0.0",
 )
-@app.get(
-    "/health",
-    tags=["Health"],
+
+
+# ============================================================
+# AI ENDPOINTS
+# ============================================================
+
+app.include_router(
+    faq.router
 )
-def health_check():
+
+app.include_router(
+    sentiment.router
+)
+
+app.include_router(
+    summarization.router
+)
+
+
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+
+@app.get("/health")
+def health():
     return {
         "status": "healthy",
+        "service": "ResolveAI AI Service"
     }
-app.include_router(classification_router)
-app.include_router(priority_router)
+
+
+# ============================================================
+# TEST ENDPOINT
+# ============================================================
+
+@app.get("/hello")
+def hello():
+    return {
+        "message": "Hello World"
+    }

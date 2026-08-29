@@ -52,3 +52,54 @@ def get_priority_model_metrics() -> dict:
         raise AIServiceError(
             "Priority model metrics service is unavailable."
         ) from exc
+def call_sentiment_service(text: str) -> dict:
+    """Send ticket text to the sentiment analysis service."""
+    url = f"{settings.AI_SERVICE_URL}/sentiment/"
+    try:
+        response = requests.post(
+            url,
+            json={
+                "text": text,
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Sentiment analysis service is unavailable."
+        ) from exc
+def call_summarization_service(text: str) -> dict:
+    """Send ticket text to the summarization service."""
+    url = f"{settings.AI_SERVICE_URL}/summarization/"
+    try:
+        response = requests.post(
+            url,
+            json={
+                "text": text,
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Summarization service is unavailable."
+        ) from exc
+def call_faq_service(question: str) -> dict:
+    """Send a student question to the FAQ retrieval service."""
+    url = f"{settings.AI_SERVICE_URL}/faq/"
+    try:
+        response = requests.post(
+            url,
+            json={
+                "question": question,
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "FAQ service is unavailable."
+        ) from exc
