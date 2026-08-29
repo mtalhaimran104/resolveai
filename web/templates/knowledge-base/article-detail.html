@@ -4,7 +4,7 @@
 {% block page_title %}Article Detail{% endblock %}
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-<li class="breadcrumb-item"><a href="{% url 'demo_kb_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item"><a href="{% url 'knowledge_article_list' %}">Knowledge Base</a></li>
 <li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
 {% endblock %}
 
@@ -38,13 +38,13 @@
 
                 <div class="d-flex gap-2">
                   {% if user.is_admin %}
-                  <a href="{% url 'article_edit' pk=article.pk %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
-                  <form action="{% url 'article_delete' pk=article.pk %}" method="post" class="d-inline">
+                  <a href="{% url 'knowledge_article_edit' pk=article.pk %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+                  <form action="{% url 'knowledge_article_delete' pk=article.pk %}" method="post" class="d-inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-danger btn-sm" data-ra-confirm="Delete this article? This cannot be undone."><i class="bi bi-trash me-1"></i>Delete</button>
                   </form>
                   {% endif %}
-                  <a href="{% url 'article_versions' pk=article.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clock-history me-1"></i>Version History</a>
+                  <a href="{% url 'knowledge_article_versions' pk=article.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clock-history me-1"></i>Version History</a>
                 </div>
               </div>
             </div>

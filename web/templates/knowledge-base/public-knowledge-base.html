@@ -26,7 +26,7 @@
               <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card h-100">
                   <div class="card-body d-flex flex-column">
-                    <h3 class="fs-6"><a href="{% url 'article_detail' pk=article.pk %}" class="text-decoration-none">{{ article.title }}</a></h3>
+                    <h3 class="fs-6"><a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="text-decoration-none">{{ article.title }}</a></h3>
                     <p class="text-secondary fs-7 flex-grow-1">{{ article.summary }}</p>
                     {% if article.category %}<span class="badge text-bg-secondary align-self-start">{{ article.category.name }}</span>{% endif %}
                   </div>

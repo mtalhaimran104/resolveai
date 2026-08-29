@@ -28,6 +28,38 @@
         <div class="fs-7 text-secondary">Priority</div>
         <span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span>
       </div>
+        <div class="col-6 col-md-2">
+          <div class="fs-7 text-secondary">Sentiment Analysis</div>
+
+          {% if ticket.sentiment %}
+            {% if ticket.sentiment|lower == "positive" %}
+              <span class="badge text-bg-success">
+                <i class="bi bi-emoji-smile me-1"></i>
+                {{ ticket.sentiment|title }}
+              </span>
+
+            {% elif ticket.sentiment|lower == "negative" %}
+              <span class="badge text-bg-danger">
+                <i class="bi bi-emoji-frown me-1"></i>
+                {{ ticket.sentiment|title }}
+              </span>
+
+            {% elif ticket.sentiment|lower == "neutral" %}
+              <span class="badge text-bg-secondary">
+                <i class="bi bi-emoji-neutral me-1"></i>
+                {{ ticket.sentiment|title }}
+              </span>
+
+            {% else %}
+              <span class="badge text-bg-secondary">
+                {{ ticket.sentiment|title }}
+              </span>
+            {% endif %}
+          {% else %}
+            <span class="text-secondary">—</span>
+          {% endif %}
+        </div>
+
       <div class="col-6 col-md-2">
         <div class="fs-7 text-secondary">Category</div>
         <span>{{ ticket.category.name|default:"—" }}</span>
