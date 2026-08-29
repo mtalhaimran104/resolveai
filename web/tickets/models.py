@@ -206,9 +206,6 @@ class TicketHistory(TimeStampedModel):
         STATUS_CHANGED = "STATUS_CHANGED", "Status changed"
         PRIORITY_CHANGED = "PRIORITY_CHANGED", "Priority changed"
         CATEGORY_CHANGED = "CATEGORY_CHANGED", "Category changed"
-        INTERNAL_NOTE = "INTERNAL_NOTE", "Internal note"
-        PUBLIC_REPLY = "PUBLIC_REPLY", "Public reply"
-        ATTACHMENT_ADDED = "ATTACHMENT_ADDED", "Attachment added"
 
     ticket = models.ForeignKey(
         Ticket,

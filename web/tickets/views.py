@@ -778,7 +778,7 @@ def ticket_add_comment(request, pk):
             )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 
@@ -865,7 +865,7 @@ def ticket_add_attachment(request, pk):
             )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 
@@ -981,7 +981,7 @@ def ticket_update_status(request, pk):
             )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 
@@ -1053,7 +1053,7 @@ def ticket_update_priority(request, pk):
             )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 
@@ -1131,7 +1131,7 @@ def ticket_update_category(request, pk):
             )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 
@@ -1197,7 +1197,7 @@ def ticket_resolve(request, pk):
         )
 
     return redirect(
-        "ticket_detail",
+        "tickets:ticket_detail",
         pk=ticket.pk,
     )
 

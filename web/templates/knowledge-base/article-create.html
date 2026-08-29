@@ -133,12 +133,13 @@
                                 <textarea
                                     class="form-control {% if form.summary.errors %}is-invalid{% endif %}"
                                     id="id_summary"
-                                    name="summary"
+                                    {% comment %} name="summary" {% endcomment %}
+                                    name="excerpt"
                                     rows="2"
                                     maxlength="220"
                                     required
                                     placeholder="One or two sentences shown in search results and article lists."
-                                >{{ form.summary.value|default:'' }}</textarea>
+                                >{{ form.excerpt.value|default:'' }}</textarea>
 
                                 <div class="form-text">
                                     Max 220 characters. Shown in search results and
@@ -231,17 +232,21 @@
         <textarea
             class="form-control {% if form.body.errors %}is-invalid{% endif %}"
             id="articleBody"
-            name="body"
+            {% comment %} name="body" {% endcomment %}
+            name="content"
             rows="14"
             required
-            placeholder="Write the full article content here..."
-        >{{ form.body.value|default:'' }}</textarea>
+            placeholder="Write the full article content here...">
+            {% comment %} {{ form.body.value|default:'' }} {% endcomment %}
+            {{ form.content.value|default:'' }}
+        </textarea>
 
         <div class="form-text">
             Formatting buttons are visual only for now — content is saved as plain text.
         </div>
 
-        {% if form.body.errors %}
+        {% comment %} {% if form.body.errors %} {% endcomment %}
+        {% if form.content.errors %}
             <div class="text-danger small mt-1">
                 {{ form.body.errors|striptags }}
             </div>
@@ -381,7 +386,7 @@
                                 >
                                     Status
                                 </label>
-
+                                {% comment %} 
                                 <select
                                     class="form-select"
                                     id="id_status"
@@ -397,6 +402,27 @@
 
                                     <option value="published"
                                         {% if form.status.value == "published" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Published
+                                    </option>
+                                </select> {% endcomment %}
+                                <select
+                                    class="form-select"
+                                    id="id_status"
+                                    name="status"
+                                >
+                                    <option value="DRAFT"
+                                        {% if form.status.value == "DRAFT" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Draft
+                                    </option>
+
+                                    <option value="PUBLISHED"
+                                        {% if form.status.value == "PUBLISHED" %}
                                             selected
                                         {% endif %}
                                     >
@@ -490,7 +516,7 @@
 
                         <div class="card-body d-grid gap-2">
 
-                            <button
+                            {% comment %} <button
                                 type="submit"
                                 name="action"
                                 value="publish"
@@ -498,13 +524,33 @@
                             >
                                 <i class="bi bi-send-check me-1"></i>
                                 Publish Article
+                            </button> {% endcomment %}
+                            <button
+                                type="submit"
+                                name="action"
+                                value="publish"
+                                class="btn btn-primary"
+                                onclick="document.getElementById('id_status').value='PUBLISHED';"
+                            >
+                                <i class="bi bi-send-check me-1"></i>
+                                Publish Article
                             </button>
 
+                            {% comment %} <button
+                                type="submit"
+                                name="action"
+                                value="draft"
+                                class="btn btn-outline-secondary"
+                            >
+                                <i class="bi bi-save me-1"></i>
+                                Save Draft
+                            </button> {% endcomment %}
                             <button
                                 type="submit"
                                 name="action"
                                 value="draft"
                                 class="btn btn-outline-secondary"
+                                onclick="document.getElementById('id_status').value='DRAFT';"
                             >
                                 <i class="bi bi-save me-1"></i>
                                 Save Draft
@@ -542,8 +588,8 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const editor = document.getElementById("articleEditorBody");
-    const bodyField = document.getElementById("id_body");
+    /*const editor = document.getElementById("articleEditorBody");
+    const bodyField = document.getElementById("id_body"); */
     const tagsInput = document.getElementById("articleTags");
     const tagContainer = document.getElementById("tagContainer");
 
@@ -551,14 +597,14 @@ document.addEventListener("DOMContentLoaded", function () {
     /*
      * Keep the contenteditable editor synchronized
      * with the Django textarea.
-     */
+     {% comment %} 
     if (editor && bodyField) {
 
         editor.addEventListener("input", function () {
             bodyField.value = editor.innerHTML;
         });
 
-    }
+    } {% endcomment %}
 
 
     /*
