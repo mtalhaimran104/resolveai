@@ -1,4 +1,4 @@
-from typing import Optional
+﻿from typing import Optional
 from pydantic import BaseModel, Field
 class PriorityPredictionRequest(BaseModel):
     ticket_id: int = Field(
@@ -14,6 +14,7 @@ class PriorityPredictionResponse(BaseModel):
     message: str
     data: Optional[PriorityPredictionData] = None
 class PriorityModelMetricsData(BaseModel):
+    model_version: str
     accuracy: float
     precision: float
     recall: float
@@ -22,3 +23,4 @@ class PriorityModelMetricsResponse(BaseModel):
     status: bool
     message: str
     data: Optional[PriorityModelMetricsData] = None
+

@@ -36,8 +36,8 @@ ai_service/app/models/*.pt
 ai_service/app/models/*.pth
 ai_service/app/models/*.bin
 
-# Ticket classification models
-ai_service/app/models/ticket_classification/*.pkl
-
-# Priority prediction models
-ai_service/app/models/priority_prediction/*.pkl
+# classification and priority prediction models
+ai_service/app/models/ticket_classification/ticket_classification_model.pkl
+ai_service/app/models/ticket_classification/tfidf_vectorizer.pkl
+ai_service/app/models/priority_prediction/priority_prediction_model.pkl
+ai_service/app/models/priority_prediction/tfidf_vectorizer.pkl

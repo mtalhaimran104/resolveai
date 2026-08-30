@@ -92,6 +92,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csrf",
                 "accounts.context_processors.user_roles",
                 "accounts.context_processors.sidebar_counts",
             ],
