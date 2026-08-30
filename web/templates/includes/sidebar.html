@@ -107,8 +107,13 @@
               <i class="nav-icon bi bi-tags"></i><p>Categories</p>
             </a>
           </li>
+          
 
           <li class="nav-header">KNOWLEDGE BASE</li>
+          <li class="nav-item">
+<a href="{% url 'tickets:agent_faq_list' %}" class="nav-link {% if current == 'agent_faq_list' %}active{% endif %}">              <i class="nav-icon bi bi-robot"></i><p>Suggested FAQs</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="{% url 'knowledge_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
               <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
@@ -124,6 +129,57 @@
               <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
             </a>
           </li>
+<li class="nav-header">REPORTS</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:dashboard' %}" class="nav-link">
+    <i class="nav-icon bi bi-bar-chart-line"></i>
+    <p>Reports Dashboard</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:ticket_volume' %}" class="nav-link">
+    <i class="nav-icon bi bi-graph-up"></i>
+    <p>Ticket Volume</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:resolution_time' %}" class="nav-link">
+    <i class="nav-icon bi bi-stopwatch"></i>
+    <p>Resolution Time</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:agent_performance' %}" class="nav-link">
+    <i class="nav-icon bi bi-person-lines-fill"></i>
+    <p>Agent Performance</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:department' %}" class="nav-link">
+    <i class="nav-icon bi bi-building-check"></i>
+    <p>Department Report</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:category' %}" class="nav-link">
+    <i class="nav-icon bi bi-pie-chart"></i>
+    <p>Category Report</p>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a href="{% url 'reports:ai_accuracy' %}" class="nav-link">
+    <i class="nav-icon bi bi-check2-circle"></i>
+    <p>AI Accuracy</p>
+  </a>
+</li>
+
 
           <li class="nav-header">AI &amp; AUTOMATION</li>
           <li class="nav-item">
@@ -210,6 +266,7 @@
               <i class="nav-icon bi bi-tags"></i><p>Categories</p>
             </a>
           </li>
+          
 
         {% elif user.has_role_agent %}
 
@@ -334,5 +391,6 @@
   </div>
 </aside>
 <!--end::Sidebar-->
+
 
 

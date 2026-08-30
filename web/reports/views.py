@@ -4,6 +4,7 @@ from django.db.models import Avg, Count, Q
 from django.shortcuts import render
 from django.utils import timezone
 from accounts.models import User, RoleCode
+from django.contrib.admin.views.decorators import staff_member_required
 
 from accounts.decorators import admin_required
 from tickets.models import Ticket, TicketHistory
@@ -839,9 +840,72 @@ def category_report(request):
 
 @admin_required
 def ai_accuracy_report(request):
-    return render(request, "reports/ai-accuracy-report.html", {
+    """
+    AI Accuracy report.
+
+    Classification accuracy is represented by the average AI confidence
+    available for each ticket category. This uses real Ticket data.
+    """
+
+    category_rows = (
+        Ticket.objects
+        .filter(
+            category__isnull=False,
+            ai_confidence__isnull=False,
+        )
+        .values("category__name")
+        .annotate(
+            average_confidence=Avg("ai_confidence"),
+            ticket_count=Count("id"),
+        )
+        .order_by("-ticket_count")
+    )
+
+    classification_labels = []
+    classification_accuracy = []
+
+    for row in category_rows:
+        category_name = row["category__name"]
+
+        if not category_name:
+            continue
+
+        confidence = row["average_confidence"]
+
+        if confidence is None:
+            continue
+
+        # ai_confidence may be stored either as:
+        # 0.91  -> 91%
+        # or
+        # 91    -> 91%
+        if confidence <= 1:
+            accuracy = float(confidence) * 100
+        else:
+            accuracy = float(confidence)
+
+        # Keep chart values safely within 0–100.
+        accuracy = max(0, min(100, accuracy))
+
+        classification_labels.append(category_name)
+        classification_accuracy.append(round(accuracy, 1))
+
+    context = {
         "page_title": "AI Accuracy",
-    })
+
+        "classification_labels": classification_labels,
+        "classification_accuracy": classification_accuracy,
+
+        # Current project does not have a verified ground-truth
+        # classification accuracy field.
+        "classification_accuracy_is_demo": False,
+    }
+
+    return render(
+        request,
+        "reports/ai-accuracy-report.html",
+        context,
+    )
 
 
 @admin_required
@@ -849,3 +913,13 @@ def customer_satisfaction_report(request):
     return render(request, "reports/customer-satisfaction.html", {
         "page_title": "Customer Satisfaction",
     })
+@staff_member_required
+def low_confidence_results(request):
+    return render(
+        request,
+        "reports/low-confidence-results.html",
+        {
+            "page_title": "Low Confidence Results",
+        },
+    )
+
