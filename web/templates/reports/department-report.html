@@ -1,0 +1,518 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Department Report | ResolveAI{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css" crossorigin="anonymous">
+
+{% endblock %}
+
+{% block content %}
+
+<!--begin::App Content Header-->
+
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Department Report</h1>
+      </div>
+
+
+  <div class="col-sm-6">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb float-sm-end">
+
+        <li class="breadcrumb-item">
+          <a href="{% url 'dashboard' %}">Home</a>
+        </li>
+
+        <li class="breadcrumb-item">
+          <a href="{% url 'reports:dashboard' %}">Reports</a>
+        </li>
+
+        <li class="breadcrumb-item active" aria-current="page">
+          Department Report
+        </li>
+
+      </ol>
+    </nav>
+  </div>
+</div>
+
+
+  </div>
+</div>
+
+<!--end::App Content Header-->
+
+<!--begin::App Content-->
+
+<div class="app-content">
+  <div class="container-fluid">
+
+
+<!--begin::Department Charts-->
+<div class="row g-3 mb-3">
+
+  <!-- Tickets by Department -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+
+      <div class="card-header">
+        <h3 class="card-title">Tickets by Department</h3>
+
+        <div class="card-tools">
+          <a href="{% url 'department_list' %}"
+             class="btn btn-sm btn-outline-secondary">
+            Manage Departments
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="departmentVolumeChart"
+          style="height: 320px"
+        ></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Workload Comparison -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+
+      <div class="card-header">
+        <h3 class="card-title">
+          Workload Comparison &mdash; Open vs Resolved This Month
+        </h3>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="departmentWorkloadChart"
+          style="height: 320px"
+        ></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<!--end::Department Charts-->
+
+<!--begin::Department Detail Table-->
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title">Department Detail</h3>
+  </div>
+
+  <div class="card-body p-0">
+
+    <div class="table-responsive">
+
+      <table class="table table-hover align-middle mb-0">
+
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th class="text-end">Open Tickets</th>
+            <th class="text-end">Resolved This Month</th>
+            <th class="text-end">Avg. Resolution Time</th>
+            <th class="text-end">Agent Count</th>
+            <th>Active Supervisor</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for department in department_data %}
+
+          <tr>
+
+            <td>
+              <a
+                href="{% url 'department_list' %}"
+                class="text-decoration-none"
+              >
+                {{ department.name }}
+              </a>
+            </td>
+
+            <td class="text-end">
+              {{ department.open_tickets }}
+            </td>
+
+            <td class="text-end">
+              {{ department.resolved_this_month }}
+            </td>
+
+            <td class="text-end">
+              {{ department.avg_resolution_time }}
+            </td>
+
+            <td class="text-end">
+              {{ department.agent_count }}
+            </td>
+
+            <td>
+              {% if department.active_supervisor %}
+                {{ department.active_supervisor }}
+              {% else %}
+                <span class="text-secondary">
+                  No supervisor assigned
+                </span>
+              {% endif %}
+            </td>
+
+          </tr>
+
+          {% empty %}
+
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <div class="text-secondary">
+                <i class="bi bi-building fs-3 d-block mb-2"></i>
+                No department data available.
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+<!--end::Department Detail Table-->
+
+{% if page_obj %}
+
+<!--begin::Pagination-->
+<div class="card-footer mt-3">
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+    <div class="text-secondary small">
+      Showing
+      {{ page_obj.start_index }}
+      to
+      {{ page_obj.end_index }}
+      of
+      {{ page_obj.paginator.count }}
+      departments
+    </div>
+
+    <nav aria-label="Department report pagination">
+
+      <ul class="pagination pagination-sm mb-0">
+
+        {% if page_obj.has_previous %}
+
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ page_obj.previous_page_number }}"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+
+        {% else %}
+
+          <li class="page-item disabled">
+            <span class="page-link">
+              <i class="bi bi-chevron-left"></i>
+            </span>
+          </li>
+
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+
+          {% if page_obj.number == num %}
+
+            <li class="page-item active">
+              <span class="page-link">
+                {{ num }}
+              </span>
+            </li>
+
+          {% else %}
+
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ num }}"
+              >
+                {{ num }}
+              </a>
+            </li>
+
+          {% endif %}
+
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ page_obj.next_page_number }}"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+
+        {% else %}
+
+          <li class="page-item disabled">
+            <span class="page-link">
+              <i class="bi bi-chevron-right"></i>
+            </span>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </nav>
+
+  </div>
+
+</div>
+<!--end::Pagination-->
+
+{% endif %}
+
+
+  </div>
+</div>
+
+<!--end::App Content-->
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script
+  src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+  crossorigin="anonymous">
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  "use strict";
+
+  const isDark =
+    document.documentElement.getAttribute("data-bs-theme") === "dark";
+
+  const foreColor = isDark ? "#c3c2b7" : "#52514e";
+  const gridColor = isDark ? "#2b3040" : "#e7e9ee";
+
+  /*
+   * These values come from the Django view.
+   *
+   * Example:
+   *
+   * department_chart_labels = [
+   *     "IT Support",
+   *     "Finance",
+   *     "Admissions"
+   * ]
+   *
+   * department_chart_values = [
+   *     198, 68, 40
+   * ]
+   */
+
+  const deptLabels = {{ chart_data.labels|default:"[]"|safe }};
+  const deptVolume = {{ chart_data.volume|default:"[]"|safe }};
+  const openTickets = {{ chart_data.open|default:"[]"|safe }};
+  const resolvedTickets = {{ chart_data.resolved|default:"[]"|safe }};
+
+
+  /*
+   * ---------------------------------------------------------
+   * Tickets by Department
+   * ---------------------------------------------------------
+   */
+
+  const volumeElement =
+    document.querySelector("#departmentVolumeChart");
+
+  if (volumeElement && deptLabels.length) {
+
+    new ApexCharts(volumeElement, {
+
+      series: [
+        {
+          name: "Tickets",
+          data: deptVolume
+        }
+      ],
+
+      chart: {
+        type: "bar",
+        height: 320,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: [
+        "#2a78d6",
+        "#eb6834",
+        "#1baf7a",
+        "#eda100",
+        "#7950f2",
+        "#e64980",
+        "#20c997",
+        "#fd7e14"
+      ],
+
+      plotOptions: {
+        bar: {
+          distributed: true,
+          borderRadius: 4,
+          columnWidth: "50%"
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      legend: {
+        show: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      xaxis: {
+        categories: deptLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+
+  /*
+   * ---------------------------------------------------------
+   * Open vs Resolved
+   * ---------------------------------------------------------
+   */
+
+  const workloadElement =
+    document.querySelector("#departmentWorkloadChart");
+
+  if (workloadElement && deptLabels.length) {
+
+    new ApexCharts(workloadElement, {
+
+      series: [
+
+        {
+          name: "Open Tickets",
+          data: openTickets
+        },
+
+        {
+          name: "Resolved This Month",
+          data: resolvedTickets
+        }
+
+      ],
+
+      chart: {
+        type: "bar",
+        height: 320,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: [
+        "#2a78d6",
+        "#1baf7a"
+      ],
+
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          columnWidth: "55%"
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      legend: {
+        labels: {
+          colors: foreColor
+        }
+      },
+
+      xaxis: {
+        categories: deptLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+});
+
+</script>
+
+{% endblock %}

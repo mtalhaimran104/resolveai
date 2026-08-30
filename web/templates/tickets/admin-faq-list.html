@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Suggested FAQs{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <h1 class="h3 mb-4">Suggested FAQs</h1>
+
+    {% if faqs %}
+        {% for faq in faqs %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>{{ faq.question }}</h5>
+                    <p>{{ faq.answer }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            No suggested FAQs have been generated yet.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Django settings for the ResolveAI web portal (Phase 1).
 
 Configuration values are read from environment variables so the same
@@ -182,6 +182,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "login"
+LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"

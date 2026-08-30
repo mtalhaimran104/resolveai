@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Performance | ResolveAI{% endblock %}
+
+{% block content %}
+
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Agent Performance</h1>
+      </div>
+
+      <div class="col-sm-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard' %}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+<li class="breadcrumb-item">
+    <a href="{% url 'reports:dashboard' %}">
+        Reports
+    </a>
+</li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Agent Performance
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="app-content">
+  <div class="container-fluid">
+
+    <!-- Comparison Chart -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">Resolved Tickets by Agent</h3>
+      </div>
+
+      <div class="card-body">
+        <div id="agentComparisonChart" style="height: 320px"></div>
+      </div>
+    </div>
+
+
+    <!-- Agent Performance Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Agent Performance Detail</h3>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th class="text-end">Assigned</th>
+                <th class="text-end">Resolved</th>
+                <th class="text-end">Avg. Response</th>
+                <th class="text-end">Avg. Resolution</th>
+                <th class="text-end">Reopened</th>
+                <th class="text-end">Satisfaction</th>
+                <th class="text-end">AI Suggestions Used</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for agent in agents %}
+              <tr>
+                <td>
+  <div class="d-flex align-items-center">
+
+    {% if agent.user.profile_image %}
+      <img
+        src="{{ agent.user.profile_image.url }}"
+        class="img-size-32 rounded-circle me-2"
+        alt="{{ agent.user.get_full_name }}"
+      />
+    {% endif %}
+
+    <span class="text-decoration-none">
+      {{ agent.user.get_full_name|default:agent.user.username }}
+    </span>
+
+    {% if agent.department %}
+      <span class="badge text-bg-secondary ms-2">
+        {{ agent.department.name }}
+      </span>
+    {% endif %}
+
+  </div>
+</td>
+
+                <td class="text-end">
+                  {{ agent.assigned }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.resolved }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.avg_response }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.avg_resolution }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.reopened }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.satisfaction }}
+                </td>
+
+                <td class="text-end">
+                  {{ agent.ai_suggestions_used }}%
+                </td>
+              </tr>
+
+              {% empty %}
+              <tr>
+                <td colspan="8" class="text-center py-4 text-secondary">
+                  No agent performance data available.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"></script>
+
+{{ chart_labels|json_script:"agent-chart-labels" }}
+{{ chart_values|json_script:"agent-chart-values" }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chartElement = document.getElementById("agentComparisonChart");
+
+    if (!chartElement) {
+        console.error("Agent Performance: chart container not found.");
+        return;
+    }
+
+    if (typeof ApexCharts === "undefined") {
+        console.error("Agent Performance: ApexCharts did not load.");
+        return;
+    }
+
+    const labelsElement = document.getElementById("agent-chart-labels");
+    const valuesElement = document.getElementById("agent-chart-values");
+
+    if (!labelsElement || !valuesElement) {
+        console.error("Agent Performance: chart data elements not found.");
+        return;
+    }
+
+    let labels;
+    let values;
+
+    try {
+        labels = JSON.parse(labelsElement.textContent);
+        values = JSON.parse(valuesElement.textContent);
+    } catch (error) {
+        console.error("Agent Performance: invalid chart JSON.", error);
+        return;
+    }
+
+    console.log("Agent Performance labels:", labels);
+    console.log("Agent Performance values:", values);
+
+    if (!Array.isArray(labels) || !Array.isArray(values)) {
+        console.error("Agent Performance: chart data is not an array.");
+        return;
+    }
+
+    if (labels.length === 0 || values.length === 0) {
+        console.warn("Agent Performance: no chart data available.");
+        return;
+    }
+
+    /*
+     * Convert all values to real JavaScript numbers.
+     * This prevents ApexCharts from treating values such as "2"
+     * or "2.2" as strings.
+     */
+    values = values.map(function (value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number : 0;
+    });
+
+    /*
+     * Make sure the old chart contents are completely removed.
+     */
+    chartElement.innerHTML = "";
+
+    const isDark =
+        document.documentElement.getAttribute("data-bs-theme") === "dark";
+
+    const foreColor = isDark ? "#c3c2b7" : "#52514e";
+    const gridColor = isDark ? "#2b3040" : "#e7e9ee";
+
+    const chartOptions = {
+
+        chart: {
+            type: "bar",
+            height: 320,
+            toolbar: {
+                show: false
+            },
+            animations: {
+                enabled: true
+            }
+        },
+
+        series: [
+            {
+                name: "Resolved Tickets",
+                data: values
+            }
+        ],
+
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "45%",
+                borderRadius: 4,
+                borderRadiusApplication: "end"
+            }
+        },
+
+        dataLabels: {
+            enabled: true,
+            formatter: function (value) {
+                return value;
+            }
+        },
+
+        xaxis: {
+            categories: labels,
+            labels: {
+                style: {
+                    colors: foreColor
+                }
+            }
+        },
+
+        yaxis: {
+            min: 0,
+            forceNiceScale: true,
+            decimalsInFloat: 0,
+            labels: {
+                style: {
+                    colors: foreColor
+                }
+            }
+        },
+
+        grid: {
+            borderColor: gridColor,
+            strokeDashArray: 4
+        },
+
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return value + " tickets";
+                }
+            }
+        },
+
+        legend: {
+            show: false
+        }
+    };
+
+    const chart = new ApexCharts(
+        chartElement,
+        chartOptions
+    );
+
+    chart.render().then(function () {
+        console.log("Agent Performance bar chart rendered successfully.");
+    }).catch(function (error) {
+        console.error("Agent Performance chart render error:", error);
+    });
+
+});
+</script>
+
+{% endblock %}

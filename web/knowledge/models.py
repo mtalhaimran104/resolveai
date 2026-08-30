@@ -1,5 +1,5 @@
 from django.db import models
-from tickets.models import TicketCategory
+from classification.models import TicketCategory
 # Create your models here.
 from django.conf import settings
 from django.db import models
@@ -48,7 +48,10 @@ class KnowledgeArticle(TimeStampedModel):
     is_public = models.BooleanField(
         default=False,
     )
-
+    
+    include_in_ai_knowledge_base = models.BooleanField(
+        default=False,
+    )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -142,35 +145,35 @@ class KnowledgeArticleVersion(models.Model):
 #         return self.title
 
 
-class KnowledgeArticleVersion(models.Model):
-    article = models.ForeignKey(
-        KnowledgeArticle,
-        on_delete=models.CASCADE,
-        related_name="versions",
-    )
+# class KnowledgeArticleVersion(models.Model):
+#     article = models.ForeignKey(
+#         KnowledgeArticle,
+#         on_delete=models.CASCADE,
+#         related_name="versions",
+#     )
 
-    version_number = models.PositiveIntegerField()
-    title = models.CharField(max_length=255)
-    content = models.TextField()
+#     version_number = models.PositiveIntegerField()
+#     title = models.CharField(max_length=255)
+#     content = models.TextField()
 
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name="knowledge_article_versions",
-    )
+#     created_by = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.PROTECT,
+#         related_name="knowledge_article_versions",
+#     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = "knowledge_article_versions"
-        ordering = ["-version_number"]
+#     class Meta:
+#         db_table = "knowledge_article_versions"
+#         ordering = ["-version_number"]
 
-        constraints = [
-            models.UniqueConstraint(
-                fields=["article", "version_number"],
-                name="uniq_article_version",
-            ),
-        ]
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=["article", "version_number"],
+#                 name="uniq_article_version",
+#             ),
+#         ]
 
-    def __str__(self):
-        return f"{self.article.title} v{self.version_number}"
+#     def __str__(self):
+#         return f"{self.article.title} v{self.version_number}"
