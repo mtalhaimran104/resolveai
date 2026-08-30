@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resolution Time | ResolveAI{% endblock %}
+
+{% block content %}
+
+<!-- App Content Header -->
+
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Resolution Time</h1>
+      </div>
+
+
+  <div class="col-sm-6">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb float-sm-end mb-0">
+        <li class="breadcrumb-item">
+<a href="{% url 'dashboard' %}">Home</a>        </li>
+
+        <li class="breadcrumb-item">
+          <a href="{% url 'reports:dashboard' %}">Reports</a>
+        </li>
+
+        <li class="breadcrumb-item active" aria-current="page">
+          Resolution Time
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+
+  </div>
+</div>
+<!-- End App Content Header -->
+
+<!-- App Content -->
+
+<div class="app-content">
+  <div class="container-fluid">
+
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-3">
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card ra-stat-card h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+
+        <span class="ra-stat-icon text-bg-primary">
+          <i class="bi bi-reply-fill"></i>
+        </span>
+
+        <div>
+          <div class="ra-stat-value">24m</div>
+          <div class="ra-stat-label">
+            Avg. First Response Time
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card ra-stat-card h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+
+        <span class="ra-stat-icon text-bg-info">
+          <i class="bi bi-stopwatch"></i>
+        </span>
+
+        <div>
+          <div class="ra-stat-value">18h 40m</div>
+          <div class="ra-stat-label">
+            Avg. Resolution Time
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card ra-stat-card h-100 border-start border-danger border-4">
+      <div class="card-body d-flex align-items-center gap-3">
+
+        <span class="ra-stat-icon text-bg-danger">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </span>
+
+        <div>
+          <div class="ra-stat-value text-danger">7</div>
+          <div class="ra-stat-label">
+            SLA Breaches (Last 30 Days)
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card ra-stat-card h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+
+        <span class="ra-stat-icon text-bg-success">
+          <i class="bi bi-graph-down-arrow"></i>
+        </span>
+
+        <div>
+          <div class="ra-stat-value text-success">&minus;6%</div>
+          <div class="ra-stat-label">
+            Resolution Time Trend vs Last Month
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- End Stat Cards -->
+
+
+<!-- Time by Priority + Department -->
+<div class="row g-3 mb-3">
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+
+      <div class="card-header">
+        <h3 class="card-title">
+          Avg. Resolution Time by Priority
+        </h3>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="timeByPriorityChart"
+          style="height: 300px;"
+        ></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+
+      <div class="card-header">
+        <h3 class="card-title">
+          Avg. Resolution Time by Department
+        </h3>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="timeByDepartmentChart"
+          style="height: 300px;"
+        ></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<!-- End Time by Priority + Department -->
+
+
+<!-- Trend Chart -->
+<div class="card mb-3">
+
+  <div class="card-header">
+    <h3 class="card-title">
+      Avg. Resolution Time Trend &mdash; Last 8 Weeks
+    </h3>
+  </div>
+
+  <div class="card-body">
+    <div
+      id="timeTrendChart"
+      style="height: 300px;"
+    ></div>
+  </div>
+
+</div>
+<!-- End Trend Chart -->
+
+
+<!-- Detail Table -->
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title">
+      Resolution Time Detail by Priority
+    </h3>
+  </div>
+
+  <div class="card-body p-0">
+
+    <div class="table-responsive">
+
+      <table class="table table-hover align-middle mb-0">
+
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th class="text-end">Avg. First Response</th>
+            <th class="text-end">Avg. Resolution Time</th>
+            <th class="text-end">Tickets Resolved</th>
+            <th class="text-end">SLA Target</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>
+              <span class="badge badge-priority-critical">
+                Critical
+              </span>
+            </td>
+            <td class="text-end">6m</td>
+            <td class="text-end">3h 30m</td>
+            <td class="text-end">15</td>
+            <td class="text-end">4h</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="badge badge-priority-high">
+                High
+              </span>
+            </td>
+            <td class="text-end">14m</td>
+            <td class="text-end">9h 00m</td>
+            <td class="text-end">45</td>
+            <td class="text-end">12h</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="badge badge-priority-medium">
+                Medium
+              </span>
+            </td>
+            <td class="text-end">28m</td>
+            <td class="text-end">18h 00m</td>
+            <td class="text-end">140</td>
+            <td class="text-end">24h</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="badge badge-priority-low">
+                Low
+              </span>
+            </td>
+            <td class="text-end">52m</td>
+            <td class="text-end">28h 00m</td>
+            <td class="text-end">28h 00m</td>
+            <td class="text-end">120</td>
+            <td class="text-end">48h</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- End Detail Table -->
+
+
+  </div>
+</div>
+<!-- End App Content -->
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script
+  src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+  crossorigin="anonymous">
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  "use strict";
+
+  const isDark =
+    document.documentElement.getAttribute("data-bs-theme") === "dark";
+
+  const foreColor = isDark ? "#c3c2b7" : "#52514e";
+  const gridColor = isDark ? "#2b3040" : "#e7e9ee";
+
+
+  /* ==========================================================
+     Resolution Time by Priority
+     ========================================================== */
+
+  const priorityElement =
+    document.querySelector("#timeByPriorityChart");
+
+  if (priorityElement) {
+
+    new ApexCharts(priorityElement, {
+
+      series: [{
+        name: "Avg. Hours to Resolve",
+        data: [28, 18, 9, 3.5]
+      }],
+
+      chart: {
+        type: "bar",
+        height: 300,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: [
+        "#6c757d",
+        "#0dcaf0",
+        "#d98c00",
+        "#c0293e"
+      ],
+
+      plotOptions: {
+        bar: {
+          distributed: true,
+          borderRadius: 4,
+          columnWidth: "55%"
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      legend: {
+        show: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      xaxis: {
+        categories: [
+          "Low",
+          "Medium",
+          "High",
+          "Critical"
+        ],
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        title: {
+          text: "Hours",
+          style: {
+            color: foreColor
+          }
+        },
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+
+  /* ==========================================================
+     Resolution Time by Department
+     ========================================================== */
+
+  const departmentElement =
+    document.querySelector("#timeByDepartmentChart");
+
+  if (departmentElement) {
+
+    new ApexCharts(departmentElement, {
+
+      series: [{
+        name: "Avg. Hours to Resolve",
+        data: [16.5, 21, 19, 24]
+      }],
+
+      chart: {
+        type: "bar",
+        height: 300,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: [
+        "#2a78d6",
+        "#eb6834",
+        "#1baf7a",
+        "#eda100"
+      ],
+
+      plotOptions: {
+        bar: {
+          distributed: true,
+          borderRadius: 4,
+          columnWidth: "55%"
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      legend: {
+        show: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      xaxis: {
+        categories: [
+          "IT Support",
+          "Finance",
+          "Admissions",
+          "Examination"
+        ],
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        title: {
+          text: "Hours",
+          style: {
+            color: foreColor
+          }
+        },
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+
+  /* ==========================================================
+     Resolution Time Trend
+     ========================================================== */
+
+  const trendElement =
+    document.querySelector("#timeTrendChart");
+
+  if (trendElement) {
+
+    new ApexCharts(trendElement, {
+
+      series: [{
+        name: "Avg. Resolution Time (hrs)",
+        data: [
+          22.4,
+          21.1,
+          20.3,
+          19.6,
+          19.0,
+          18.9,
+          18.3,
+          18.7
+        ]
+      }],
+
+      chart: {
+        type: "line",
+        height: 300,
+        foreColor: foreColor,
+        toolbar: {
+          show: false
+        }
+      },
+
+      colors: ["#2a78d6"],
+
+      stroke: {
+        curve: "smooth",
+        width: 3
+      },
+
+      markers: {
+        size: 4
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      grid: {
+        borderColor: gridColor
+      },
+
+      xaxis: {
+        categories: [
+          "Jun 8",
+          "Jun 15",
+          "Jun 22",
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27"
+        ],
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      },
+
+      yaxis: {
+        title: {
+          text: "Hours",
+          style: {
+            color: foreColor
+          }
+        },
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+      }
+
+    }).render();
+
+  }
+
+});
+</script>
+
+{% endblock %}

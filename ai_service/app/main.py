@@ -2,9 +2,9 @@
 
 from fastapi import FastAPI
 
-from app.api.routers import (
-    priority_prediction,
+from app.api.routes import (
     classification,
+    priority_prediction,
     faq,
     sentiment,
     summarization,
@@ -38,6 +38,12 @@ app.include_router(
 
 app.include_router(
     faq.router
+)
+app.include_router(
+    classification.router
+)
+app.include_router(
+    priority_prediction.router
 )
 
 app.include_router(

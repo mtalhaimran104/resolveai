@@ -4,14 +4,14 @@
 {% block page_title %}Edit Article{% endblock %}
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-<li class="breadcrumb-item"><a href="{% url 'demo_kb_article_list' %}">Knowledge Base</a></li>
-<li class="breadcrumb-item"><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'knowledge_article_list' %}">Knowledge Base</a></li>
+<li class="breadcrumb-item"><a href="{% url 'knowledge_article_detail' pk=article.pk %}">{{ article.title }}</a></li>
 <li class="breadcrumb-item active" aria-current="page">Edit</li>
 {% endblock %}
 
 {% block content %}
 
-            <form novalidate action="{% url 'article_edit' pk=article.pk %}" method="post">
+            <form novalidate action="{% url 'knowledge_article_edit' pk=article.pk %}" method="post">
               {% csrf_token %}
               <div class="row">
                 <div class="col-lg-8">
@@ -29,18 +29,40 @@
                         </div>
                         <div class="col-12">
                           <label for="articleSummary" class="form-label">Summary <span class="text-danger">*</span></label>
-                          <textarea class="form-control" id="articleSummary" name="summary" rows="2" maxlength="220" required>{{ form.summary.value|default:article.summary }}</textarea>
+                          <textarea
+                              class="form-control"
+                              id="articleExcerpt"
+                              name="excerpt"
+                              rows="2"
+                              maxlength="220"
+                              required
+                          >{{ form.excerpt.value|default:article.excerpt }}</textarea>                          
                           {% if form.summary.errors %}<div class="text-danger small mt-1">{{ form.summary.errors|striptags }}</div>{% endif %}
                         </div>
                         <div class="col-12">
                           <label for="articleBody" class="form-label">Body <span class="text-danger">*</span></label>
-                          <textarea class="form-control" id="articleBody" name="body" rows="12" required>{{ form.body.value|default:article.body }}</textarea>
+                          <textarea class="form-control" id="articleContent" name="content" rows="12" required>{{ form.content.value|default:article.content }}</textarea>
                           {% if form.body.errors %}<div class="text-danger small mt-1">{{ form.body.errors|striptags }}</div>{% endif %}
                         </div>
-                        <div class="col-12">
+                        {% comment %} <div class="col-12">
                           <label for="articleTags" class="form-label">Tags</label>
                           <input type="text" class="form-control" id="articleTags" name="tags" value="{{ form.tags.value|default:article.tags }}" placeholder="password, account, login" />
                           <div class="form-text">Comma-separated.</div>
+                        </div> {% endcomment %}
+                        <div class="col-12">
+                            <label for="articleTags" class="form-label">Tags</label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="articleTags"
+                                value="password, account, login"
+                                readonly
+                            />
+
+                            <div class="form-text">
+                                Comma-separated.
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -84,7 +106,7 @@
 
                   <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
-                    <a href="{% url 'article_detail' pk=article.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="btn btn-outline-secondary">Cancel</a>
                   </div>
                 </div>
               </div>

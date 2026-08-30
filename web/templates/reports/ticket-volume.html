@@ -1,0 +1,524 @@
+
+{% extends "base.html" %}
+
+{% block title %}Ticket Volume | ResolveAI{% endblock %}
+
+{% block content %}
+
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Ticket Volume</h1>
+      </div>
+
+      <div class="col-sm-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item">
+<a href="{% url 'dashboard' %}">Home</a>            <li class="breadcrumb-item">
+              <a href="{% url 'reports:dashboard' %}">Reports</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Ticket Volume
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-content">
+  <div class="container-fluid">
+
+    <!-- Filters -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <form class="row g-3 align-items-end" method="get">
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterFrom" class="form-label">From</label>
+            <input
+              type="date"
+              class="form-control"
+              id="filterFrom"
+              name="date_from"
+              value="{{ date_from|default:'2026-06-01' }}"
+            />
+          </div>
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterTo" class="form-label">To</label>
+            <input
+              type="date"
+              class="form-control"
+              id="filterTo"
+              name="date_to"
+              value="{{ date_to|default:'2026-07-30' }}"
+            />
+          </div>
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterGroupBy" class="form-label">Group By</label>
+            <select
+              class="form-select"
+              id="filterGroupBy"
+              name="group_by"
+            >
+              <option value="day" {% if group_by == 'day' %}selected{% endif %}>
+                Day
+              </option>
+              <option value="week" {% if group_by == 'week' or not group_by %}selected{% endif %}>
+                Week
+              </option>
+              <option value="month" {% if group_by == 'month' %}selected{% endif %}>
+                Month
+              </option>
+            </select>
+          </div>
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterDepartment" class="form-label">
+              Department
+            </label>
+            <select
+              class="form-select"
+              id="filterDepartment"
+              name="department"
+            >
+              <option value="">All Departments</option>
+
+              {% for department in departments %}
+                <option
+                  value="{{ department.pk }}"
+                  {% if selected_department == department.pk|stringformat:"s" %}selected{% endif %}
+                >
+                  {{ department.name }}
+                </option>
+              {% empty %}
+                <option value="its">IT Support</option>
+                <option value="fin">Finance</option>
+                <option value="adm">Admissions</option>
+                <option value="exm">Examination</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterCategory" class="form-label">
+              Category
+            </label>
+            <select
+              class="form-select"
+              id="filterCategory"
+              name="category"
+            >
+              <option value="">All Categories</option>
+
+              {% for category in categories %}
+                <option
+                  value="{{ category.pk }}"
+                  {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}
+                >
+                  {{ category.name }}
+                </option>
+              {% empty %}
+                <option value="acc-acs">Account Access</option>
+                <option value="pwd-rst">Password Reset</option>
+                <option value="tech-err">Technical Error</option>
+                <option value="pay-iss">Payment Issue</option>
+                <option value="ref-req">Refund Request</option>
+                <option value="adm-inq">Admission Inquiry</option>
+                <option value="doc-ver">Document Verification</option>
+                <option value="grd-dsp">Grade Dispute</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-sm-6 col-lg-2">
+            <label for="filterStatus" class="form-label">
+              Status
+            </label>
+            <select
+              class="form-select"
+              id="filterStatus"
+              name="status"
+            >
+              <option value="">All Statuses</option>
+              <option value="open" {% if selected_status == 'open' %}selected{% endif %}>
+                Open
+              </option>
+              <option value="in-progress" {% if selected_status == 'in-progress' %}selected{% endif %}>
+                In Progress
+              </option>
+              <option value="waiting" {% if selected_status == 'waiting' %}selected{% endif %}>
+                Waiting for User
+              </option>
+              <option value="resolved" {% if selected_status == 'resolved' %}selected{% endif %}>
+                Resolved
+              </option>
+              <option value="closed" {% if selected_status == 'closed' %}selected{% endif %}>
+                Closed
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-funnel me-1"></i>
+              Apply Filters
+            </button>
+
+            <a
+              href="{% url 'reports:ticket_volume' %}"
+              class="btn btn-outline-secondary"
+            >
+              Reset
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Comparison Stat Deltas -->
+    <div class="row g-3 mb-3">
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body">
+            <div class="ra-stat-label mb-1">
+              New Tickets vs Previous Period
+            </div>
+
+            <div class="ra-stat-value fs-4 text-success">
+              <i class="bi bi-arrow-up-short"></i>
+              +{{ new_ticket_change|default:'12' }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body">
+            <div class="ra-stat-label mb-1">
+              Resolved Tickets vs Previous Period
+            </div>
+
+            <div class="ra-stat-value fs-4 text-success">
+              <i class="bi bi-arrow-up-short"></i>
+              +{{ resolved_ticket_change|default:'8' }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body">
+            <div class="ra-stat-label mb-1">
+              Avg. Resolution Time vs Previous Period
+            </div>
+
+            <div class="ra-stat-value fs-4 text-success">
+              <i class="bi bi-arrow-down-short"></i>
+              −{{ resolution_time_change|default:'6' }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+          <div class="card-body">
+            <div class="ra-stat-label mb-1">
+              Net Backlog Change
+            </div>
+
+            <div class="ra-stat-value fs-4 text-danger">
+              <i class="bi bi-arrow-up-short"></i>
+              +{{ backlog_change|default:'18' }} tickets
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- Ticket Volume Chart -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">
+          Ticket Volume — Current Period
+        </h3>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="volumeTrendChart"
+          style="height: 320px"
+        ></div>
+      </div>
+    </div>
+
+
+    <!-- Volume Detail Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          Volume Detail by {{ group_by|default:'Week'|title }}
+        </h3>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+
+          <table class="table table-hover align-middle mb-0">
+
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th class="text-end">New Tickets</th>
+                <th class="text-end">Resolved Tickets</th>
+                <th class="text-end">Net Change</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {% for row in volume_data %}
+              <tr>
+
+                <td>
+                  {{ row.period }}
+
+                  {% if row.in_progress %}
+                    <span class="badge text-bg-secondary ms-1">
+                      In Progress
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td class="text-end">
+                  {{ row.new_tickets }}
+                </td>
+
+                <td class="text-end">
+                  {{ row.resolved_tickets }}
+                </td>
+
+                <td
+                  class="text-end {% if row.net_change > 0 %}text-danger{% else %}text-success{% endif %}"
+                >
+                  {% if row.net_change > 0 %}
+                    +{{ row.net_change }}
+                  {% else %}
+                    {{ row.net_change }}
+                  {% endif %}
+                </td>
+
+              </tr>
+
+              {% empty %}
+
+              <!-- Temporary fallback data -->
+              <tr>
+                <td>Jun 8 – Jun 14, 2026</td>
+                <td class="text-end">38</td>
+                <td class="text-end">35</td>
+                <td class="text-end text-danger">+3</td>
+              </tr>
+
+              <tr>
+                <td>Jun 15 – Jun 21, 2026</td>
+                <td class="text-end">42</td>
+                <td class="text-end">40</td>
+                <td class="text-end text-danger">+2</td>
+              </tr>
+
+              <tr>
+                <td>Jun 22 – Jun 28, 2026</td>
+                <td class="text-end">45</td>
+                <td class="text-end">41</td>
+                <td class="text-end text-danger">+4</td>
+              </tr>
+
+              <tr>
+                <td>Jun 29 – Jul 5, 2026</td>
+                <td class="text-end">40</td>
+                <td class="text-end">44</td>
+                <td class="text-end text-success">−4</td>
+              </tr>
+
+              <tr>
+                <td>Jul 6 – Jul 12, 2026</td>
+                <td class="text-end">51</td>
+                <td class="text-end">46</td>
+                <td class="text-end text-danger">+5</td>
+              </tr>
+
+              <tr>
+                <td>Jul 13 – Jul 19, 2026</td>
+                <td class="text-end">47</td>
+                <td class="text-end">45</td>
+                <td class="text-end text-danger">+2</td>
+              </tr>
+
+              <tr>
+                <td>Jul 20 – Jul 26, 2026</td>
+                <td class="text-end">53</td>
+                <td class="text-end">50</td>
+                <td class="text-end text-danger">+3</td>
+              </tr>
+
+              <tr>
+                <td>
+                  Jul 27 – Aug 2, 2026
+                  <span class="badge text-bg-secondary ms-1">
+                    In Progress
+                  </span>
+                </td>
+
+                <td class="text-end">49</td>
+                <td class="text-end">52</td>
+                <td class="text-end text-success">−3</td>
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
+  crossorigin="anonymous"
+/>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script
+  src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+(function () {
+  'use strict';
+
+  const isDark =
+    document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+  const foreColor = isDark ? '#c3c2b7' : '#52514e';
+  const gridColor = isDark ? '#2b3040' : '#e7e9ee';
+
+  const categorical = [
+    '#2a78d6',
+    '#eb6834',
+    '#1baf7a'
+  ];
+
+  const chartElement =
+    document.querySelector('#volumeTrendChart');
+
+  if (!chartElement) {
+    return;
+  }
+
+  new ApexCharts(chartElement, {
+
+    series: [
+      {
+        name: 'New Tickets',
+        data: {{ chart_new_tickets|default:'[38, 42, 45, 40, 51, 47, 53, 49]'|safe }}
+      },
+      {
+        name: 'Resolved Tickets',
+        data: {{ chart_resolved_tickets|default:'[35, 40, 41, 44, 46, 45, 50, 52]'|safe }}
+      }
+    ],
+
+    chart: {
+      type: 'line',
+      height: 320,
+      foreColor: foreColor,
+      toolbar: {
+        show: false
+      }
+    },
+
+    colors: [
+      categorical[0],
+      categorical[2]
+    ],
+
+    stroke: {
+      curve: 'smooth',
+      width: 3
+    },
+
+    markers: {
+      size: 4
+    },
+
+    dataLabels: {
+      enabled: false
+    },
+
+    grid: {
+      borderColor: gridColor
+    },
+
+    legend: {
+      labels: {
+        colors: foreColor
+      }
+    },
+
+    xaxis: {
+      categories:
+        {{ chart_labels|default:'["Jun 8", "Jun 15", "Jun 22", "Jun 29", "Jul 6", "Jul 13", "Jul 20", "Jul 27"]'|safe }},
+
+      labels: {
+        style: {
+          colors: foreColor
+        }
+      }
+    },
+
+    yaxis: {
+      labels: {
+        style: {
+          colors: foreColor
+        }
+      }
+    }
+
+  }).render();
+
+})();
+</script>
+
+{% endblock %}
+

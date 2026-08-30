@@ -27,6 +27,7 @@ def article_list(request):
             "current": "knowledge_article_list",
         },
     )
+
 @agent_or_supervisor_required
 def article_create(request):
     categories = TicketCategory.objects.filter(
@@ -41,7 +42,7 @@ def article_create(request):
 
             article.author = request.user
 
-            # Generate slug if the user left it blank
+            # Generate slug if blank
             if not article.slug:
                 slug = slugify(article.title)
 
@@ -56,26 +57,25 @@ def article_create(request):
 
                 article.slug = slug
 
-            # Set publish information
+            # Publish settings
             if article.status == KnowledgeArticle.Status.PUBLISHED:
                 article.is_public = True
-                article.published_at = (
-                    article.published_at or timezone.now()
-                )
+
+                if not article.published_at:
+                    article.published_at = timezone.now()
+
             else:
+                article.is_public = False
                 article.published_at = None
 
             article.save()
-
-            # Save tags if your model uses a normal field
-            form.save_m2m()
 
             # Create first version
             KnowledgeArticleVersion.objects.create(
                 article=article,
                 version_number=1,
                 title=article.title,
-                content=article.body,
+                content=article.content,
                 created_by=request.user,
             )
 
@@ -90,9 +90,7 @@ def article_create(request):
                     f"Article '{article.title}' saved as draft successfully.",
                 )
 
-            return redirect(
-                "knowledge_article_list"
-            )
+            return redirect("knowledge_article_list")
 
     else:
         form = KnowledgeArticleForm()
@@ -106,6 +104,88 @@ def article_create(request):
             "current": "knowledge_article_create",
         },
     )
+
+# @agent_or_supervisor_required
+# def article_create(request):
+#     categories = TicketCategory.objects.filter(
+#         is_active=True
+#     ).order_by("name")
+
+#     if request.method == "POST":
+#         form = KnowledgeArticleForm(request.POST)
+
+#         if form.is_valid():
+#             article = form.save(commit=False)
+
+#             article.author = request.user
+
+#             # Generate slug if the user left it blank
+#             if not article.slug:
+#                 slug = slugify(article.title)
+
+#                 original_slug = slug
+#                 counter = 2
+
+#                 while KnowledgeArticle.objects.filter(
+#                     slug=slug
+#                 ).exists():
+#                     slug = f"{original_slug}-{counter}"
+#                     counter += 1
+
+#                 article.slug = slug
+
+#             # Set publish information
+#             if article.status == KnowledgeArticle.Status.PUBLISHED:
+#                 article.is_public = True
+#                 article.published_at = (
+#                     article.published_at or timezone.now()
+#                 )
+#             else:
+#                 article.published_at = None
+
+#             article.save()
+
+#             # Save tags if your model uses a normal field
+#             form.save_m2m()
+
+#             # Create first version
+#             KnowledgeArticleVersion.objects.create(
+#                 article=article,
+#                 version_number=1,
+#                 title=article.title,
+#                 # content=article.body,
+#                 content=article.content,
+#                 created_by=request.user,
+#             )
+
+#             if article.status == KnowledgeArticle.Status.PUBLISHED:
+#                 messages.success(
+#                     request,
+#                     f"Article '{article.title}' published successfully.",
+#                 )
+#             else:
+#                 messages.success(
+#                     request,
+#                     f"Article '{article.title}' saved as draft successfully.",
+#                 )
+
+#             return redirect(
+#                 "knowledge_article_list"
+#             )
+
+#     else:
+#         form = KnowledgeArticleForm()
+
+#     return render(
+#         request,
+#         "knowledge-base/article-create.html",
+#         {
+#             "form": form,
+#             "categories": categories,
+#             "current": "knowledge_article_create",
+#         },
+#     )
+
 # @agent_or_supervisor_required
 # def article_create(request):
 #     if request.method == "POST":
@@ -323,7 +403,7 @@ def article_detail(request, pk):
 
     return render(
         request,
-        "knowledge/article-detail.html",
+        "knowledge-base/article-detail.html",
         {
             "article": article,
             "current": "knowledge_article_detail",
@@ -395,7 +475,7 @@ def article_edit(request, pk):
 
     return render(
         request,
-        "knowledge/article-edit.html",
+        "knowledge-base/article-edit.html",
         {
             "article": article,
             "current": "knowledge_article_edit",
@@ -479,5 +559,26 @@ def public_article_detail(request, slug):
         {
             "article": article,
             "current": "public_knowledge_base",
+        },
+    )
+
+@agent_or_supervisor_required
+def article_versions(request, pk):
+    article = get_object_or_404(
+        KnowledgeArticle,
+        pk=pk,
+    )
+
+    versions = article.versions.select_related(
+        "created_by"
+    ).all()
+
+    return render(
+        request,
+        "knowledge-base/article-versions.html",
+        {
+            "article": article,
+            "versions": versions,
+            "current": "knowledge_article_versions",
         },
     )

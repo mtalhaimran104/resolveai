@@ -1,0 +1,1151 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Reports Dashboard | ResolveAI{% endblock %}
+
+{% block content %}
+
+<!--begin::App Content Header-->
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+
+      <div class="col-sm-6">
+        <h1 class="mb-0 fs-3">Reports Dashboard</h1>
+      </div>
+
+      <div class="col-sm-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb float-sm-end">
+
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard' %}">Home</a>
+            </li>
+
+            <li class="breadcrumb-item">
+              <a href="{% url 'reports:dashboard' %}">Reports</a>
+            </li>
+
+            <li class="breadcrumb-item active" aria-current="page">
+              Reports Dashboard
+            </li>
+
+          </ol>
+        </nav>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--end::App Content Header-->
+
+
+<!--begin::App Content-->
+<div class="app-content">
+  <div class="container-fluid">
+
+
+    <!--begin::Summary Stat Cards-->
+    <div class="row g-3 mb-3">
+
+      <!-- Total Tickets -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+
+          <div class="card-body d-flex align-items-center gap-3">
+
+            <span class="ra-stat-icon text-bg-primary">
+              <i class="bi bi-ticket-detailed"></i>
+            </span>
+
+            <div>
+
+              <div class="ra-stat-value">
+                {{ total_tickets }}
+              </div>
+
+              <div class="ra-stat-label">
+                Total Tickets (Last 30 Days)
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- Average Resolution Time -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+
+          <div class="card-body d-flex align-items-center gap-3">
+
+            <span class="ra-stat-icon text-bg-info">
+              <i class="bi bi-stopwatch"></i>
+            </span>
+
+            <div>
+
+              <div class="ra-stat-value">
+
+                {{ average_resolution_display }}
+
+               
+
+              </div>
+
+              <div class="ra-stat-label">
+                Avg. Resolution Time
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- AI Accuracy -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+
+          <div class="card-body d-flex align-items-center gap-3">
+
+            <span class="ra-stat-icon text-bg-success">
+              <i class="bi bi-robot"></i>
+            </span>
+
+            <div>
+
+              <div class="ra-stat-value">
+    {{ ai_accuracy }}%
+</div>
+
+              <div class="ra-stat-label">
+                AI Classification Accuracy
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- Satisfaction -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card ra-stat-card h-100">
+
+          <div class="card-body d-flex align-items-center gap-3">
+
+            <span class="ra-stat-icon text-bg-warning">
+              <i class="bi bi-emoji-smile"></i>
+            </span>
+
+            <div>
+
+             <div class="ra-stat-value">
+    {{ satisfaction_score }}
+    <span class="fs-6 text-secondary">/ 5</span>
+</div>
+
+              <div class="ra-stat-label">
+
+                Satisfaction Score
+
+                <span
+                  class="text-warning ms-1"
+                  aria-hidden="true"
+                >
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-half"></i>
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <!--end::Summary Stat Cards-->
+
+
+    <!--begin::Ticket Volume + Open vs Closed-->
+    <div class="row g-3 mb-3">
+
+      <!-- Ticket Volume -->
+      <div class="col-lg-8">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Ticket Volume &mdash; Last 8 Weeks
+            </h3>
+
+            <div class="card-tools">
+
+              <a
+                href="{% url 'reports:ticket_volume' %}"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                View Full Report
+              </a>
+
+            </div>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardVolumeChart"
+              style="height: 300px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Open vs Closed -->
+      <div class="col-lg-4">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Open vs Closed
+            </h3>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardOpenClosedChart"
+              style="height: 300px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!--end::Ticket Volume + Open vs Closed-->
+
+
+    <!--begin::Status + Priority-->
+    <div class="row g-3 mb-3">
+
+      <!-- Status -->
+      <div class="col-lg-6">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Tickets by Status
+            </h3>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardStatusChart"
+              style="height: 280px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Priority -->
+      <div class="col-lg-6">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Tickets by Priority
+            </h3>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardPriorityChart"
+              style="height: 280px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!--end::Status + Priority-->
+
+
+    <!--begin::Category + Department-->
+    <div class="row g-3 mb-3">
+
+      <!-- Category -->
+      <div class="col-lg-6">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Tickets by Category
+            </h3>
+
+            <div class="card-tools">
+
+              <a
+                href="{% url 'reports:category' %}"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                Details
+              </a>
+
+            </div>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardCategoryChart"
+              style="height: 320px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Department -->
+      <div class="col-lg-6">
+
+        <div class="card h-100">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Tickets by Department
+            </h3>
+
+            <div class="card-tools">
+
+              <a
+                href="{% url 'reports:department' %}"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                Details
+              </a>
+
+            </div>
+
+          </div>
+
+          <div class="card-body">
+
+            <div
+              id="dashboardDepartmentChart"
+              style="height: 320px;"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!--end::Category + Department-->
+
+
+    <!--begin::Agent Workload-->
+    <div class="row g-3 mb-3">
+
+      <div class="col-12">
+
+        <div class="card">
+
+          <div class="card-header">
+
+            <h3 class="card-title">
+              Agent Workload
+            </h3>
+
+            <div class="card-tools">
+
+              <a
+                href="{% url 'reports:agent_performance' %}"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                Full Agent Report
+              </a>
+
+            </div>
+
+          </div>
+
+
+          <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+              <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                  <tr>
+                    <th>Agent</th>
+                    <th>Department</th>
+                    <th class="text-end">Open Tickets</th>
+                    <th class="text-end">Resolved Tickets</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      <a
+                        href="{% url 'accounts:user_edit' 1 %}"
+                        class="text-decoration-none"
+                      >
+                        Agent 1
+                      </a>
+                    </td>
+
+                    <td>
+                      IT Support
+                    </td>
+
+                    <td class="text-end">
+                      14
+                    </td>
+
+                    <td class="text-end">
+                      132
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      <a
+                        href="{% url 'accounts:user_edit' 3 %}"
+                        class="text-decoration-none"
+                      >
+                        Faiza Tehreem
+                      </a>
+                    </td>
+
+                    <td>
+                      IT Support
+                    </td>
+
+                    <td class="text-end">
+                      9
+                    </td>
+
+                    <td class="text-end">
+                      118
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      <a
+                        href="{% url 'accounts:user_edit' 3 %}"
+                        class="text-decoration-none"
+                      >
+                        Hira Sultan
+                      </a>
+                    </td>
+
+                    <td>
+                      IT Support
+                    </td>
+
+                    <td class="text-end">
+                      11
+                    </td>
+
+                    <td class="text-end">
+                      96
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      <a
+                        href="{% url 'accounts:user_edit' 4 %}"
+                        class="text-decoration-none"
+                      >
+                        Sana Iqbal
+                      </a>
+                    </td>
+
+                    <td>
+                      Finance
+                    </td>
+
+                    <td class="text-end">
+                      6
+                    </td>
+
+                    <td class="text-end">
+                      54
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      <a
+                        href="{% url 'accounts:user_edit' 5 %}"
+                        class="text-decoration-none"
+                      >
+                        Hamza Tariq
+                      </a>
+                    </td>
+
+                    <td>
+                      Examination
+                    </td>
+
+                    <td class="text-end">
+                      3
+                    </td>
+
+                    <td class="text-end">
+                      14
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!--end::Agent Workload-->
+
+  </div>
+</div>
+<!--end::App Content-->
+
+{% endblock content %}
+
+
+{% block extra_js %}
+
+<script
+  src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+  crossorigin="anonymous"
+></script>
+
+
+<!-- ==========================================================
+     Django data -> JavaScript
+     ========================================================== -->
+
+{{ volume_labels|json_script:"volume-labels" }}
+{{ new_ticket_data|json_script:"new-ticket-data" }}
+{{ resolved_ticket_data|json_script:"resolved-ticket-data" }}
+
+{{ status_labels|json_script:"status-labels" }}
+{{ status_data|json_script:"status-data" }}
+
+{{ priority_labels|json_script:"priority-labels" }}
+{{ priority_data|json_script:"priority-data" }}
+
+{{ category_labels|json_script:"category-labels" }}
+{{ category_data|json_script:"category-data" }}
+
+{{ department_labels|json_script:"department-labels" }}
+{{ department_data|json_script:"department-data" }}
+
+
+<script>
+
+(function () {
+
+  'use strict';
+
+
+  /* ==========================================================
+     Read Django JSON data
+     ========================================================== */
+
+  const volumeLabels = JSON.parse(
+    document.getElementById('volume-labels').textContent
+  );
+
+  const newTicketData = JSON.parse(
+    document.getElementById('new-ticket-data').textContent
+  );
+
+  const resolvedTicketData = JSON.parse(
+    document.getElementById('resolved-ticket-data').textContent
+  );
+
+
+  const statusLabels = JSON.parse(
+    document.getElementById('status-labels').textContent
+  );
+
+  const statusData = JSON.parse(
+    document.getElementById('status-data').textContent
+  );
+
+
+  const priorityLabels = JSON.parse(
+    document.getElementById('priority-labels').textContent
+  );
+
+  const priorityData = JSON.parse(
+    document.getElementById('priority-data').textContent
+  );
+
+
+  const categoryLabels = JSON.parse(
+    document.getElementById('category-labels').textContent
+  );
+
+  const categoryData = JSON.parse(
+    document.getElementById('category-data').textContent
+  );
+
+
+  const departmentLabels = JSON.parse(
+    document.getElementById('department-labels').textContent
+  );
+
+  const departmentData = JSON.parse(
+    document.getElementById('department-data').textContent
+  );
+
+
+  /* ==========================================================
+     Theme
+     ========================================================== */
+
+  const isDark =
+    document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+
+  const foreColor =
+    isDark ? '#c3c2b7' : '#52514e';
+
+
+  const gridColor =
+    isDark ? '#2b3040' : '#e7e9ee';
+
+
+  /* ==========================================================
+     Colors
+     ========================================================== */
+
+  const categorical = [
+    '#2a78d6',
+    '#eb6834',
+    '#1baf7a',
+    '#eda100',
+    '#e87ba4',
+    '#4a3aa7',
+    '#e34948'
+  ];
+
+
+  const statusColors = [
+    '#0b3d91',
+    '#0dcaf0',
+    '#d98c00',
+    '#1b8a5a',
+    '#6c757d'
+  ];
+
+
+  const priorityColors = [
+    '#6c757d',
+    '#0dcaf0',
+    '#d98c00',
+    '#c0293e'
+  ];
+
+
+  /* ==========================================================
+     Base Chart Theme
+     ========================================================== */
+
+  const baseTheme = {
+
+    chart: {
+      foreColor: foreColor,
+
+      toolbar: {
+        show: false
+      }
+    },
+
+    grid: {
+      borderColor: gridColor
+    },
+
+    legend: {
+      labels: {
+        colors: foreColor
+      }
+    }
+
+  };
+
+
+  /* ==========================================================
+     Ticket Volume — Last 8 Weeks
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardVolumeChart'),
+    {
+
+      ...baseTheme,
+
+      series: [
+        {
+          name: 'New Tickets',
+          data: newTicketData
+        },
+        {
+          name: 'Resolved Tickets',
+          data: resolvedTicketData
+        }
+      ],
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'area',
+        height: 300
+      },
+
+      colors: [
+        categorical[0],
+        categorical[2]
+      ],
+
+      stroke: {
+        curve: 'smooth',
+        width: 2
+      },
+
+      fill: {
+        type: 'gradient',
+
+        gradient: {
+          opacityFrom: 0.35,
+          opacityTo: 0.05
+        }
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      xaxis: {
+
+        categories: volumeLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      },
+
+      yaxis: {
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      }
+
+    }
+  ).render();
+
+
+  /* ==========================================================
+     Open vs Closed
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardOpenClosedChart'),
+    {
+
+      ...baseTheme,
+
+      series: [
+        {{ open_tickets }},
+        {{ closed_tickets }}
+      ],
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'donut',
+        height: 300
+      },
+
+      labels: [
+        'Open',
+        'Closed'
+      ],
+
+      colors: [
+        categorical[0],
+        '#6c757d'
+      ],
+
+      dataLabels: {
+
+        enabled: true,
+
+        formatter: function (val) {
+          return `${Math.round(val)}%`;
+        }
+
+      },
+
+      legend: {
+        position: 'bottom',
+
+        labels: {
+          colors: foreColor
+        }
+      }
+
+    }
+  ).render();
+
+
+  /* ==========================================================
+     Tickets by Status
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardStatusChart'),
+    {
+
+      ...baseTheme,
+
+      series: [
+        {
+          name: 'Tickets',
+          data: statusData
+        }
+      ],
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'bar',
+        height: 280
+      },
+
+      colors: statusColors,
+
+      plotOptions: {
+
+        bar: {
+          distributed: true,
+          borderRadius: 4,
+          columnWidth: '55%'
+        }
+
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      legend: {
+        show: false
+      },
+
+      xaxis: {
+
+        categories: statusLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      },
+
+      yaxis: {
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      }
+
+    }
+  ).render();
+
+
+  /* ==========================================================
+     Tickets by Priority
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardPriorityChart'),
+    {
+
+      ...baseTheme,
+
+      series: [
+        {
+          name: 'Tickets',
+          data: priorityData
+        }
+      ],
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'bar',
+        height: 280
+      },
+
+      colors: priorityColors,
+
+      plotOptions: {
+
+        bar: {
+          distributed: true,
+          borderRadius: 4,
+          columnWidth: '55%'
+        }
+
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      legend: {
+        show: false
+      },
+
+      xaxis: {
+
+        categories: priorityLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      },
+
+      yaxis: {
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      }
+
+    }
+  ).render();
+
+
+  /* ==========================================================
+     Tickets by Category
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardCategoryChart'),
+    {
+
+      ...baseTheme,
+
+      series: [
+        {
+          name: 'Tickets',
+          data: categoryData
+        }
+      ],
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'bar',
+        height: 320
+      },
+
+      colors: [
+        categorical[0]
+      ],
+
+      plotOptions: {
+
+        bar: {
+          horizontal: true,
+          borderRadius: 4,
+          barHeight: '60%'
+        }
+
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      xaxis: {
+
+        categories: categoryLabels,
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      },
+
+      yaxis: {
+
+        labels: {
+          style: {
+            colors: foreColor
+          }
+        }
+
+      }
+
+    }
+  ).render();
+
+
+  /* ==========================================================
+     Tickets by Department
+     ========================================================== */
+
+  new ApexCharts(
+    document.querySelector('#dashboardDepartmentChart'),
+    {
+
+      ...baseTheme,
+
+      series: departmentData,
+
+      chart: {
+        ...baseTheme.chart,
+        type: 'donut',
+        height: 320
+      },
+
+      labels: departmentLabels,
+
+      colors: [
+        categorical[0],
+        categorical[1],
+        categorical[2],
+        categorical[3],
+        categorical[4],
+        categorical[5],
+        categorical[6]
+      ],
+
+      dataLabels: {
+
+        enabled: true,
+
+        formatter: function (val) {
+          return `${Math.round(val)}%`;
+        }
+
+      },
+
+      legend: {
+
+        position: 'bottom',
+
+        labels: {
+          colors: foreColor
+        }
+
+      }
+
+    }
+  ).render();
+
+
+})();
+
+</script>
+
+{% endblock extra_js %}

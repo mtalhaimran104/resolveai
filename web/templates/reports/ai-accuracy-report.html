@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Performance | ResolveAI{% endblock %}
+
+{% block content %}
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="mb-0 fs-3">Agent Performance</h1>
+            </div>
+
+            <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'dashboard' %}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+<a href="{% url 'reports:dashboard' %}">Reports</a>                        </li>
+                        <li class="breadcrumb-item active">
+                            Agent Performance
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="app-content">
+    <div class="container-fluid">
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">Resolved Tickets by Agent</h3>
+            </div>
+
+            <div class="card-body">
+                <div id="agentComparisonChart" style="height: 320px"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Agent Performance Detail</h3>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th class="text-end">Assigned</th>
+                                <th class="text-end">Resolved</th>
+                                <th class="text-end">Avg. Response</th>
+                                <th class="text-end">Avg. Resolution</th>
+                                <th class="text-end">Reopened</th>
+                                <th class="text-end">Satisfaction</th>
+                                <th class="text-end">AI Suggestions Used</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for agent in agents %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img
+                                            src="{{ agent.avatar }}"
+                                            class="img-size-32 rounded-circle me-2"
+                                            alt="{{ agent.name }}"
+                                        >
+
+                                        <a
+                                            href="{% url 'accounts:user_detail' agent.id %}"
+                                            class="text-decoration-none"
+                                        >
+                                            {{ agent.name }}
+                                        </a>
+
+                                        {% if agent.department %}
+                                        <span class="badge text-bg-secondary ms-2">
+                                            {{ agent.department }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <td class="text-end">{{ agent.assigned }}</td>
+                                <td class="text-end">{{ agent.resolved }}</td>
+                                <td class="text-end">{{ agent.avg_response }}</td>
+                                <td class="text-end">{{ agent.avg_resolution }}</td>
+                                <td class="text-end">{{ agent.reopened }}</td>
+                                <td class="text-end">{{ agent.satisfaction }} / 5</td>
+                                <td class="text-end">{{ agent.ai_usage }}%</td>
+                            </tr>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-secondary">
+                                    No agent performance data available.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    const isDark =
+        document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+    const foreColor = isDark ? '#c3c2b7' : '#52514e';
+    const gridColor = isDark ? '#2b3040' : '#e7e9ee';
+
+    new ApexCharts(
+        document.querySelector('#agentComparisonChart'),
+        {
+            series: [{
+                name: 'Resolved Tickets',
+                data: {{ chart_values|safe }}
+            }],
+
+            chart: {
+                type: 'bar',
+                height: 320,
+                foreColor,
+                toolbar: {
+                    show: false
+                }
+            },
+
+            colors: ['#2a78d6'],
+
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    columnWidth: '50%'
+                }
+            },
+
+            dataLabels: {
+                enabled: false
+            },
+
+            grid: {
+                borderColor: gridColor
+            },
+
+            xaxis: {
+                categories: {{ chart_labels|safe }},
+                labels: {
+                    style: {
+                        colors: foreColor
+                    }
+                }
+            },
+
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: foreColor
+                    }
+                }
+            }
+        }
+    ).render();
+})();
+</script>
+{% endblock %}
