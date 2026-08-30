@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Model Performance | ResolveAI{% endblock %}
@@ -37,7 +37,7 @@
                         </h3>
 
                         <span class="badge text-bg-primary">
-                            v2.3
+                            v{{ classification_model.model_version }}
                         </span>
                     </div>
 
@@ -45,22 +45,22 @@
                         <dl class="row mb-0 fs-7">
 
                             <dt class="col-7">Accuracy</dt>
-                            <dd class="col-5 text-end fw-semibold">93.4%</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_model.accuracy }}%</dd>
 
                             <dt class="col-7">Precision</dt>
-                            <dd class="col-5 text-end fw-semibold">92.8%</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_model.precision }}%</dd>
 
                             <dt class="col-7">Recall</dt>
-                            <dd class="col-5 text-end fw-semibold">91.6%</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_model.recall }}%</dd>
 
                             <dt class="col-7">F1 Score</dt>
-                            <dd class="col-5 text-end fw-semibold">92.2%</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_model.f1_score }}%</dd>
 
                             <dt class="col-7">Total Predictions</dt>
-                            <dd class="col-5 text-end fw-semibold">4,820</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_total_predictions }}</dd>
 
                             <dt class="col-7">Avg. Response Time</dt>
-                            <dd class="col-5 text-end fw-semibold">184 ms</dd>
+                            <dd class="col-5 text-end fw-semibold">{{ classification_avg_response_time|default_if_none:0|floatformat:2 }} ms</dd>
 
                         </dl>
                     </div>
@@ -79,7 +79,7 @@
                         </h3>
 
                         <span class="badge text-bg-warning">
-                            v1.8
+                            v{{ priority_model.model_version }}
                         </span>
                     </div>
 
@@ -265,7 +265,7 @@
             <div class="card-header">
 
                 <h3 class="card-title">
-                    Confusion Matrix &mdash; ticket-classifier-v2.3
+                    Confusion Matrix &mdash; ticket-classifier-v{{ classification_model.model_version }}
                 </h3>
 
                 <p class="text-secondary fs-7 mb-0 mt-1">
@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         xaxis: {
             categories: [
-                'Classifier v2.3',
+                'Classifier v{{ classification_model.model_version }}',
                 'Priority v1.8',
                 'Sentiment v1.4',
                 'Suggester v2.0',
@@ -538,4 +538,8 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 {% endblock %}
+
+
+
+
 

@@ -1,4 +1,4 @@
-import requests
+﻿import requests
 from django.conf import settings
 class AIServiceError(Exception):
     """Raised when the AI service cannot process a request."""
@@ -37,6 +37,20 @@ def call_priority_service(ticket_id: int, text: str) -> dict:
     except requests.RequestException as exc:
         raise AIServiceError(
             "Priority prediction service is unavailable."
+        ) from exc
+def get_classification_model_metrics() -> dict:
+    """Get classification model performance metrics from the AI service."""
+    url = f"{settings.AI_SERVICE_URL}/api/v1/classification/metrics"
+    try:
+        response = requests.get(
+            url,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as exc:
+        raise AIServiceError(
+            "Classification model metrics service is unavailable."
         ) from exc
 def get_priority_model_metrics() -> dict:
     """Get priority model performance metrics from the AI service."""
@@ -103,3 +117,4 @@ def call_faq_service(question: str) -> dict:
         raise AIServiceError(
             "FAQ service is unavailable."
         ) from exc
+

@@ -1,4 +1,4 @@
-import hashlib
+﻿import hashlib
 import json
 import time
 from pathlib import Path
@@ -152,9 +152,14 @@ def get_priority_model_metrics() -> PriorityModelMetricsResponse:
         status=True,
         message="Success",
         data=PriorityModelMetricsData(
+            model_version=metrics["model_version"],
             accuracy=metrics["accuracy"],
             precision=metrics["precision"],
             recall=metrics["recall"],
             f1_score=metrics["f1_score"],
         ),
     )
+
+
+
+

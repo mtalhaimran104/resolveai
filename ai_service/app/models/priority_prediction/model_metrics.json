@@ -1,4 +1,5 @@
 {
+    "model_version": "1.0",
     "accuracy": 98.31,
     "precision": 98.36,
     "recall": 98.32,
