@@ -1,4 +1,6 @@
+```django
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}AI Accuracy Report | ResolveAI{% endblock %}
 
@@ -6,424 +8,1011 @@
 
 <div class="app-content-header">
     <div class="container-fluid">
+
         <div class="row">
+
             <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">AI Accuracy Report</h1>
+                <h1 class="mb-0 fs-3">
+                    AI Accuracy Report
+                </h1>
             </div>
 
+            <div class="col-sm-6">
+                <nav aria-label="breadcrumb">
 
-        <div class="col-sm-6">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'reports:dashboard' %}">Reports</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        AI Accuracy
-                    </li>
-                </ol>
-            </nav>
+                    <ol class="breadcrumb float-sm-end">
+
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'dashboard' %}">
+                                Home
+                            </a>
+                        </li>
+
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'reports:dashboard' %}">
+                                Reports
+                            </a>
+                        </li>
+
+                        <li class="breadcrumb-item active"
+                            aria-current="page">
+                            AI Accuracy
+                        </li>
+
+                    </ol>
+
+                </nav>
+            </div>
+
         </div>
+
     </div>
 </div>
 
 
-</div>
-
 <div class="app-content">
+
     <div class="container-fluid">
 
 
-    <!-- Stat Cards -->
-    <div class="row g-3 mb-3">
+        <!-- ===================================================== -->
+        <!-- STAT CARDS -->
+        <!-- ===================================================== -->
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card ra-stat-card h-100">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon text-bg-success">
-                        <i class="bi bi-tags-fill"></i>
-                    </span>
-                    <div>
-                        <div class="ra-stat-value">91.4%</div>
-                        <div class="ra-stat-label">Classification Accuracy</div>
+        <div class="row g-3 mb-3">
+
+
+            <!-- Classification Accuracy -->
+
+            <div class="col-sm-6 col-lg-3">
+
+                <div class="card ra-stat-card h-100">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <span class="ra-stat-icon text-bg-success">
+                            <i class="bi bi-tags-fill"></i>
+                        </span>
+
+                        <div>
+
+                            <div class="ra-stat-value">
+
+                                {% if classification_accuracy_overall is not None %}
+
+                                    {{ classification_accuracy_overall|floatformat:1 }}%
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="ra-stat-label">
+                                Classification Accuracy
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </div>
+
             </div>
+
+
+            <!-- Priority Accuracy -->
+
+            <div class="col-sm-6 col-lg-3">
+
+                <div class="card ra-stat-card h-100">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <span class="ra-stat-icon text-bg-primary">
+                            <i class="bi bi-flag-fill"></i>
+                        </span>
+
+                        <div>
+
+                            <div class="ra-stat-value">
+                                {{ priority_accuracy|floatformat:1 }}%
+                            </div>
+
+                            <div class="ra-stat-label">
+                                Priority Accuracy
+                            </div>
+
+                            {% if priority_accuracy_is_demo %}
+                                <span class="badge text-bg-secondary mt-1">
+                                    Demo
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Sentiment Agreement -->
+
+            <div class="col-sm-6 col-lg-3">
+
+                <div class="card ra-stat-card h-100">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <span class="ra-stat-icon text-bg-info">
+                            <i class="bi bi-emoji-neutral-fill"></i>
+                        </span>
+
+                        <div>
+
+                            <div class="ra-stat-value">
+                                {{ sentiment_agreement|floatformat:1 }}%
+                            </div>
+
+                            <div class="ra-stat-label">
+                                Sentiment Agreement
+                            </div>
+
+                            {% if sentiment_agreement_is_demo %}
+                                <span class="badge text-bg-secondary mt-1">
+                                    Demo
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Human Correction Rate -->
+
+            <div class="col-sm-6 col-lg-3">
+
+                <div class="card ra-stat-card h-100">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <span class="ra-stat-icon text-bg-warning">
+                            <i class="bi bi-pencil-square"></i>
+                        </span>
+
+                        <div>
+
+                            <div class="ra-stat-value">
+                                {{ human_correction_rate|floatformat:1 }}%
+                            </div>
+
+                            <div class="ra-stat-label">
+                                Human Correction Rate
+                            </div>
+
+                            {% if human_correction_rate_is_demo %}
+                                <span class="badge text-bg-secondary mt-1">
+                                    Demo
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
         </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card ra-stat-card h-100">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon text-bg-primary">
-                        <i class="bi bi-flag-fill"></i>
-                    </span>
-                    <div>
-                        <div class="ra-stat-value">88.2%</div>
-                        <div class="ra-stat-label">Priority Accuracy</div>
+
+        <!-- ===================================================== -->
+        <!-- ACCURACY + LOW CONFIDENCE -->
+        <!-- ===================================================== -->
+
+        <div class="row g-3 mb-3">
+
+
+            <!-- Classification Accuracy Chart -->
+
+            <div class="col-lg-8">
+
+                <div class="card h-100">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title">
+                            Classification Accuracy by Category
+                        </h3>
+
+                        <div class="card-tools">
+
+                            <a
+                                href="{% url 'demo_ai_model_performance' %}"
+                                class="btn btn-sm btn-outline-secondary"
+                            >
+                                Model Performance
+                            </a>
+
+                        </div>
+
                     </div>
+
+
+                    <div class="card-body">
+
+                        <div
+                            id="accuracyByCategoryChart"
+                            style="height: 320px"
+                        ></div>
+
+
+                        <p class="text-secondary fs-7 mb-0 mt-2">
+
+                            <i class="bi bi-info-circle me-1"></i>
+
+                            Document Verification is excluded &mdash;
+                            AI classification is disabled for that category
+                            and tickets are routed manually.
+
+                        </p>
+
+                    </div>
+
                 </div>
+
             </div>
+
+
+            <!-- Low Confidence -->
+
+            <div class="col-lg-4">
+
+                <div class="card h-100 border-start border-danger border-4">
+
+                    <div
+                        class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100"
+                    >
+
+                        <span class="ra-stat-icon text-bg-danger mb-2">
+
+                            <i class="bi bi-question-diamond-fill"></i>
+
+                        </span>
+
+
+                        <div class="ra-stat-value text-danger">
+
+                            {{ low_confidence_rate|floatformat:1 }}%
+
+                        </div>
+
+
+                        <div class="ra-stat-label">
+
+                            Low-Confidence Rate (&lt;60%)
+
+                        </div>
+
+
+                        {% if low_confidence_rate_is_demo %}
+
+                            <span class="badge text-bg-secondary mt-2">
+                                Demo
+                            </span>
+
+                        {% endif %}
+
+
+                        <a
+                            href="{% url 'demo_ai_low_confidence' %}"
+                            class="btn btn-sm btn-outline-danger mt-3"
+                        >
+                            Review Low Confidence Results
+                        </a>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
         </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card ra-stat-card h-100">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon text-bg-info">
-                        <i class="bi bi-emoji-neutral-fill"></i>
-                    </span>
-                    <div>
-                        <div class="ra-stat-value">85.6%</div>
-                        <div class="ra-stat-label">Sentiment Agreement</div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card ra-stat-card h-100">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <span class="ra-stat-icon text-bg-warning">
-                        <i class="bi bi-pencil-square"></i>
-                    </span>
-                    <div>
-                        <div class="ra-stat-value">8.6%</div>
-                        <div class="ra-stat-label">Human Correction Rate</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ===================================================== -->
+        <!-- MODEL VERSION TABLE -->
+        <!-- ===================================================== -->
 
-    </div>
+        <div class="card">
 
-    <!-- Accuracy + Low Confidence -->
-    <div class="row g-3 mb-3">
+            <div class="card-header">
 
-        <div class="col-lg-8">
-            <div class="card h-100">
+                <h3 class="card-title">
+                    Accuracy by Model Version
+                </h3>
 
-                <div class="card-header">
-                    <h3 class="card-title">
-                        Classification Accuracy by Category
-                    </h3>
+                {% if model_versions_are_demo %}
 
                     <div class="card-tools">
-                        <a href="{% url 'demo_ai_model_performance' %}"
-                           class="btn btn-sm btn-outline-secondary">
-                            Model Performance
-                        </a>
-                    </div>
-                </div>
 
-                <div class="card-body">
-                    <div id="accuracyByCategoryChart"
-                         style="height: 320px"></div>
+                        <span class="badge text-bg-secondary">
+                            Demo Data
+                        </span>
 
-                    <p class="text-secondary fs-7 mb-0 mt-2">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Document Verification is excluded &mdash; AI classification is
-                        disabled for that category and tickets are routed manually.
-                    </p>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card h-100 border-start border-danger border-4">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-
-                    <span class="ra-stat-icon text-bg-danger mb-2">
-                        <i class="bi bi-question-diamond-fill"></i>
-                    </span>
-
-                    <div class="ra-stat-value text-danger">6.8%</div>
-
-                    <div class="ra-stat-label">
-                        Low-Confidence Rate (&lt;60%)
                     </div>
 
+                {% endif %}
 
-<a href="{% url 'demo_ai_low_confidence' %}"
-   class="btn btn-sm btn-outline-danger mt-3">
-    Review Low Confidence Results
-</a>
+            </div>
+
+
+            <div class="card-body p-0">
+
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Model
+                                </th>
+
+                                <th>
+                                    Version
+                                </th>
+
+                                <th>
+                                    Purpose
+                                </th>
+
+                                <th class="text-end">
+                                    Accuracy / Quality Score
+                                </th>
+
+                                <th class="text-end">
+                                    Sample Size
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for item in model_versions %}
+
+                                <tr>
+
+
+                                    <!-- Model -->
+
+                                    <td>
+
+                                        <code>
+                                            {{ item.model }}
+                                        </code>
+
+                                    </td>
+
+
+                                    <!-- Version -->
+
+                                    <td>
+
+                                        {{ item.version }}
+
+                                    </td>
+
+
+                                    <!-- Purpose -->
+
+                                    <td>
+
+                                        {{ item.purpose }}
+
+                                    </td>
+
+
+                                    <!-- Score -->
+
+                                    <td class="text-end">
+
+
+                                        {% if item.score >= 85 %}
+
+                                            <span class="ra-confidence ra-confidence-high">
+
+                                                {{ item.score|floatformat:1 }}%
+
+                                                <span class="ra-confidence-bar">
+
+                                                    <span
+                                                        style="width: {{ item.score }}%"
+                                                    ></span>
+
+                                                </span>
+
+                                            </span>
+
+
+                                        {% elif item.score >= 70 %}
+
+                                            <span class="ra-confidence ra-confidence-medium">
+
+                                                {{ item.score|floatformat:1 }}%
+
+                                                <span class="ra-confidence-bar">
+
+                                                    <span
+                                                        style="width: {{ item.score }}%"
+                                                    ></span>
+
+                                                </span>
+
+                                            </span>
+
+
+                                        {% else %}
+
+                                            <span class="ra-confidence ra-confidence-low">
+
+                                                {{ item.score|floatformat:1 }}%
+
+                                                <span class="ra-confidence-bar">
+
+                                                    <span
+                                                        style="width: {{ item.score }}%"
+                                                    ></span>
+
+                                                </span>
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </td>
+
+
+                                    <!-- Sample Size -->
+
+                                    <td class="text-end">
+
+                                        {{ item.sample_size|default:"—" }}
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="5"
+                                        class="text-center py-4 text-secondary"
+                                    >
+
+                                        No model performance data available.
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- PAGINATION -->
+                <!-- ================================================= -->
+
+                {% if page_obj.paginator.num_pages > 1 %}
+
+                    <div
+                        class="d-flex justify-content-between align-items-center px-3 py-3"
+                    >
+
+
+                        <!-- Showing information -->
+
+                        <div class="text-secondary small">
+
+                            Showing
+
+                            <strong>
+                                {{ page_obj.start_index }}
+                            </strong>
+
+                            to
+
+                            <strong>
+                                {{ page_obj.end_index }}
+                            </strong>
+
+                            of
+
+                            <strong>
+                                {{ page_obj.paginator.count }}
+                            </strong>
+
+                            models
+
+                        </div>
+
+
+                        <!-- Pagination -->
+
+                        <nav aria-label="AI model pagination">
+
+                            <ul class="pagination pagination-sm mb-0">
+
+
+                                <!-- Previous -->
+
+                                {% if page_obj.has_previous %}
+
+                                    <li class="page-item">
+
+                                        <a
+                                            class="page-link"
+                                            href="?page={{ page_obj.previous_page_number }}"
+                                        >
+                                            Previous
+                                        </a>
+
+                                    </li>
+
+                                {% else %}
+
+                                    <li class="page-item disabled">
+
+                                        <span class="page-link">
+                                            Previous
+                                        </span>
+
+                                    </li>
+
+                                {% endif %}
+
+
+                                <!-- Page Numbers -->
+
+                                {% for page_num in page_obj.paginator.page_range %}
+
+                                    {% if page_obj.number == page_num %}
+
+                                        <li class="page-item active">
+
+                                            <span class="page-link">
+                                                {{ page_num }}
+                                            </span>
+
+                                        </li>
+
+                                    {% else %}
+
+                                        <li class="page-item">
+
+                                            <a
+                                                class="page-link"
+                                                href="?page={{ page_num }}"
+                                            >
+                                                {{ page_num }}
+                                            </a>
+
+                                        </li>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+
+                                <!-- Next -->
+
+                                {% if page_obj.has_next %}
+
+                                    <li class="page-item">
+
+                                        <a
+                                            class="page-link"
+                                            href="?page={{ page_obj.next_page_number }}"
+                                        >
+                                            Next
+                                        </a>
+
+                                    </li>
+
+                                {% else %}
+
+                                    <li class="page-item disabled">
+
+                                        <span class="page-link">
+                                            Next
+                                        </span>
+
+                                    </li>
+
+                                {% endif %}
+
+
+                            </ul>
+
+                        </nav>
+
+
+                    </div>
+
+                {% endif %}
 
 
             </div>
+
         </div>
+
 
     </div>
-
-    <!-- Model Version Table -->
-    <div class="card">
-
-        <div class="card-header">
-            <h3 class="card-title">Accuracy by Model Version</h3>
-        </div>
-
-        <div class="card-body p-0">
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead>
-                        <tr>
-                            <th>Model</th>
-                            <th>Version</th>
-                            <th>Purpose</th>
-                            <th class="text-end">
-                                Accuracy / Quality Score
-                            </th>
-                            <th class="text-end">
-                                Sample Size
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td><code>ticket-classifier</code></td>
-                            <td>v2.3</td>
-                            <td>Category classification</td>
-                            <td class="text-end">
-                                <span class="ra-confidence ra-confidence-high">
-                                    91.4%
-                                    <span class="ra-confidence-bar">
-                                        <span style="width: 91.4%"></span>
-                                    </span>
-                                </span>
-                            </td>
-                            <td class="text-end">18,420</td>
-                        </tr>
-
-                        <tr>
-                            <td><code>priority-recommender</code></td>
-                            <td>v1.8</td>
-                            <td>Priority suggestion</td>
-                            <td class="text-end">
-                                <span class="ra-confidence ra-confidence-high">
-                                    88.2%
-                                    <span class="ra-confidence-bar">
-                                        <span style="width: 88.2%"></span>
-                                    </span>
-                                </span>
-                            </td>
-                            <td class="text-end">18,420</td>
-                        </tr>
-
-                        <tr>
-                            <td><code>sentiment-analyzer</code></td>
-                            <td>v1.4</td>
-                            <td>Sentiment detection</td>
-                            <td class="text-end">
-                                <span class="ra-confidence ra-confidence-high">
-                                    85.6%
-                                    <span class="ra-confidence-bar">
-                                        <span style="width: 85.6%"></span>
-                                    </span>
-                                </span>
-                            </td>
-                            <td class="text-end">15,110</td>
-                        </tr>
-
-                        <tr>
-                            <td><code>response-suggester</code></td>
-                            <td>v2.0</td>
-                            <td>Reply suggestion (acceptance rate)</td>
-                            <td class="text-end">
-                                <span class="ra-confidence ra-confidence-medium">
-                                    74.3%
-                                    <span class="ra-confidence-bar">
-                                        <span style="width: 74.3%"></span>
-                                    </span>
-                                </span>
-                            </td>
-                            <td class="text-end">11,860</td>
-                        </tr>
-
-                        <tr>
-                            <td><code>summarizer</code></td>
-                            <td>v1.2</td>
-                            <td>Ticket &amp; thread summarization</td>
-                            <td class="text-end">
-                                <span class="ra-confidence ra-confidence-high">
-                                    88.9%
-                                    <span class="ra-confidence-bar">
-                                        <span style="width: 88.9%"></span>
-                                    </span>
-                                </span>
-                            </td>
-                            <td class="text-end">9,275</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
 
 </div>
 
 {% endblock %}
 
-```django
+
+
 {% block extra_js %}
+
+
+<!-- ============================================================= -->
+<!-- APEXCHARTS -->
+<!-- ============================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+    crossorigin="anonymous">
+</script>
+
+
+<!-- ============================================================= -->
+<!-- CHART DATA -->
+<!-- ============================================================= -->
+
+{{ classification_labels|json_script:"classification-labels" }}
+
+{{ classification_accuracy|json_script:"classification-accuracy" }}
+
+
 <script>
+
 (function () {
+
     'use strict';
+
 
     const isDark =
         document.documentElement.getAttribute('data-bs-theme') === 'dark';
 
-    const foreColor = isDark ? '#c3c2b7' : '#52514e';
-    const gridColor = isDark ? '#2b3040' : '#e7e9ee';
+
+    const foreColor =
+        isDark
+            ? '#c3c2b7'
+            : '#52514e';
+
+
+    const gridColor =
+        isDark
+            ? '#2b3040'
+            : '#e7e9ee';
+
 
     const chartElement =
-        document.querySelector('#accuracyByCategoryChart');
+        document.querySelector(
+            '#accuracyByCategoryChart'
+        );
+
 
     if (!chartElement) {
-        console.error('accuracyByCategoryChart element not found.');
+
+        console.error(
+            'accuracyByCategoryChart element not found.'
+        );
+
         return;
+
     }
 
+
     const labelsElement =
-        document.getElementById('classification-labels');
+        document.getElementById(
+            'classification-labels'
+        );
+
 
     const valuesElement =
-        document.getElementById('classification-accuracy');
+        document.getElementById(
+            'classification-accuracy'
+        );
+
 
     if (!labelsElement || !valuesElement) {
+
         console.error(
             'Classification accuracy chart data not found.'
         );
+
         return;
+
     }
+
 
     let labels;
     let values;
 
+
     try {
-        labels = JSON.parse(labelsElement.textContent);
-        values = JSON.parse(valuesElement.textContent);
-    } catch (error) {
+
+        labels =
+            JSON.parse(
+                labelsElement.textContent
+            );
+
+
+        values =
+            JSON.parse(
+                valuesElement.textContent
+            );
+
+    }
+
+    catch (error) {
+
         console.error(
             'Unable to parse classification accuracy chart data:',
             error
         );
+
         return;
+
     }
 
-    if (!Array.isArray(labels) || !Array.isArray(values)) {
+
+    if (
+        !Array.isArray(labels) ||
+        !Array.isArray(values)
+    ) {
+
         console.error(
             'Classification accuracy chart data must be arrays.'
         );
+
         return;
+
     }
 
+
     if (labels.length !== values.length) {
+
         console.error(
             'Classification accuracy chart labels and values length mismatch.'
         );
+
         return;
+
     }
+
 
     if (labels.length === 0) {
+
         chartElement.innerHTML = `
+
             <div class="text-center text-secondary py-5">
+
                 No classification accuracy data is available.
+
             </div>
+
         `;
+
         return;
+
     }
 
-    const safeValues = values.map(function (value) {
-        const number = Number(value);
 
-        if (!Number.isFinite(number)) {
-            return 0;
-        }
+    const safeValues =
+        values.map(function (value) {
 
-        return Math.max(0, Math.min(100, number));
-    });
+            const number =
+                Number(value);
 
-    new ApexCharts(chartElement, {
-        series: [
-            {
-                name: 'Accuracy',
-                data: safeValues
+
+            if (!Number.isFinite(number)) {
+
+                return 0;
+
             }
-        ],
 
-        chart: {
-            type: 'bar',
-            height: 320,
-            foreColor: foreColor,
-            toolbar: {
-                show: false
-            }
-        },
 
-        colors: ['#2a78d6'],
+            return Math.max(
+                0,
+                Math.min(
+                    100,
+                    number
+                )
+            );
 
-        plotOptions: {
-            bar: {
-                borderRadius: 4,
-                columnWidth: '55%'
-            }
-        },
+        });
 
-        dataLabels: {
-            enabled: false
-        },
 
-        grid: {
-            borderColor: gridColor
-        },
+    new ApexCharts(
+        chartElement,
+        {
 
-        xaxis: {
-            categories: labels,
-            labels: {
-                style: {
-                    colors: foreColor
+            series: [
+
+                {
+
+                    name: 'Accuracy',
+
+                    data: safeValues
+
                 }
-            }
-        },
 
-        yaxis: {
-            min: 0,
-            max: 100,
-            title: {
-                text: 'Accuracy %',
-                style: {
-                    color: foreColor
+            ],
+
+
+            chart: {
+
+                type: 'bar',
+
+                height: 320,
+
+                foreColor: foreColor,
+
+                toolbar: {
+
+                    show: false
+
                 }
+
             },
-            labels: {
-                style: {
-                    colors: foreColor
-                },
-                formatter: function (value) {
-                    return `${value}%`;
-                }
-            }
-        },
 
-        tooltip: {
-            y: {
-                formatter: function (value) {
-                    return `${Number(value).toFixed(1)}%`;
+
+            colors: ['#2a78d6'],
+
+
+            plotOptions: {
+
+                bar: {
+
+                    borderRadius: 4,
+
+                    columnWidth: '55%'
+
                 }
+
+            },
+
+
+            dataLabels: {
+
+                enabled: false
+
+            },
+
+
+            grid: {
+
+                borderColor: gridColor
+
+            },
+
+
+            xaxis: {
+
+                categories: labels,
+
+                labels: {
+
+                    style: {
+
+                        colors: foreColor
+
+                    }
+
+                }
+
+            },
+
+
+            yaxis: {
+
+                min: 0,
+
+                max: 100,
+
+                title: {
+
+                    text: 'Accuracy %',
+
+                    style: {
+
+                        color: foreColor
+
+                    }
+
+                },
+
+                labels: {
+
+                    style: {
+
+                        colors: foreColor
+
+                    },
+
+                    formatter: function (value) {
+
+                        return `${value}%`;
+
+                    }
+
+                }
+
+            },
+
+
+            tooltip: {
+
+                y: {
+
+                    formatter: function (value) {
+
+                        return `${Number(value).toFixed(1)}%`;
+
+                    }
+
+                }
+
             }
+
         }
-    }).render();
+
+    ).render();
+
 
 })();
+
 </script>
+
+
 {% endblock %}
 

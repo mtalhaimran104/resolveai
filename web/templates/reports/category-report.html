@@ -1,4 +1,4 @@
-
+```html
 {% extends "base.html" %}
 {% load static %}
 
@@ -17,7 +17,9 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb float-sm-end">
             <li class="breadcrumb-item">
-<a href="{% url 'dashboard' %}">Home</a><a href="{% url 'reports:dashboard' %}">Reports</a>            </li>
+              <a href="{% url 'dashboard' %}">Home</a>
+              <a href="{% url 'reports:dashboard' %}">Reports</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">
               Category Report
             </li>
@@ -28,168 +30,322 @@
   </div>
 </div>
 
+
 <div class="app-content">
   <div class="container-fluid">
 
     <!-- Category Chart -->
     <div class="card mb-3">
+
       <div class="card-header">
         <h3 class="card-title">Tickets by Category</h3>
 
         <div class="card-tools">
-<a href="{% url 'category_list' %}"><a href="{% url 'category_list' %}"
-   class="btn btn-sm btn-outline-secondary">
-    Manage Categories
-</a>          </a>
+          <a href="{% url 'category_list' %}"
+             class="btn btn-sm btn-outline-secondary">
+            Manage Categories
+          </a>
         </div>
       </div>
 
       <div class="card-body">
         <div id="categoryVolumeChart" style="height: 340px"></div>
       </div>
+
     </div>
 
+
     <!-- Category Detail Table -->
+    <div class="card">
 
-<div class="card">
-  <div class="card-header">
-    <h3 class="card-title">Category Detail</h3>
-  </div>
-
-  <div class="card-body p-0">
-    <div class="table-responsive">
+      <div class="card-header">
+        <h3 class="card-title">Category Detail</h3>
+      </div>
 
 
-  <table class="table table-hover align-middle mb-0">
+      <div class="card-body p-0">
 
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Department</th>
-        <th class="text-end">Open</th>
-        <th class="text-end">Resolved</th>
-        <th class="text-end">Avg. Resolution Time</th>
-        <th class="text-end">AI Classification Accuracy</th>
-      </tr>
-    </thead>
+        <div class="table-responsive">
 
-    <tbody>
+          <table class="table table-hover align-middle mb-0">
 
-      {% for item in category_reports %}
-
-      <tr>
-
-        <td>
-          {% if item.category.id %}
-            <a
-              href="{% url 'category_list' %}"
-              class="text-decoration-none"
-            >
-              {{ item.category.name }}
-            </a>
-          {% else %}
-            {{ item.category.name }}
-          {% endif %}
-        </td>
-
-        <td>
-            {{ item.department|default:"—" }}
-        </td>
-
-        <td class="text-end">
-          {{ item.open_count }}
-        </td>
-
-        <td class="text-end">
-          {{ item.resolved_count }}
-        </td>
-
-        <td class="text-end">
-          {% if item.avg_resolution_time %}
-            {{ item.avg_resolution_time }}
-          {% else %}
-            —
-          {% endif %}
-        </td>
-
-        <td class="text-end">
-
-          {% if item.ai_disabled %}
-
-            <span
-              class="badge text-bg-secondary"
-              title="AI classification disabled for this category"
-            >
-              AI Disabled
-            </span>
-
-          {% elif item.ai_accuracy is not None %}
-
-            {% if item.ai_accuracy >= 85 %}
-
-              {% with confidence_class="ra-confidence-high" %}
-                <span class="ra-confidence {{ confidence_class }}">
-                  {{ item.ai_accuracy|floatformat:0 }}%
-
-                  <span class="ra-confidence-bar">
-                    <span style="width: {{ item.ai_accuracy }}%"></span>
-                  </span>
-                </span>
-              {% endwith %}
-
-            {% elif item.ai_accuracy >= 70 %}
-
-              <span class="ra-confidence ra-confidence-medium">
-                {{ item.ai_accuracy|floatformat:0 }}%
-
-                <span class="ra-confidence-bar">
-                  <span style="width: {{ item.ai_accuracy }}%"></span>
-                </span>
-              </span>
-
-            {% else %}
-
-              <span class="ra-confidence ra-confidence-low">
-                {{ item.ai_accuracy|floatformat:0 }}%
-
-                <span class="ra-confidence-bar">
-                  <span style="width: {{ item.ai_accuracy }}%"></span>
-                </span>
-              </span>
-
-            {% endif %}
-
-          {% else %}
-
-            <span class="text-secondary">—</span>
-
-          {% endif %}
-
-        </td>
-
-      </tr>
-
-      {% empty %}
-
-      <tr>
-        <td colspan="6" class="text-center py-4 text-secondary">
-          No category report data available.
-        </td>
-      </tr>
-
-      {% endfor %}
-
-    </tbody>
-
-  </table>
-
-</div>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Department</th>
+                <th class="text-end">Open</th>
+                <th class="text-end">Resolved</th>
+                <th class="text-end">Avg. Resolution Time</th>
+                <th class="text-end">AI Classification Accuracy</th>
+              </tr>
+            </thead>
 
 
-  </div>
-</div>
+            <tbody>
+
+              {% for item in category_reports %}
+
+              <tr>
+
+                <!-- Category -->
+                <td>
+                  {% if item.category.id %}
+                    <a
+                      href="{% url 'category_list' %}"
+                      class="text-decoration-none"
+                    >
+                      {{ item.category.name }}
+                    </a>
+                  {% else %}
+                    {{ item.category.name }}
+                  {% endif %}
+                </td>
+
+
+                <!-- Department -->
+                <td>
+                  {{ item.department|default:"—" }}
+                </td>
+
+
+                <!-- Open -->
+                <td class="text-end">
+                  {{ item.open_count }}
+                </td>
+
+
+                <!-- Resolved -->
+                <td class="text-end">
+                  {{ item.resolved_count }}
+                </td>
+
+
+                <!-- Average Resolution Time -->
+                <td class="text-end">
+
+                  {% if item.avg_resolution_time %}
+                    {{ item.avg_resolution_time }}
+                  {% else %}
+                    —
+                  {% endif %}
+
+                </td>
+
+
+                <!-- AI Classification Accuracy -->
+                <td class="text-end">
+
+                  {% if item.ai_disabled %}
+
+                    <span
+                      class="badge text-bg-secondary"
+                      title="AI classification disabled for this category"
+                    >
+                      AI Disabled
+                    </span>
+
+
+                  {% elif item.ai_accuracy is not None %}
+
+                    {% if item.ai_accuracy >= 85 %}
+
+                      {% with confidence_class="ra-confidence-high" %}
+
+                        <span class="ra-confidence {{ confidence_class }}">
+
+                          {{ item.ai_accuracy|floatformat:0 }}%
+
+                          <span class="ra-confidence-bar">
+                            <span style="width: {{ item.ai_accuracy }}%"></span>
+                          </span>
+
+                        </span>
+
+                      {% endwith %}
+
+
+                    {% elif item.ai_accuracy >= 70 %}
+
+                      <span class="ra-confidence ra-confidence-medium">
+
+                        {{ item.ai_accuracy|floatformat:0 }}%
+
+                        <span class="ra-confidence-bar">
+                          <span style="width: {{ item.ai_accuracy }}%"></span>
+                        </span>
+
+                      </span>
+
+
+                    {% else %}
+
+                      <span class="ra-confidence ra-confidence-low">
+
+                        {{ item.ai_accuracy|floatformat:0 }}%
+
+                        <span class="ra-confidence-bar">
+                          <span style="width: {{ item.ai_accuracy }}%"></span>
+                        </span>
+
+                      </span>
+
+                    {% endif %}
+
+
+                  {% else %}
+
+                    <span class="text-secondary">—</span>
+
+                  {% endif %}
+
+                </td>
+
+              </tr>
+
+
+              {% empty %}
+
+              <tr>
+                <td colspan="6" class="text-center py-4 text-secondary">
+                  No category report data available.
+                </td>
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- Pagination -->
+        {% if category_reports.has_other_pages %}
+
+        <div class="px-3 py-3 border-top">
+
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+
+            <!-- Page Information -->
+            <div class="text-secondary small">
+
+              Page
+              <strong>{{ category_reports.number }}</strong>
+              of
+              <strong>{{ category_reports.paginator.num_pages }}</strong>
+
+            </div>
+
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Category report pagination">
+
+              <ul class="pagination pagination-sm mb-0">
+
+                <!-- Previous -->
+                {% if category_reports.has_previous %}
+
+                  <li class="page-item">
+
+                    <a
+                      class="page-link"
+                      href="?page={{ category_reports.previous_page_number }}"
+                      aria-label="Previous"
+                    >
+                      &laquo;
+                    </a>
+
+                  </li>
+
+                {% else %}
+
+                  <li class="page-item disabled">
+
+                    <span
+                      class="page-link"
+                      aria-hidden="true"
+                    >
+                      &laquo;
+                    </span>
+
+                  </li>
+
+                {% endif %}
+
+
+                <!-- Page Numbers -->
+                {% for num in category_reports.paginator.page_range %}
+
+                  {% if category_reports.number == num %}
+
+                    <li class="page-item active">
+                      <span class="page-link">
+                        {{ num }}
+                      </span>
+                    </li>
+
+                  {% else %}
+
+                    <li class="page-item">
+
+                      <a
+                        class="page-link"
+                        href="?page={{ num }}"
+                      >
+                        {{ num }}
+                      </a>
+
+                    </li>
+
+                  {% endif %}
+
+                {% endfor %}
+
+
+                <!-- Next -->
+                {% if category_reports.has_next %}
+
+                  <li class="page-item">
+
+                    <a
+                      class="page-link"
+                      href="?page={{ category_reports.next_page_number }}"
+                      aria-label="Next"
+                    >
+                      &raquo;
+                    </a>
+
+                  </li>
+
+                {% else %}
+
+                  <li class="page-item disabled">
+
+                    <span
+                      class="page-link"
+                      aria-hidden="true"
+                    >
+                      &raquo;
+                    </span>
+
+                  </li>
+
+                {% endif %}
+
+              </ul>
+
+            </nav>
+
+          </div>
+
+        </div>
+
+        {% endif %}
+
 
       </div>
+
     </div>
 
   </div>
@@ -205,6 +361,7 @@
   crossorigin="anonymous">
 </script>
 
+
 <script>
 (function () {
   'use strict';
@@ -215,11 +372,13 @@
   const foreColor = isDark ? '#c3c2b7' : '#52514e';
   const gridColor = isDark ? '#2b3040' : '#e7e9ee';
 
+
   const categories = [
     {% for item in category_reports %}
       "{{ item.category.name|escapejs }}"{% if not forloop.last %},{% endif %}
     {% endfor %}
   ];
+
 
   const ticketCounts = [
     {% for item in category_reports %}
@@ -227,8 +386,10 @@
     {% endfor %}
   ];
 
+
   const chartElement =
     document.querySelector('#categoryVolumeChart');
+
 
   if (chartElement) {
 
@@ -241,16 +402,20 @@
         }
       ],
 
+
       chart: {
         type: 'bar',
         height: 340,
         foreColor: foreColor,
+
         toolbar: {
           show: false
         }
       },
 
+
       colors: ['#2a78d6'],
+
 
       plotOptions: {
         bar: {
@@ -260,15 +425,19 @@
         }
       },
 
+
       dataLabels: {
         enabled: false
       },
+
 
       grid: {
         borderColor: gridColor
       },
 
+
       xaxis: {
+
         categories: categories,
 
         labels: {
@@ -276,14 +445,18 @@
             colors: foreColor
           }
         }
+
       },
 
+
       yaxis: {
+
         labels: {
           style: {
             colors: foreColor
           }
         }
+
       }
 
     }).render();

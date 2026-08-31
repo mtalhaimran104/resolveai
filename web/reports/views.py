@@ -1,8 +1,10 @@
 from datetime import timedelta
+
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, Q
 from django.shortcuts import render
 from django.utils import timezone
+
 from accounts.models import User, RoleCode
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -42,6 +44,11 @@ def _get_status_values():
         }
     except AttributeError:
         return set()
+
+
+# ---------------------------------------------------------------------
+# REPORTS DASHBOARD
+# ---------------------------------------------------------------------
 
 
 @admin_required
@@ -151,9 +158,7 @@ def reports_dashboard(request):
     category_rows = (
         tickets
         .filter(category__isnull=False)
-        .values(
-            "category__name"
-        )
+        .values("category__name")
         .annotate(
             total=Count("id")
         )
@@ -170,7 +175,7 @@ def reports_dashboard(request):
         for row in category_rows
     ]
 
-    # Limit the dashboard chart to the top categories.
+    # Limit dashboard chart to top 10 categories
     category_labels = category_labels[:10]
     category_data = category_data[:10]
 
@@ -181,9 +186,7 @@ def reports_dashboard(request):
     department_rows = (
         tickets
         .filter(department__isnull=False)
-        .values(
-            "department__name"
-        )
+        .values("department__name")
         .annotate(
             total=Count("id")
         )
@@ -251,7 +254,7 @@ def reports_dashboard(request):
             "resolved_count": row["resolved_count"],
         })
 
-    # Dashboard should show the highest workloads first.
+    # Dashboard shows highest workloads first
     agent_workload = agent_workload[:10]
 
     # ---------------------------------------------------------------
@@ -279,7 +282,6 @@ def reports_dashboard(request):
 
         resolved_count = 0
 
-        # If resolved_at exists, use the real timestamp.
         if "resolved_at" in ticket_fields:
 
             resolved_count = tickets.filter(
@@ -288,8 +290,6 @@ def reports_dashboard(request):
                 resolved_at__lt=week_end,
             ).count()
 
-        # If resolved_at doesn't exist, fall back to status history
-        # later rather than pretending this number is accurate.
         volume_labels.append(
             week_start.strftime("%b %d")
         )
@@ -350,8 +350,7 @@ def reports_dashboard(request):
 
     else:
 
-        # Controlled demo value because the current project
-        # does not have confirmed usable resolution timestamps.
+        # Controlled demo value
         average_resolution_display = "18h 40m"
 
     # ---------------------------------------------------------------
@@ -359,10 +358,6 @@ def reports_dashboard(request):
     # ---------------------------------------------------------------
 
     ai_accuracy = 91.4
-
-    # IMPORTANT:
-    # ai_confidence is NOT classification accuracy.
-    # Therefore we do not use it here as "accuracy".
 
     # ---------------------------------------------------------------
     # 11. Customer satisfaction - CONTROLLED DEMO
@@ -411,7 +406,7 @@ def reports_dashboard(request):
         # Agents
         "agent_workload": agent_workload,
 
-        # Explicit demo indicators
+        # Demo indicators
         "ai_accuracy_is_demo": True,
         "satisfaction_is_demo": True,
         "resolution_time_is_demo": (
@@ -426,19 +421,44 @@ def reports_dashboard(request):
     )
 
 
+# ---------------------------------------------------------------------
+# TICKET VOLUME REPORT
+# ---------------------------------------------------------------------
+
+
 @admin_required
 def ticket_volume_report(request):
-    return render(request, "reports/ticket-volume.html", {
-        "page_title": "Ticket Volume",
-    })
+
+    return render(
+        request,
+        "reports/ticket-volume.html",
+        {
+            "page_title": "Ticket Volume",
+        },
+    )
+
+
+# ---------------------------------------------------------------------
+# RESOLUTION TIME REPORT
+# ---------------------------------------------------------------------
 
 
 @admin_required
 def resolution_time_report(request):
-    return render(request, "reports/resolution-time.html", {
-        "page_title": "Resolution Time",
-    })
 
+    return render(
+        request,
+        "reports/resolution-time.html",
+        {
+            "page_title": "Resolution Time",
+        },
+    )
+
+
+# ---------------------------------------------------------------------
+# AGENT PERFORMANCE REPORT
+# Pagination: 5 agents per page
+# ---------------------------------------------------------------------
 
 
 @admin_required
@@ -490,15 +510,10 @@ def agent_performance_report(request):
             description__icontains="reopened",
         ).count()
 
-        # Agent name
         agent_name = agent.get_full_name()
 
         if not agent_name:
             agent_name = agent.username
-
-        # ---------------------------------------------------------
-        # Table
-        # ---------------------------------------------------------
 
         agents.append({
             "user": agent,
@@ -512,10 +527,6 @@ def agent_performance_report(request):
             "department": agent.department,
         })
 
-        # ---------------------------------------------------------
-        # Chart
-        # ---------------------------------------------------------
-
         chart_labels.append(agent_name)
         chart_values.append(resolved_count)
 
@@ -528,9 +539,14 @@ def agent_performance_report(request):
         5
     )
 
-    page_number = request.GET.get("page", 1)
+    page_number = request.GET.get(
+        "page",
+        1
+    )
 
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(
+        page_number
+    )
 
     # -------------------------------------------------------------
     # Render
@@ -551,9 +567,15 @@ def agent_performance_report(request):
     )
 
 
+# ---------------------------------------------------------------------
+# DEPARTMENT REPORT
+# Pagination: 5 departments per page
+# ---------------------------------------------------------------------
+
 
 @admin_required
 def department_report(request):
+
     now = timezone.now()
 
     month_start = now.replace(
@@ -577,9 +599,18 @@ def department_report(request):
         "CLOSED",
     ]
 
-    department_model = Ticket._meta.get_field("department").remote_field.model
+    department_model = (
+        Ticket._meta
+        .get_field("department")
+        .remote_field
+        .model
+    )
 
-    departments = department_model.objects.all().order_by("name")
+    departments = (
+        department_model.objects
+        .all()
+        .order_by("name")
+    )
 
     department_data = []
 
@@ -617,8 +648,6 @@ def department_report(request):
 
         else:
 
-            # Current Ticket model does not have resolved_at.
-            # Use updated_at as the best available real timestamp.
             resolved_this_month = department_tickets.filter(
                 status__in=resolved_statuses,
                 updated_at__gte=month_start,
@@ -657,7 +686,9 @@ def department_report(request):
                         duration.total_seconds() / 60
                     )
 
-                    resolution_minutes.append(minutes)
+                    resolution_minutes.append(
+                        minutes
+                    )
 
             if resolution_minutes:
 
@@ -678,8 +709,8 @@ def department_report(request):
         # ---------------------------------------------------------
 
         agent_count = User.objects.filter(
-    department=department
-).count()
+            department=department
+        ).count()
 
         # ---------------------------------------------------------
         # Active supervisor
@@ -688,14 +719,14 @@ def department_report(request):
         active_supervisor = None
 
         supervisor = (
-    User.objects
-    .filter(
-        department=department,
-        roles__code=RoleCode.SUPERVISOR,
-        is_active=True,
-    )
-    .first()
-)
+            User.objects
+            .filter(
+                department=department,
+                roles__code=RoleCode.SUPERVISOR,
+                is_active=True,
+            )
+            .first()
+        )
 
         if supervisor:
 
@@ -708,10 +739,14 @@ def department_report(request):
                 active_supervisor = supervisor.username
 
         # ---------------------------------------------------------
-        # Add department row
+        # Total tickets
         # ---------------------------------------------------------
 
         total_count = department_tickets.count()
+
+        # ---------------------------------------------------------
+        # Add department row
+        # ---------------------------------------------------------
 
         department_data.append({
             "id": department.id,
@@ -727,23 +762,43 @@ def department_report(request):
         # Chart data
         # ---------------------------------------------------------
 
-        chart_labels.append(department.name)
-        chart_volume.append(total_count)
-        chart_open.append(open_tickets)
-        chart_resolved.append(resolved_this_month)
+        chart_labels.append(
+            department.name
+        )
+
+        chart_volume.append(
+            total_count
+        )
+
+        chart_open.append(
+            open_tickets
+        )
+
+        chart_resolved.append(
+            resolved_this_month
+        )
 
     # -------------------------------------------------------------
-    # Pagination — 5 departments per page
+    # Pagination - 5 departments per page
     # -------------------------------------------------------------
-
-    page_number = request.GET.get("page", 1)
 
     paginator = Paginator(
         department_data,
         5
     )
 
-    page_obj = paginator.get_page(page_number)
+    page_number = request.GET.get(
+        "page",
+        1
+    )
+
+    page_obj = paginator.get_page(
+        page_number
+    )
+
+    # -------------------------------------------------------------
+    # Render
+    # -------------------------------------------------------------
 
     return render(
         request,
@@ -762,20 +817,56 @@ def department_report(request):
             },
         },
     )
+
+
+# ---------------------------------------------------------------------
+# CATEGORY REPORT
+# Pagination: 5 categories per page
+# ---------------------------------------------------------------------
+
+
 @admin_required
 def category_report(request):
-    categories = TicketCategory.objects.all().order_by("name")
+
+    # -------------------------------------------------------------
+    # Get all categories
+    # -------------------------------------------------------------
+
+    categories = (
+        TicketCategory.objects
+        .all()
+        .order_by("name")
+    )
 
     category_reports = []
 
-    for category in categories:
-        # Real tickets belonging to this category
-        tickets = Ticket.objects.filter(category=category)
+    # These lists are kept separate for the chart.
+    # This means the chart can display ALL categories while
+    # the table displays only 5 categories per page.
+    chart_labels = []
+    chart_data = []
 
+    # -------------------------------------------------------------
+    # Build category report data
+    # -------------------------------------------------------------
+
+    for category in categories:
+
+        # Real tickets belonging to this category
+        tickets = Ticket.objects.filter(
+            category=category
+        )
+
+        # ---------------------------------------------------------
         # Total tickets
+        # ---------------------------------------------------------
+
         total_count = tickets.count()
 
+        # ---------------------------------------------------------
         # Open / active tickets
+        # ---------------------------------------------------------
+
         open_count = tickets.filter(
             status__in=[
                 "OPEN",
@@ -784,7 +875,10 @@ def category_report(request):
             ]
         ).count()
 
+        # ---------------------------------------------------------
         # Resolved / closed tickets
+        # ---------------------------------------------------------
+
         resolved_count = tickets.filter(
             status__in=[
                 "RESOLVED",
@@ -792,54 +886,122 @@ def category_report(request):
             ]
         ).count()
 
-        # Real average AI confidence from tickets
+        # ---------------------------------------------------------
+        # Real average AI confidence
+        # ---------------------------------------------------------
+
         avg_ai_confidence = tickets.filter(
             ai_confidence__isnull=False
         ).aggregate(
             avg=Avg("ai_confidence")
         )["avg"]
 
-        # Real departments used by tickets in this category
+        # ---------------------------------------------------------
+        # Real departments used by this category
+        # ---------------------------------------------------------
+
         department_names = list(
             tickets
-            .filter(department__isnull=False)
-            .values_list("department__name", flat=True)
+            .filter(
+                department__isnull=False
+            )
+            .values_list(
+                "department__name",
+                flat=True
+            )
             .distinct()
         )
+
+        # ---------------------------------------------------------
+        # Add category row
+        # ---------------------------------------------------------
 
         category_reports.append({
             "category": category,
 
-            # Convert department names into a simple string
-            "department": ", ".join(department_names)
-            if department_names else "-",
+            "department": (
+                ", ".join(department_names)
+                if department_names
+                else "-"
+            ),
 
             "open_count": open_count,
+
             "resolved_count": resolved_count,
+
             "total_count": total_count,
 
-            # We will calculate this from TicketHistory separately
+            # Resolution time is not currently calculated
+            # from TicketHistory.
             "avg_resolution_time": None,
 
-            # This is the real average AI confidence currently
-            # supported by the Ticket model.
+            # Real average AI confidence.
             "ai_accuracy": avg_ai_confidence,
 
             "ai_disabled": False,
         })
+
+        # ---------------------------------------------------------
+        # Chart data
+        # ---------------------------------------------------------
+
+        chart_labels.append(
+            category.name
+        )
+
+        chart_data.append(
+            total_count
+        )
+
+    # -------------------------------------------------------------
+    # Pagination - 5 categories per page
+    # -------------------------------------------------------------
+
+    paginator = Paginator(
+        category_reports,
+        5
+    )
+
+    page_number = request.GET.get(
+        "page",
+        1
+    )
+
+    page_obj = paginator.get_page(
+        page_number
+    )
+
+    # -------------------------------------------------------------
+    # Render
+    # -------------------------------------------------------------
 
     return render(
         request,
         "reports/category-report.html",
         {
             "page_title": "Category Report",
-            "category_reports": category_reports,
+
+            # Paginated table data
+            "category_reports": page_obj,
+
+            # Pagination object
+            "page_obj": page_obj,
+
+            # Full chart data
+            "chart_labels": chart_labels,
+            "chart_data": chart_data,
         },
     )
 
 
+# ---------------------------------------------------------------------
+# AI ACCURACY REPORT
+# ---------------------------------------------------------------------
+
+
 @admin_required
 def ai_accuracy_report(request):
+
     """
     AI Accuracy report.
 
@@ -853,9 +1015,13 @@ def ai_accuracy_report(request):
             category__isnull=False,
             ai_confidence__isnull=False,
         )
-        .values("category__name")
+        .values(
+            "category__name"
+        )
         .annotate(
-            average_confidence=Avg("ai_confidence"),
+            average_confidence=Avg(
+                "ai_confidence"
+            ),
             ticket_count=Count("id"),
         )
         .order_by("-ticket_count")
@@ -865,39 +1031,67 @@ def ai_accuracy_report(request):
     classification_accuracy = []
 
     for row in category_rows:
-        category_name = row["category__name"]
+
+        category_name = row[
+            "category__name"
+        ]
 
         if not category_name:
             continue
 
-        confidence = row["average_confidence"]
+        confidence = row[
+            "average_confidence"
+        ]
 
         if confidence is None:
             continue
 
-        # ai_confidence may be stored either as:
-        # 0.91  -> 91%
-        # or
-        # 91    -> 91%
+        # ai_confidence may be stored as:
+        #
+        # 0.91 -> 91%
+        # 91   -> 91%
+
         if confidence <= 1:
-            accuracy = float(confidence) * 100
+            accuracy = (
+                float(confidence) * 100
+            )
         else:
-            accuracy = float(confidence)
+            accuracy = float(
+                confidence
+            )
 
-        # Keep chart values safely within 0–100.
-        accuracy = max(0, min(100, accuracy))
+        # Keep values between 0 and 100
+        accuracy = max(
+            0,
+            min(
+                100,
+                accuracy
+            )
+        )
 
-        classification_labels.append(category_name)
-        classification_accuracy.append(round(accuracy, 1))
+        classification_labels.append(
+            category_name
+        )
+
+        classification_accuracy.append(
+            round(
+                accuracy,
+                1
+            )
+        )
 
     context = {
         "page_title": "AI Accuracy",
 
-        "classification_labels": classification_labels,
-        "classification_accuracy": classification_accuracy,
+        "classification_labels": (
+            classification_labels
+        ),
 
-        # Current project does not have a verified ground-truth
-        # classification accuracy field.
+        "classification_accuracy": (
+            classification_accuracy
+        ),
+
+        # This is not ground-truth classification accuracy.
         "classification_accuracy_is_demo": False,
     }
 
@@ -908,13 +1102,31 @@ def ai_accuracy_report(request):
     )
 
 
+# ---------------------------------------------------------------------
+# CUSTOMER SATISFACTION REPORT
+# ---------------------------------------------------------------------
+
+
 @admin_required
 def customer_satisfaction_report(request):
-    return render(request, "reports/customer-satisfaction.html", {
-        "page_title": "Customer Satisfaction",
-    })
-@staff_member_required
+
+    return render(
+        request,
+        "reports/customer-satisfaction.html",
+        {
+            "page_title": "Customer Satisfaction",
+        },
+    )
+
+
+# ---------------------------------------------------------------------
+# LOW CONFIDENCE RESULTS
+# ---------------------------------------------------------------------
+
+
+@admin_required
 def low_confidence_results(request):
+
     return render(
         request,
         "reports/low-confidence-results.html",
@@ -922,4 +1134,3 @@ def low_confidence_results(request):
             "page_title": "Low Confidence Results",
         },
     )
-
