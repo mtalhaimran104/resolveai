@@ -53,9 +53,10 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="fs-7 text-secondary">Ticket History</div>
-        <a href="{% url 'ticket_history' ticket.pk %}">{{ history|length }} event{{ history|length|pluralize }} &middot; View full history <i class="bi bi-arrow-right"></i></a>
-      </div>
-    </div>
+<a href="{% url 'tickets:ticket_history' ticket.pk %}">
+    {{ history|length }} event{{ history|length|pluralize }} &middot; View full history
+    <i class="bi bi-arrow-right"></i>
+</a>    </div>
   </div>
 
   <!--begin::Assigned Agent-->
@@ -95,35 +96,74 @@
     <!--end::Description-->
 
     <!--begin::Attachments-->
-    <div class="card mb-4">
-      <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-paperclip me-1"></i>Attachments</h3></div>
-      <div class="card-body">
-        {% if attachments %}
-          <ul class="list-group list-group-flush mb-3">
-            {% for att in attachments %}
-              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                <span>
-                  <i class="bi bi-file-earmark me-1"></i>
-                  <a href="{{ att.file.url }}" target="_blank" rel="noopener">{{ att.original_filename }}</a>
-                  <span class="text-secondary fs-7">&middot; {{ att.size_bytes|filesizeformat }} &middot; by {{ att.uploaded_by.get_full_name|default:att.uploaded_by.username }} &middot; {{ att.created_at|date:"M d, Y g:i A" }}</span>
-                </span>
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-secondary">No attachments yet.</p>
-        {% endif %}
-        <form method="POST" action="{% url 'ticket_add_attachment' ticket.pk %}" enctype="multipart/form-data" class="d-flex gap-2 align-items-start">
-          {% csrf_token %}
-          {{ attachment_form.file }}
-          <button type="submit" class="btn btn-outline-primary flex-shrink-0"><i class="bi bi-upload me-1"></i>Upload</button>
-        </form>
+<div class="card mb-4">
+  <div class="card-header">
+    <h3 class="card-title fs-6 mb-0">
+      <i class="bi bi-paperclip me-1"></i>Attachments
+    </h3>
+  </div>
+
+  <div class="card-body">
+
+    {% if attachments %}
+      <ul class="list-group list-group-flush mb-3">
+        {% for att in attachments %}
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span>
+              <i class="bi bi-file-earmark me-1"></i>
+
+              <a href="{{ att.file.url }}"
+                 target="_blank"
+                 rel="noopener">
+                {{ att.original_filename }}
+              </a>
+
+              <span class="text-secondary fs-7">
+                &middot;
+                {{ att.size_bytes|filesizeformat }}
+                &middot; by
+                {{ att.uploaded_by.get_full_name|default:att.uploaded_by.username }}
+                &middot;
+                {{ att.created_at|date:"M d, Y g:i A" }}
+              </span>
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-secondary">No attachments yet.</p>
+    {% endif %}
+
+    <form
+      method="POST"
+      action="{% url 'tickets:ticket_add_attachment' ticket.pk %}"
+      enctype="multipart/form-data"
+      class="d-flex gap-2 align-items-start"
+    >
+      {% csrf_token %}
+
+      <div class="flex-grow-1">
+        {{ attachment_form.file }}
+
         {% if attachment_form.file.errors %}
-          <div class="text-danger small mt-1">{{ attachment_form.file.errors|striptags }}</div>
+          <div class="text-danger small mt-1">
+            {{ attachment_form.file.errors|striptags }}
+          </div>
         {% endif %}
       </div>
-    </div>
-    <!--end::Attachments-->
+
+      <button
+        type="submit"
+        class="btn btn-outline-primary flex-shrink-0"
+      >
+        <i class="bi bi-upload me-1"></i>
+        Upload
+      </button>
+    </form>
+
+  </div>
+</div>
+<!--end::Attachments-->
 
     <!--begin::Conversation-->
     <div class="card mb-4">
@@ -157,8 +197,9 @@
     <div class="card mb-4">
       <div class="card-header"><h3 class="card-title fs-6 mb-0">Add a Reply</h3></div>
       <div class="card-body">
-        <form method="POST" action="{% url 'ticket_add_comment' ticket.pk %}" class="d-flex gap-2 align-items-start">
-          {% csrf_token %}
+<form method="POST"
+      action="{% url 'tickets:ticket_add_comment' ticket.pk %}"
+      class="d-flex gap-2 align-items-start">          {% csrf_token %}
           <div class="flex-grow-1">
             {{ comment_form.message }}
             {% if comment_form.message.errors %}
@@ -171,7 +212,7 @@
     </div>
     <!--end::Reply Form-->
 
-    <!--begin::Ticket History-->
+    {% comment %} <!--begin::Ticket History-->
     <div class="card mb-4">
       <div class="card-header"><h3 class="card-title fs-6 mb-0"><i class="bi bi-clock-history me-1"></i>Ticket History</h3></div>
       <div class="card-body">
@@ -191,7 +232,7 @@
         {% endif %}
       </div>
     </div>
-    <!--end::Ticket History-->
+    <!--end::Ticket History--> {% endcomment %}
   </div>
 </div>
 {% endblock %}

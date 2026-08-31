@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from app.api.routes import (
+from app.api.routers import (
     classification,
     priority_prediction,
     faq,

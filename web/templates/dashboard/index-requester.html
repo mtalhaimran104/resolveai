@@ -5,61 +5,102 @@
 
 {% block content %}
 
-  <div class="mb-4">
+<div class="mb-4">
     <h4 class="mb-1">Welcome, {{ welcome_name }}!</h4>
-    <p class="text-secondary mb-0">Here's an overview of your support tickets.</p>
-  </div>
+    <p class="text-secondary mb-0">
+        Here's an overview of your support tickets.
+    </p>
+</div>
 
-  <div class="row">
+<div class="row">
     <div class="col-lg-3 col-6">
-      <div class="info-box">
-        <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-envelope-open-fill"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Open Tickets</span>
-          <span class="info-box-number">{{ open_count }}</span>
+        <div class="info-box">
+            <span class="info-box-icon text-bg-primary shadow-sm">
+                <i class="bi bi-envelope-open-fill"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Open Tickets</span>
+                <span class="info-box-number">{{ open_count }}</span>
+            </div>
         </div>
-      </div>
     </div>
-    <div class="col-lg-3 col-6">
-      <div class="info-box">
-        <span class="info-box-icon text-bg-success shadow-sm"><i class="bi bi-check-circle-fill"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Resolved</span>
-          <span class="info-box-number">{{ resolved_count }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="card mb-4">
+    <div class="col-lg-3 col-6">
+        <div class="info-box">
+            <span class="info-box-icon text-bg-success shadow-sm">
+                <i class="bi bi-check-circle-fill"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Resolved</span>
+                <span class="info-box-number">{{ resolved_count }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <h3 class="card-title mb-0">My Recent Tickets</h3>
-      <a href="{% url 'my_tickets' %}" class="fs-7">View All</a>
+        <h3 class="card-title mb-0">My Recent Tickets</h3>
+        <a href="{% url 'tickets:my_tickets' %}" class="fs-7">View All</a>
     </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead>
-            <tr><th>Ticket #</th><th>Subject</th><th>Priority</th><th>Status</th><th>Updated</th></tr>
-          </thead>
-          <tbody>
-            {% for ticket in recent_tickets %}
-              <tr>
-                <td><a href="{% url 'ticket_detail_requester' ticket.pk %}">{{ ticket.ticket_number }}</a></td>
-                <td>{{ ticket.subject }}</td>
-                <td><span class="badge badge-priority-{{ ticket.priority|lower }}">{{ ticket.get_priority_display }}</span></td>
-                <td><span class="badge badge-status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span></td>
-                <td class="text-secondary fs-7">{{ ticket.updated_at|date:"M d, Y g:i A" }}</td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="5" class="text-center text-secondary py-4">You haven't created any tickets yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
-  <a href="{% url 'tickets:create_ticket' %}" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Create a New Ticket</a>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for ticket in recent_tickets %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'tickets:ticket_detail' ticket.pk %}">
+                                {{ ticket.ticket_number }}
+                            </a>
+                        </td>
+
+                        <td>{{ ticket.subject }}</td>
+
+                        <td>
+                            <span class="badge badge-priority-{{ ticket.priority|lower }}">
+                                {{ ticket.get_priority_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge badge-status-{{ ticket.status|lower }}">
+                                {{ ticket.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td class="text-secondary fs-7">
+                            {{ ticket.updated_at|date:"M d, Y g:i A" }}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">
+                            You haven't created any tickets yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'tickets:ticket_create' %}" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-1"></i>
+    Create a New Ticket
+</a>
 
 {% endblock %}
