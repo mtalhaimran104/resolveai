@@ -1,5 +1,6 @@
-import hashlib
+﻿import hashlib
 import json
+from pathlib import Path
 from fastapi import APIRouter
 from sqlalchemy import text
 from app.core.database import engine
@@ -8,6 +9,8 @@ from app.schemas.classification import (
     ClassificationData,
     ClassificationRequest,
     ClassificationResponse,
+    ClassificationModelMetricsData,
+    ClassificationModelMetricsResponse,
 )
 from app.services.classification_service import classify_ticket
 router = APIRouter(
@@ -121,4 +124,46 @@ def predict_classification(
             confidence=confidence,
         ),
     )
+
+@router.get(
+    "/metrics",
+    response_model=ClassificationModelMetricsResponse,
+)
+def get_classification_model_metrics() -> ClassificationModelMetricsResponse:
+    metrics_path = (
+        Path(__file__).resolve().parent.parent.parent
+        / "models"
+        / "ticket_classification"
+        / "model_metrics.json"
+    )
+    try:
+        with open(
+            metrics_path,
+            "r",
+            encoding="utf-8",
+        ) as metrics_file:
+            metrics = json.load(metrics_file)
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+    ):
+        return ClassificationModelMetricsResponse(
+            status=False,
+            message="Classification model metrics not available",
+            data=None,
+        )
+    return ClassificationModelMetricsResponse(
+        status=True,
+        message="Success",
+        data=ClassificationModelMetricsData(
+            model_version=metrics["model_version"],
+            accuracy=metrics["accuracy"],
+            precision=metrics["precision"],
+            recall=metrics["recall"],
+            f1_score=metrics["f1_score"],
+        ),
+    )
+
+
+
 

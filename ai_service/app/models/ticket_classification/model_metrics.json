@@ -1,0 +1,13 @@
+{
+    "model_name": "ticket-classifier",
+    "model_version": "1.0",
+    "accuracy": 98.07,
+    "precision": 98.17,
+    "recall": 98.12,
+    "f1_score": 98.09,
+    "training_samples": 1657,
+    "test_samples": 415,
+    "total_samples": 2072,
+    "cv_macro_f1": 96.83,
+    "classes": 19
+}

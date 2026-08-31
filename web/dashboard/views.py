@@ -1,4 +1,4 @@
-from datetime import timedelta
+﻿from datetime import timedelta
 from pathlib import Path
 import json
 
@@ -13,7 +13,7 @@ User = get_user_model()
 from accounts.decorators import admin_required
 from tickets.models import Ticket, TicketHistory
 from ai.models import AIAnalysis
-from ai.services import get_priority_model_metrics, AIServiceError
+from ai.services import get_classification_model_metrics, get_priority_model_metrics, AIServiceError
 
 
 # ---------------------------------------------------------------------
@@ -308,7 +308,7 @@ def _requester_dashboard(request):
 # SYSTEM / SETTINGS placeholder pages
 #
 # The sidebar (templates/includes/sidebar.html) already links to all of
-# these for admins, but none of them had a view or url — visiting any
+# these for admins, but none of them had a view or url â€” visiting any
 # page as an admin raised NoReverseMatch when the sidebar tried to
 # render those links. There's no Notification/AuditLog/SystemSetting
 # model yet, so these render the existing static templates; wire real
@@ -374,7 +374,7 @@ def activity_log(request):
 #
 # These AI pages are copied from the supplied ResolveAI HTML template demo
 # unchanged. They are exposed only to Admin and Agent sidebars.
-# The Knowledge Base pages that used to live here have real CRUD now —
+# The Knowledge Base pages that used to live here have real CRUD now â€”
 # see the `knowledge` app.
 # ---------------------------------------------------------------------
 
@@ -406,6 +406,15 @@ def demo_ai_low_confidence(request):
 
 def demo_ai_model_performance(request):
     try:
+        metrics_response = get_classification_model_metrics()
+        if metrics_response.get("status"):
+            classification_model = metrics_response.get("data", {})
+        else:
+            classification_model = {}
+    except AIServiceError:
+        classification_model = {}
+
+    try:
         metrics_response = get_priority_model_metrics()
         if metrics_response.get("status"):
             priority_model = metrics_response.get("data", {})
@@ -413,6 +422,14 @@ def demo_ai_model_performance(request):
             priority_model = {}
     except AIServiceError:
         priority_model = {}
+    classification_analyses = AIAnalysis.objects.filter(
+        analysis_type=AIAnalysis.AnalysisType.CLASSIFICATION,
+        status=AIAnalysis.Status.SUCCESS,
+    )
+    classification_total_predictions = classification_analyses.count()
+    classification_avg_response_time = classification_analyses.aggregate(
+        average=Avg("response_time_ms")
+    )["average"]
     priority_analyses = AIAnalysis.objects.filter(
         analysis_type=AIAnalysis.AnalysisType.PRIORITY,
         status=AIAnalysis.Status.SUCCESS,
@@ -425,6 +442,9 @@ def demo_ai_model_performance(request):
         request,
         "ai/model-performance.html",
         {
+            "classification_model": classification_model,
+            "classification_total_predictions": classification_total_predictions,
+            "classification_avg_response_time": classification_avg_response_time,
             "priority_model": priority_model,
             "priority_total_predictions": priority_total_predictions,
             "priority_avg_response_time": priority_avg_response_time,
@@ -448,7 +468,7 @@ from django.db.models import Avg
 # from accounts.decorators import admin_required
 # from tickets.models import Ticket, TicketHistory
 from ai.models import AIAnalysis
-from ai.services import get_priority_model_metrics, AIServiceError
+from ai.services import get_classification_model_metrics, get_priority_model_metrics, AIServiceError
 # from core.pagination import paginate_queryset
 
 
@@ -632,7 +652,7 @@ from ai.services import get_priority_model_metrics, AIServiceError
 # # SYSTEM / SETTINGS placeholder pages
 # #
 # # The sidebar (templates/includes/sidebar.html) already links to all of
-# # these for admins, but none of them had a view or url — visiting any
+# # these for admins, but none of them had a view or url â€” visiting any
 # # page as an admin raised NoReverseMatch when the sidebar tried to
 # # render those links. There's no Notification/AuditLog/SystemSetting
 # # model yet, so these render the existing static templates; wire real
@@ -755,6 +775,9 @@ from ai.services import get_priority_model_metrics, AIServiceError
 
 # def demo_ai_service_status(request):
 #     return _demo_page(request, "ai/ai-service-status.html")
+
+
+
 
 
 

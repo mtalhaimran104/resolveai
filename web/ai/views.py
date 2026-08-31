@@ -1,3 +1,4 @@
+from time import perf_counter
 import hashlib
 import json
 import time
@@ -9,7 +10,7 @@ from django.views.decorators.http import require_POST
 from tickets.models import Ticket
 from .models import AIAnalysis, AIFeedback
 from .services import (
-    AIServiceError,
+AIServiceError,
     call_classification_service,
     call_priority_service,
     call_sentiment_service,
@@ -95,12 +96,15 @@ def classify_ticket(request):
     input_hash = _create_input_hash(text)
 
     try:
+        start_time = perf_counter()
         result = call_classification_service(
             ticket_id=ticket.id,
             text=text,
         )
-        category = result["category"]
-        confidence = result["confidence"]
+        response_time_ms = (perf_counter() - start_time) * 1000
+        result_data = result["data"]
+        category = result_data["category_title"]
+        confidence = result_data["confidence"]
     except AIServiceError as exc:
         _record_failed_analysis(
             ticket=ticket,
@@ -140,6 +144,7 @@ def classify_ticket(request):
             "confidence": confidence,
         },
         confidence_score=confidence,
+        response_time_ms=response_time_ms,
         status=AIAnalysis.Status.SUCCESS,
     )
 

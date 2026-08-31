@@ -11,5 +11,11 @@ urlpatterns = [
     path("department/", views.department_report, name="department"),
     path("category/", views.category_report, name="category"),
     path("ai-accuracy/", views.ai_accuracy_report, name="ai_accuracy"),
+
+    path(
+        "ai-accuracy/low-confidence/",
+        views.low_confidence_results,
+        name="low_confidence_results",
+    ),
     path("customer-satisfaction/", views.customer_satisfaction_report, name="customer_satisfaction"),
 ]

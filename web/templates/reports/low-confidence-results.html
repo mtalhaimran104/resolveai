@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Low Confidence Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Low Confidence Results</h1>
+            <p class="text-muted mb-0">
+                AI predictions and responses that require review.
+            </p>
+        </div>
+
+        <a href="{% url 'reports:ai_accuracy' %}" class="btn btn-outline-secondary">
+            ← Back to AI Accuracy
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="alert alert-info">
+                No low-confidence results are currently available.
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

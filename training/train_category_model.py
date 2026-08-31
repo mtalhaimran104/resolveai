@@ -1,9 +1,17 @@
 from pathlib import Path
+import json
+import json
 import joblib
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from sklearn.model_selection import (
     StratifiedKFold,
     cross_val_score,
@@ -30,6 +38,10 @@ MODEL_PATH = (
 VECTORIZER_PATH = (
     MODEL_DIR
     / "tfidf_vectorizer.pkl"
+)
+METRICS_PATH = (
+    MODEL_DIR
+    / "model_metrics.json"
 )
 def create_model():
     base_model = LinearSVC(
@@ -112,6 +124,38 @@ def main():
         predictions,
         average="macro",
     )
+    macro_precision = precision_score(
+        y_test,
+        predictions,
+        average="macro",
+        zero_division=0,
+    )
+    macro_recall = recall_score(
+        y_test,
+        predictions,
+        average="macro",
+        zero_division=0,
+    )
+    metrics = {
+        "model_name": "ticket-classifier",
+        "model_version": "1.0",
+        "accuracy": round(
+            float(accuracy) * 100,
+            2,
+        ),
+        "precision": round(
+            float(macro_precision) * 100,
+            2,
+        ),
+        "recall": round(
+            float(macro_recall) * 100,
+            2,
+        ),
+        "f1_score": round(
+            float(macro_f1) * 100,
+            2,
+        ),
+    }
     print("\nTEST RESULTS")
     print(
         f"Accuracy: {accuracy:.4f}"
@@ -193,6 +237,32 @@ def main():
         final_vectorizer,
         VECTORIZER_PATH,
     )
+    
+    metrics.update(
+        {
+            "training_samples": len(X_train),
+            "test_samples": len(X_test),
+            "total_samples": len(X),
+            "cv_macro_f1": round(
+                float(cv_scores.mean()) * 100,
+                2,
+            ),
+            "classes": len(final_model.classes_),
+        }
+    )
+    with open(
+        METRICS_PATH,
+        "w",
+        encoding="utf-8",
+    ) as metrics_file:
+        json.dump(
+            metrics,
+            metrics_file,
+            indent=4,
+        )
+    print(
+        f"Metrics path: {METRICS_PATH}"
+    )
     print(
         "\nFINAL CALIBRATED MODEL SAVED"
     )
@@ -217,3 +287,13 @@ def main():
     )
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
