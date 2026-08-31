@@ -562,7 +562,7 @@ def ticket_create(request):
             )
 
             return redirect(
-                "ticket_list"
+               ("tickets:my_tickets")
             )
 
     else:
@@ -1219,18 +1219,30 @@ def supervisor_ticket_list(request):
         .order_by("-created_at")
     )
 
+    tickets = _filter_tickets(
+        request,
+        base,
+    )
+
+    page_obj = _paginate(
+        request,
+        tickets,
+    )
+
+    context = {
+        "tickets": page_obj,
+        "page_obj": page_obj,
+        "page_title": "Ticket Management",
+    }
+
+    context.update(
+        _ticket_list_filter_context(request)
+    )
+
     return render(
         request,
-        "tickets/supervisor-ticket-list.html",
-        {
-            "unassigned_tickets": base.filter(
-                assigned_to__isnull=True
-            ),
-            "assigned_tickets": base.filter(
-                assigned_to__isnull=False
-            ),
-            "page_title": "Ticket Management",
-        },
+        "tickets/ticket-table.html",
+        context,
     )
 
 
@@ -1487,9 +1499,9 @@ def ticket_assign(request, pk):
         )
 
         return redirect(
-            "supervisor_ticket_list"
+             "tickets:supervisor_ticket_list"
             if is_privileged
-            else "agent_ticket_list"
+            else "tickets:agent_ticket_list"
         )
 
     # -----------------------------------------------------------------
@@ -1594,9 +1606,9 @@ def ticket_unassign(request, pk):
         )
 
     return redirect(
-        "supervisor_ticket_list"
+         "tickets:supervisor_ticket_list"
         if is_privileged
-        else "agent_ticket_list"
+        else "tickets:agent_ticket_list"
     )
 
 

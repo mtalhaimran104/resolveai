@@ -206,6 +206,8 @@ class TicketHistory(TimeStampedModel):
         STATUS_CHANGED = "STATUS_CHANGED", "Status changed"
         PRIORITY_CHANGED = "PRIORITY_CHANGED", "Priority changed"
         CATEGORY_CHANGED = "CATEGORY_CHANGED", "Category changed"
+        PUBLIC_REPLY = "PUBLIC_REPLY", "Public reply"
+        INTERNAL_NOTE = "INTERNAL_NOTE", "Internal note"
 
     ticket = models.ForeignKey(
         Ticket,
@@ -240,5 +242,3 @@ class TicketHistory(TimeStampedModel):
             f"{self.get_action_display()} "
             f"on {self.ticket.ticket_number}"
         )
-
-

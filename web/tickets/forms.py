@@ -11,6 +11,7 @@ class TicketForm(forms.ModelForm):
         queryset=Department.objects.filter(
             is_active=True
         ).order_by("name"),
+        required=False,
         empty_label="Choose department...",
         widget=forms.Select(
             attrs={
@@ -26,11 +27,22 @@ class TicketForm(forms.ModelForm):
         ).select_related(
             "department"
         ).order_by("name"),
+        required=False,
         empty_label="Choose category...",
         widget=forms.Select(
             attrs={
                 "class": "form-select",
                 "id": "ticketCategory",
+            }
+        ),
+    )
+
+    priority = forms.ChoiceField(
+        choices=Ticket.Priority.choices,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
             }
         ),
     )
@@ -60,19 +72,15 @@ class TicketForm(forms.ModelForm):
                     "placeholder": "Describe the issue in detail",
                 }
             ),
-
-            "priority": forms.Select(
-                attrs={
-                    "class": "form-select",
-                }
-            ),
         }
 
 
 class TicketCommentForm(forms.ModelForm):
+
     class Meta:
         model = TicketComment
         fields = ["message"]
+
         widgets = {
             "message": forms.Textarea(
                 attrs={
@@ -86,6 +94,7 @@ class TicketCommentForm(forms.ModelForm):
 
 
 class TicketAttachmentForm(forms.ModelForm):
+
     file = forms.FileField(
         widget=forms.ClearableFileInput(
             attrs={
