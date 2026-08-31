@@ -1,41 +1,34 @@
-# app/schemas/faq.py
-
 from pydantic import BaseModel, Field
 
 
-# ============================================================
-# FAQ REQUEST
-# ============================================================
-
 class FAQRequest(BaseModel):
-    """
-    Request model for an IUB FAQ question.
-    """
-
-    question: str = Field(
+    ticket_id: int = Field(
         ...,
-        min_length=1,
-        description="Student's IUB-related question"
+        gt=0,
+        description="ID of the ticket for FAQ retrieval",
     )
 
 
-# ============================================================
-# FAQ RESPONSE
-# ============================================================
+class FAQData(BaseModel):
+    ticket_id: int
+    question: str
+    answer: str
+    similarity_score: float
+    confidence_score: float
+    confidence_level: str
+    source: str
+    model_name: str
+    model_version: str
+    found: bool
+
+
+class FAQError(BaseModel):
+    code: str
+    ticket_id: int
+
 
 class FAQResponse(BaseModel):
-    """
-    Response returned by the FAQ service.
-    """
-
-    question: str
-
-    answer: str
-
-    similarity_score: float
-
-    confidence_level: str
-
-    source: str
-
-    found: bool
+    status: bool
+    message: str
+    data: FAQData | None = None
+    error: FAQError | None = None

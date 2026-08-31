@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class SentimentRequest(BaseModel):
@@ -12,10 +13,16 @@ class SentimentData(BaseModel):
     ticket_id: int
     sentiment: str
     model_version: str
-    confidence_score: float | None = None
+    confidence_score: Optional[float] = None
+
+
+class SentimentError(BaseModel):
+    code: str
+    ticket_id: int
 
 
 class SentimentResponse(BaseModel):
     status: bool
     message: str
-    data: SentimentData | None = None
+    data: Optional[SentimentData] = None
+    error: Optional[SentimentError] = None

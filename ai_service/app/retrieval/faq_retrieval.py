@@ -162,10 +162,14 @@ TOPIC_PATTERNS = {
         "login", "credential", "credentials",
     },
     "lms": {
-        "lms", "learning", "moodle", "course", "courses",
+        "lms", "learning", "moodle",
     },
     "portal": {
         "portal", "student", "login", "account",
+    },
+    "registration": {
+        "register", "registration", "registrations",
+        "enroll", "enrollment", "add", "drop",
     },
     "engineering": {
         "engineering", "telecommunication", "electrical",
@@ -173,8 +177,10 @@ TOPIC_PATTERNS = {
         "information engineering",
     },
     "fee": {
-        "fee", "fees", "cost", "costs", "charge", "charges",
-        "tuition", "price", "payment", "payments", "semester",
+        "fee", "fees", "cost", "costs",
+        "charge", "charges",
+        "tuition", "price",
+        "payment", "payments",
     },
     "quantum": {
         "quantum", "computing", "algorithm", "algorithms",
@@ -206,24 +212,72 @@ TOPIC_PATTERNS = {
 
 INTENT_PATTERNS = {
     "procedure": {
-        "how", "apply", "register", "reset", "recover",
-        "change", "submit", "request", "procedure",
+        "apply",
+        "procedure",
+        "recover",
+        "request",
+        "register",
+        "how",
+        "submit",
+        "reset",
+        "change",
     },
+
     "fee": {
-        "fee", "fees", "cost", "costs", "charge", "charges",
-        "price", "tuition", "payment",
+        "price",
+        "payment",
+        "charge",
+        "charges",
+        "costs",
+        "cost",
+        "tuition",
+        "fee",
+        "fees",
     },
+
     "date": {
-        "when", "deadline", "date", "launch", "launched",
+        "launched",
+        "date",
+        "deadline",
+        "launch",
+        "when",
     },
+
     "location": {
-        "where", "location", "located", "office", "campus",
+        "campus",
+        "office",
+        "where",
+        "located",
+        "location",
     },
+
     "person": {
-        "who", "dean", "professor", "prof", "doctor",
+        "who",
+        "dean",
+        "professor",
+        "doctor",
+        "prof",
     },
+
     "general": {
-        "what", "tell", "about", "which", "describe",
+        "which",
+        "describe",
+        "about",
+        "tell",
+        "what",
+    },
+
+    "problem": {
+        "unable",
+        "cannot",
+        "cant",
+        "working",
+        "failed",
+        "failure",
+        "problem",
+        "issue",
+        "trouble",
+        "error",
     },
 }
 
@@ -258,13 +312,26 @@ def extract_topics(text: Any) -> Set[str]:
         topics.add("lms")
         topics.add("password")
 
-    if "student portal" in normalized or "portal password" in normalized:
+    if "student portal" in normalized:
+        topics.add("portal")
+
+    if "portal password" in normalized:
         topics.add("portal")
         topics.add("password")
 
     if "quantum computing" in normalized:
         topics.add("quantum")
         topics.add("computing")
+
+    # Course registration is its own topic.
+    if (
+        "course registration" in normalized
+        or "register for courses" in normalized
+        or "register courses" in normalized
+        or "course enrollment" in normalized
+        or "enroll in courses" in normalized
+    ):
+        topics.add("registration")
 
     return topics
 
@@ -295,6 +362,24 @@ def extract_intents(text: Any) -> Set[str]:
 
     if re.search(r"\bwhen\b", normalized):
         intents.add("date")
+
+    # Problem / failure intent
+    if re.search(
+        r"\b(unable|cannot|can.t|cant|not\s+working|does\s+not\s+work|"
+        r"doesn.t\s+work|failed|failure|problem|issue|trouble|error)\b",
+        normalized,
+    ):
+        intents.add("problem")
+
+    # A failure/problem query should not be treated
+    # as a simple procedure query.
+    if re.search(
+        r"\b(unable|cannot|can't|cant|not\s+working|"
+        r"does\s+not\s+work|doesn't\s+work|failed|failure|"
+        r"problem|issue|trouble|error)\b",
+        normalized,
+    ):
+        intents.discard("procedure")
 
     return intents
 
@@ -840,13 +925,33 @@ class FAQRetriever:
     # --------------------------------------------------------
 
     def get_answer(self, query: str) -> Optional[Dict[str, Any]]:
+        """
+        Main FAQ retrieval.
+
+        Strategy:
+        1. Exact match.
+        2. Semantic scores.
+        3. HARD ROUTE: Admission Date/Deadline
+        4. HARD ROUTE: Course Registration Problems
+        5. Generate semantic/lexical/topic/intent candidates.
+        6. Apply domain-specific routing.
+        7. Apply conservative validation.
+        """
+
+        # --------------------------------------------------------
+        # Validate query
+        # --------------------------------------------------------
         if query is None:
             return None
 
         query = str(query).strip()
+
         if not query:
             return None
 
+        # --------------------------------------------------------
+        # Query features
+        # --------------------------------------------------------
         query_keywords = extract_keywords(query)
         query_topics = extract_topics(query)
         query_intents = extract_intents(query)
@@ -855,6 +960,11 @@ class FAQRetriever:
         if not query_keywords:
             return None
 
+        normalized_query = normalize_text(query)
+
+        # --------------------------------------------------------
+        # Exact match
+        # --------------------------------------------------------
         exact = self._exact_match(
             query,
             query_keywords,
@@ -865,14 +975,418 @@ class FAQRetriever:
         if exact is not None:
             return exact
 
-        semantic_scores, word_scores, char_scores = self._semantic_scores(query)
+        # --------------------------------------------------------
+        # Semantic scores
+        # --------------------------------------------------------
+        semantic_scores, word_scores, char_scores = self._semantic_scores(
+            query
+        )
 
-        # Generate a larger candidate pool than before.
+        # ========================================================
+        # HARD ROUTE: ADMISSION DATE / DEADLINE
+        # ========================================================
+        # When the user asks for an admission date/deadline,
+        # prefer admission + date FAQs.
+        #
+        # Do NOT allow fee deadlines to win unless the user
+        # explicitly asks about fees/payment.
+        # ========================================================
+
+        is_admission_date_query = (
+            "admission" in query_topics
+            and "date" in query_intents
+            and "fee" not in query_topics
+            and "registration" not in query_topics
+        )
+
+        normalized_admission_query = normalize_text(query)
+
+        asks_admission_deadline = bool(
+            re.search(
+                r"\b(deadline|last\s+date|closing\s+date|last\s+day)\b",
+                normalized_admission_query,
+            )
+        )
+
+        asks_admission_opening = bool(
+            re.search(
+                r"\b(admission|admissions)\b.*\b(open|opens|opening)\b|"
+                r"\bwhen\b.*\badmission",
+                normalized_admission_query,
+            )
+        )
+
+        if is_admission_date_query:
+
+            admission_date_candidates = []
+
+            for index in range(len(self.data)):
+
+                faq_topics = self.question_topics[index]
+                faq_intents = self.question_intents[index]
+
+                # Must be admission related.
+                if "admission" not in faq_topics:
+                    continue
+
+                # Must be a date/deadline FAQ.
+                if "date" not in faq_intents:
+                    continue
+
+                # Do not allow unrelated domain-specific admissions.
+                if "fee" in faq_topics:
+                    continue
+                if "hostel" in faq_topics:
+                    continue
+                if "scholarship" in faq_topics:
+                    continue
+                if "migration" in faq_topics:
+                    continue
+
+                faq_question = normalize_text(
+                    self.data.iloc[index]["question"]
+                )
+
+                # Strong admission-date wording.
+                if not re.search(
+                    r"\b(admission|admissions|apply|application)\b",
+                    faq_question,
+                ):
+                    continue
+
+                semantic_score = float(
+                    semantic_scores[index]
+                )
+
+                keyword_score = _keyword_score(
+                    query_keywords,
+                    self.question_keywords[index],
+                )
+
+                lexical_score = _lexical_similarity(
+                    query_keywords,
+                    self.question_keywords[index],
+                )
+
+                topic_score = _topic_score(
+                    query_topics,
+                    faq_topics,
+                )
+
+                intent_score = _intent_score(
+                    query_intents,
+                    faq_intents,
+                )
+
+                question_type_score = _type_score(
+                    query_type,
+                    self.question_types[index],
+                )
+
+                routing_score = (
+                    0.40 * semantic_score
+                    + 0.15 * keyword_score
+                    + 0.10 * lexical_score
+                    + 0.20 * topic_score
+                    + 0.15 * intent_score
+                )
+
+                # Prefer the FAQ whose wording matches the exact
+                # date request, rather than merely mentioning a deadline.
+                direct_date_bonus = 0.0
+
+                if asks_admission_deadline:
+                    if re.search(
+                        r"\b(last\s+date|application\s+deadline|deadline|closing\s+date)\b",
+                        faq_question,
+                    ):
+                        direct_date_bonus += 0.35
+
+                    # "after the deadline" answers a different question.
+                    if re.search(
+                        r"\b(after|late|missed)\b.*\bdeadline\b",
+                        faq_question,
+                    ):
+                        direct_date_bonus -= 0.25
+
+                elif asks_admission_opening:
+                    if re.search(
+                        r"\b(open|opens|opening)\b",
+                        faq_question,
+                    ):
+                        direct_date_bonus += 0.30
+
+                else:
+                    if re.search(
+                        r"\bwhen\b|\blast\s+date\b|\bdeadline\b",
+                        faq_question,
+                    ):
+                        direct_date_bonus += 0.15
+
+                routing_score += direct_date_bonus
+
+                admission_date_candidates.append(
+                    {
+                        "index": int(index),
+                        "semantic_score": semantic_score,
+                        "keyword_score": keyword_score,
+                        "lexical_score": lexical_score,
+                        "topic_score": topic_score,
+                        "intent_score": intent_score,
+                        "question_type_score": question_type_score,
+                        "routing_score": routing_score,
+                    }
+                )
+
+            if admission_date_candidates:
+
+                admission_date_candidates.sort(
+                    key=lambda x: (
+                        x["routing_score"],
+                        x["intent_score"],
+                        x["semantic_score"],
+                        x["keyword_score"],
+                    ),
+                    reverse=True,
+                )
+
+                selected = admission_date_candidates[0]
+                selected_index = selected["index"]
+
+                if len(admission_date_candidates) > 1:
+                    margin = max(
+                        0.0,
+                        selected["routing_score"]
+                        - admission_date_candidates[1]["routing_score"],
+                    )
+                else:
+                    margin = selected["routing_score"]
+
+                confidence_score = min(
+                    1.0,
+                    max(
+                        selected["routing_score"],
+                        selected["intent_score"],
+                        selected["topic_score"],
+                    ),
+                )
+
+                confidence_level = _confidence_level(
+                    confidence_score
+                )
+
+                return self._build_result(
+                    index=selected_index,
+                    score=selected["routing_score"],
+                    semantic_score=selected["semantic_score"],
+                    keyword_score=selected["keyword_score"],
+                    lexical_score=selected["lexical_score"],
+                    topic_score=selected["topic_score"],
+                    intent_score=selected["intent_score"],
+                    question_type_score=selected[
+                        "question_type_score"
+                    ],
+                    margin=margin,
+                    confidence_score=confidence_score,
+                    confidence_level=confidence_level,
+                    source="admission_date_routing",
+                    question_type=self.question_types[
+                        selected_index
+                    ],
+                )
+
+        # ========================================================
+        # HARD ROUTE: COURSE REGISTRATION PROBLEMS
+        # ========================================================
+        # If the student explicitly says that course registration
+        # is not working, do NOT let complaint/portal FAQs win.
+        # Search the complete FAQ dataset for the best genuine
+        # course-registration FAQ and return it directly.
+        # ========================================================
+
+        is_course_registration_problem = (
+            "registration" in query_topics
+            and "problem" in query_intents
+            and "complaint" not in query_topics
+            and bool(
+                re.search(
+                    r"\b(course|courses)\b",
+                    normalized_query,
+                )
+            )
+            and bool(
+                re.search(
+                    r"\b(registration|register|enroll|enrollment)\b",
+                    normalized_query,
+                )
+            )
+        )
+
+        if is_course_registration_problem:
+
+            registration_candidates = []
+
+            for index in range(len(self.data)):
+
+                faq_topics = self.question_topics[index]
+
+                # Must actually be about registration.
+                if "registration" not in faq_topics:
+                    continue
+
+                # Never use complaint FAQ for a registration problem.
+                if "complaint" in faq_topics:
+                    continue
+
+                faq_question = normalize_text(
+                    self.data.iloc[index]["question"]
+                )
+
+                # Must be an actual course-registration FAQ.
+                # "Enrollment certificate" or other generic enrollment
+                # questions must NOT qualify.
+                is_course_registration_faq = bool(
+                    re.search(
+                        r"\b(course|courses)\s+(registration|enrollment)\b",
+                        faq_question,
+                    )
+                    or re.search(
+                        r"\b(register|enroll)\b.{0,50}\b(course|courses)\b",
+                        faq_question,
+                    )
+                    or re.search(
+                        r"\b(course|courses)\b.{0,50}\b(register|enroll)\b",
+                        faq_question,
+                    )
+                )
+
+                if not is_course_registration_faq:
+                    continue
+
+                semantic_score = float(
+                    semantic_scores[index]
+                )
+
+                keyword_score = _keyword_score(
+                    query_keywords,
+                    self.question_keywords[index],
+                )
+
+                lexical_score = _lexical_similarity(
+                    query_keywords,
+                    self.question_keywords[index],
+                )
+
+                topic_score = _topic_score(
+                    query_topics,
+                    faq_topics,
+                )
+
+                intent_score = _intent_score(
+                    query_intents,
+                    self.question_intents[index],
+                )
+
+                question_type_score = _type_score(
+                    query_type,
+                    self.question_types[index],
+                )
+
+                # Registration-specific ranking.
+                routing_score = (
+                    0.45 * semantic_score
+                    + 0.15 * keyword_score
+                    + 0.10 * lexical_score
+                    + 0.20 * topic_score
+                    + 0.10 * intent_score
+                )
+
+                registration_candidates.append(
+                    {
+                        "index": int(index),
+                        "semantic_score": semantic_score,
+                        "keyword_score": keyword_score,
+                        "lexical_score": lexical_score,
+                        "topic_score": topic_score,
+                        "intent_score": intent_score,
+                        "question_type_score": question_type_score,
+                        "routing_score": routing_score,
+                    }
+                )
+
+            if registration_candidates:
+
+                registration_candidates.sort(
+                    key=lambda x: (
+                        x["routing_score"],
+                        x["semantic_score"],
+                        x["keyword_score"],
+                        x["lexical_score"],
+                    ),
+                    reverse=True,
+                )
+
+                selected = registration_candidates[0]
+
+                selected_index = selected["index"]
+
+                # Calculate separation from second-best FAQ.
+                if len(registration_candidates) > 1:
+                    margin = max(
+                        0.0,
+                        selected["routing_score"]
+                        - registration_candidates[1]["routing_score"],
+                    )
+                else:
+                    margin = selected["routing_score"]
+
+                confidence_score = min(
+                    1.0,
+                    max(
+                        selected["semantic_score"],
+                        selected["routing_score"],
+                    ),
+                )
+
+                if confidence_score >= 0.65:
+                    confidence_level = "High"
+                elif confidence_score >= 0.45:
+                    confidence_level = "Medium"
+                else:
+                    confidence_level = "Low"
+
+                return self._build_result(
+                    index=selected_index,
+                    score=selected["routing_score"],
+                    semantic_score=selected["semantic_score"],
+                    keyword_score=selected["keyword_score"],
+                    lexical_score=selected["lexical_score"],
+                    topic_score=selected["topic_score"],
+                    intent_score=selected["intent_score"],
+                    question_type_score=selected[
+                        "question_type_score"
+                    ],
+                    margin=margin,
+                    confidence_score=confidence_score,
+                    confidence_level=confidence_level,
+                    source="course_registration_routing",
+                    question_type=self.question_types[
+                        selected_index
+                    ],
+                )
+
+        # --------------------------------------------------------
+        # Candidate generation continues...
+        # --------------------------------------------------------
         ranked_indexes = semantic_scores.argsort()[::-1][:TOP_K]
 
         candidates: List[Dict[str, Any]] = []
 
+        # --------------------------------------------------------
+        # Candidate scoring
+        # --------------------------------------------------------
         for index in ranked_indexes:
+
             semantic_score = float(semantic_scores[index])
 
             faq_keywords = self.question_keywords[index]
@@ -905,22 +1419,18 @@ class FAQRetriever:
                 faq_type,
             )
 
-            # Hard protection against obvious domain mismatch.
-            conflict = _topic_conflict(
+            # --------------------------------------------
+            # Hard topic conflict
+            # --------------------------------------------
+            if _topic_conflict(
                 query_topics,
                 faq_topics,
-            )
-
-            if conflict:
+            ):
                 continue
 
-            # Strong entity protection.
-            entity_match = _contains_strong_entity(
-                query,
-                self.data.iloc[index]["question"],
-            )
-
-            # Combined relevance score.
+            # --------------------------------------------
+            # Base score
+            # --------------------------------------------
             score = (
                 semantic_score * SEMANTIC_WEIGHT
                 + keyword_score * KEYWORD_WEIGHT
@@ -930,197 +1440,287 @@ class FAQRetriever:
                 + question_type_score * TYPE_WEIGHT
             )
 
-            # Named/domain entity bonus.
+            # --------------------------------------------
+            # Strong entity match
+            # --------------------------------------------
+            entity_match = _contains_strong_entity(
+                query,
+                self.data.iloc[index]["question"],
+            )
+
             if entity_match:
                 score += 0.10
 
-            # Strong topic agreement bonus.
+            # --------------------------------------------
+            # Strong topic agreement
+            # --------------------------------------------
             if query_topics and topic_score >= 0.75:
                 score += 0.05
 
-            # Exact intent agreement bonus.
+            # --------------------------------------------
+            # Strong intent agreement
+            # --------------------------------------------
             if query_intents and intent_score >= 0.80:
                 score += 0.03
 
-            # ------------------------------------------------
-            # DOMAIN-SPECIFIC BOOSTS
-            # ------------------------------------------------
-            # These are deliberately applied AFTER the generic
-            # semantic score. This fixes cases where TF-IDF gives
-            # a generic "engineering" FAQ a higher score than the
-            # actual engineering-fee FAQ.
+            # ====================================================
+            # COURSE REGISTRATION ROUTING
+            # ====================================================
 
-            # Engineering + fee:
-            # prefer FAQs that are about BOTH concepts.
-            if "engineering" in query_topics and "fee" in query_topics:
-                if "engineering" in faq_topics and "fee" in faq_topics:
-                    score += 0.25
-                elif "engineering" in faq_topics and "fee" not in faq_topics:
-                    score -= 0.12
+            faq_question = normalize_text(
+                self.data.iloc[index]["question"]
+            )
 
-            # LMS + password:
-            # never let a portal-password FAQ beat an LMS-password FAQ.
-            if "lms" in query_topics and "password" in query_topics:
-                if "lms" in faq_topics and "password" in faq_topics:
+            faq_is_course_registration = bool(
+                re.search(
+                    r"\b(course|courses)\s+(registration|enrollment)\b",
+                    faq_question,
+                )
+                or re.search(
+                    r"\b(register|enroll)\b.{0,50}\b(course|courses)\b",
+                    faq_question,
+                )
+                or re.search(
+                    r"\b(course|courses)\b.{0,50}\b(register|enroll)\b",
+                    faq_question,
+                )
+            )
+
+            faq_is_complaint = (
+                "complaint" in faq_topics
+            )
+
+            if is_course_registration_problem:
+
+                # Genuine course-registration FAQ = strong bonus.
+                if (
+                    "registration" in faq_topics
+                    and faq_is_course_registration
+                    and not faq_is_complaint
+                ):
+                    score += 0.60
+
+                # Complaint FAQ = strong penalty.
+                if faq_is_complaint:
+                    score -= 0.80
+
+                # Registration FAQ without course context is weaker.
+                elif (
+                    "registration" in faq_topics
+                    and not faq_is_course_registration
+                ):
+                    score -= 0.10
+
+            # ====================================================
+            # ADMISSION DATE DOMAIN PROTECTION
+            # ====================================================
+            if is_admission_date_query:
+                if "admission" in faq_topics and "date" in faq_intents:
                     score += 0.20
-                elif "portal" in faq_topics and "lms" not in faq_topics:
-                    score -= 0.18
+                else:
+                    score -= 0.20
 
-            # Portal + password:
-            if "portal" in query_topics and "password" in query_topics:
-                if "portal" in faq_topics and "password" in faq_topics:
-                    score += 0.18
-                elif "lms" in faq_topics and "portal" not in faq_topics:
+                if "hostel" in faq_topics and "hostel" not in query_topics:
+                    score -= 0.50
+                if "fee" in faq_topics and "fee" not in query_topics:
+                    score -= 0.50
+
+            # ====================================================
+            # NORMAL REGISTRATION
+            # ====================================================
+            elif "registration" in query_topics:
+
+                if "registration" in faq_topics:
+                    score += 0.20
+                else:
+                    score -= 0.20
+
+                # A registration problem should not select complaint.
+                if (
+                    "problem" in query_intents
+                    and faq_is_complaint
+                    and "complaint" not in query_topics
+                ):
+                    score -= 0.60
+
+            # ====================================================
+            # COMPLAINT ROUTING
+            # ====================================================
+            if "complaint" in query_topics:
+
+                if "complaint" in faq_topics:
+                    score += 0.20
+
+                elif "registration" in faq_topics:
                     score -= 0.15
 
-            # Quantum Computing:
-            # prefer Quantum Computing knowledge over generic computing.
+            # ====================================================
+            # ENGINEERING + FEE
+            # ====================================================
+            if (
+                "engineering" in query_topics
+                and "fee" in query_topics
+            ):
+                if (
+                    "engineering" in faq_topics
+                    and "fee" in faq_topics
+                ):
+                    score += 0.25
+
+                elif (
+                    "engineering" in faq_topics
+                    and "fee" not in faq_topics
+                ):
+                    score -= 0.12
+
+            # ====================================================
+            # LMS + PASSWORD
+            # ====================================================
+            if (
+                "lms" in query_topics
+                and "password" in query_topics
+            ):
+                if (
+                    "lms" in faq_topics
+                    and "password" in faq_topics
+                ):
+                    score += 0.20
+
+                elif (
+                    "portal" in faq_topics
+                    and "lms" not in faq_topics
+                ):
+                    score -= 0.18
+
+            # ====================================================
+            # PORTAL + PASSWORD
+            # ====================================================
+            if (
+                "portal" in query_topics
+                and "password" in query_topics
+            ):
+                if (
+                    "portal" in faq_topics
+                    and "password" in faq_topics
+                ):
+                    score += 0.18
+
+                elif (
+                    "lms" in faq_topics
+                    and "portal" not in faq_topics
+                ):
+                    score -= 0.15
+
+            # ====================================================
+            # QUANTUM
+            # ====================================================
             if "quantum" in query_topics:
                 if "quantum" in faq_topics:
                     score += 0.18
 
-            # Complaint:
-            if "complaint" in query_topics:
-                if "complaint" in faq_topics:
-                    score += 0.15
+            score = max(
+                0.0,
+                min(1.0, score),
+            )
 
-            score = max(0.0, min(1.0, score))
+            candidates.append(
+                {
+                    "index": int(index),
+                    "semantic_score": semantic_score,
+                    "word_score": float(word_scores[index]),
+                    "char_score": float(char_scores[index]),
+                    "keyword_score": keyword_score,
+                    "lexical_score": lexical_score,
+                    "topic_score": topic_score,
+                    "intent_score": intent_score,
+                    "question_type": faq_type,
+                    "question_type_score": question_type_score,
+                    "entity_match": entity_match,
+                    "score": score,
+                }
+            )
 
-            candidates.append({
-                "index": int(index),
-                "semantic_score": semantic_score,
-                "word_score": float(word_scores[index]),
-                "char_score": float(char_scores[index]),
-                "keyword_score": keyword_score,
-                "lexical_score": lexical_score,
-                "topic_score": topic_score,
-                "intent_score": intent_score,
-                "question_type": faq_type,
-                "question_type_score": question_type_score,
-                "entity_match": entity_match,
-                "score": score,
-            })
-
+        # --------------------------------------------------------
+        # No candidates
+        # --------------------------------------------------------
         if not candidates:
             return None
 
-        # IMPORTANT:
-        # Relevance comes first. Question type must never outrank
-        # semantic/domain relevance.
+        # --------------------------------------------------------
+        # Normal ranking
+        # --------------------------------------------------------
         candidates.sort(
             key=lambda item: (
-                item["score"], item["semantic_score"], item["topic_score"],
-                item["keyword_score"], item["lexical_score"],
+                item["score"],
+                item["semantic_score"],
+                item["topic_score"],
+                item["keyword_score"],
+                item["lexical_score"],
             ),
             reverse=True,
         )
 
         best = candidates[0]
 
-        # For broad "tell me about X" questions, prefer a strong
-        # same-topic candidate rather than allowing a date/person
-        # question to win only because its wording is similar.
-        broad_query = bool(
-            re.search(
-                r"\btell\s+me\s+about\b|\bwhat\s+is\b|\bdescribe\b",
-                normalize_text(query),
-            )
-        )
-
-        if broad_query and query_topics:
-            same_topic = [
-                c for c in candidates
-                if c["topic_score"] >= 0.50
-            ]
-            if same_topic:
-                same_topic.sort(
-                    key=lambda item: (
-                        item["score"],
-                        item["semantic_score"],
-                        item["keyword_score"],
-                    ),
-                    reverse=True,
-                )
-                if same_topic[0]["score"] >= best["score"] - 0.06:
-                    best = same_topic[0]
-
-        # Calculate margin using the actual final score.
-        second_score = (
-            candidates[1]["score"]
-            if len(candidates) > 1
-            else 0.0
-        )
-
-        margin = max(
-            0.0,
-            min(
-                1.0,
-                best["score"] - second_score,
-            ),
-        )
+        # --------------------------------------------------------
+        # IMPORTANT:
+        # From this point onward, ALWAYS use the selected candidate.
+        # Do not use stale loop variables such as semantic_score/index/topic_score.
+        # --------------------------------------------------------
 
         index = best["index"]
+
         semantic_score = best["semantic_score"]
         keyword_score = best["keyword_score"]
         lexical_score = best["lexical_score"]
         topic_score = best["topic_score"]
         intent_score = best["intent_score"]
-        question_type_score = best["question_type_score"]
+        type_score = best["question_type_score"]
 
-        # ----------------------------------------------------
-        # Confidence
-        # ----------------------------------------------------
-        #
-        # Confidence is NOT the same thing as similarity.
-        # It combines:
-        #   relevance + semantic evidence + domain agreement
-        #   + lexical evidence + ranking margin.
-        #
-        confidence_score = (
-            best["score"] * 0.70
-            + semantic_score * 0.15
-            + topic_score * 0.05
-            + keyword_score * 0.05
-            + margin * MARGIN_WEIGHT
+        # --------------------------------------------------------
+        # Calculate margin against next candidate
+        # --------------------------------------------------------
+        sorted_scores = sorted(
+            [c["score"] for c in candidates],
+            reverse=True,
         )
 
-        # Entity/domain matches deserve extra confidence.
-        if best["entity_match"]:
-            confidence_score += 0.05
+        if len(sorted_scores) >= 2:
+            margin = max(
+                0.0,
+                best["score"] - sorted_scores[1],
+            )
+        else:
+            margin = best["score"]
 
-        confidence_score = max(
-            0.0,
-            min(1.0, confidence_score),
-        )
+        # ========================================================
+        # FINAL ACCEPTANCE
+        # ========================================================
 
-        confidence_level = _confidence_level(
-            confidence_score
-        )
+        # Normal topic query.
+        if query_topics:
 
-        # ----------------------------------------------------
-        # Safety / false-positive rejection
-        # ----------------------------------------------------
+            if (
+                topic_score < 0.50
+                and semantic_score < MIN_SEMANTIC_FOR_TOPIC_MATCH
+                and not best["entity_match"]
+            ):
+                return None
 
-        # A very low semantic match should not answer simply because
-        # one keyword overlaps.
-        if semantic_score < MIN_SEMANTIC_FOR_TOPIC_MATCH:
-            return None
+        # General query.
+        else:
 
-        # For normal/general questions, require meaningful semantic
-        # evidence or a strong domain/entity match.
-        if not query_topics:
             if (
                 semantic_score < MIN_SEMANTIC_GENERAL
                 and not best["entity_match"]
             ):
                 return None
 
-        # Do not return obviously weak candidates.
+        # Standard minimum score.
         if best["score"] < MIN_FINAL_SCORE:
             return None
 
-        # If the semantic similarity is weak and there is almost no
-        # ranking separation, don't hallucinate a confident answer.
+        # Weak ambiguous match.
         if (
             semantic_score < 0.42
             and margin < 0.015
@@ -1129,19 +1729,38 @@ class FAQRetriever:
         ):
             return None
 
+        # --------------------------------------------------------
+        # Confidence
+        # --------------------------------------------------------
+        confidence_score = min(
+            1.0,
+            (
+                0.70 * best["score"]
+                + 0.20 * semantic_score
+                + 0.10 * min(1.0, margin * 5.0)
+            ),
+        )
+
+        confidence_level = _confidence_level(
+            confidence_score
+        )
+
+        # --------------------------------------------------------
+        # Return result
+        # --------------------------------------------------------
         return self._build_result(
             index=index,
-            score=semantic_score,
+            score=best["score"],
             semantic_score=semantic_score,
             keyword_score=keyword_score,
             lexical_score=lexical_score,
             topic_score=topic_score,
             intent_score=intent_score,
-            question_type_score=question_type_score,
+            question_type_score=type_score,
             margin=margin,
             confidence_score=confidence_score,
             confidence_level=confidence_level,
-            source="iub_verified_knowledge",
+            source="faq_retrieval",
             question_type=best["question_type"],
         )
 

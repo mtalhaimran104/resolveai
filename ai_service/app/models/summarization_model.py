@@ -136,10 +136,24 @@ def split_sentences(text: str):
     if not text:
         return []
 
+    # Protect common abbreviations before sentence splitting.
+    protected = re.sub(
+        r"\b(Rs|Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|e\.g|i\.e)\.\s*",
+        lambda m: m.group(1).replace(".", "<DOT>") + " ",
+        text,
+        flags=re.IGNORECASE,
+    )
+
     sentences = re.split(
         r"(?<=[.!?])\s+",
-        text
+        protected,
     )
+
+    sentences = [
+        s.replace("<DOT>", ".").strip()
+        for s in sentences
+        if s.strip()
+    ]
 
     return [
         sentence.strip()
@@ -577,8 +591,8 @@ def clean_sentence(sentence: str) -> str:
 
 def summarize_text(
     text: str,
-    max_sentences: int = 4,
-    max_words: int = 100
+    max_sentences: int = 2,
+    max_words: int = 55
 ) -> str:
     """
     Fast extractive summarization.
@@ -634,10 +648,23 @@ def summarize_text(
 
     if len(sentences) == 2:
 
-        return " ".join(
-            clean_sentence(sentence)
-            for sentence in sentences
+        # Keep both sentences for genuinely short tickets.
+        if len(text.split()) <= 28:
+            return " ".join(
+                clean_sentence(sentence)
+                for sentence in sentences
+            )
+
+        # For longer two-sentence tickets, keep the more informative
+        # sentence using the same scoring system used elsewhere.
+        scored = score_sentences(sentences)
+
+        best = max(
+            scored,
+            key=lambda item: item["score"]
         )
+
+        return clean_sentence(best["sentence"])
 
     # --------------------------------------------------------
     # Long input
