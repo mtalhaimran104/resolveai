@@ -56,17 +56,32 @@ pip's resolver backtrack — downloading candidate after candidate before
 settling — and they mean two interns can end up on different versions. They
 are now pinned to the versions the project already resolved to.
 
-**3. A pip cache that survives failures.** Both Dockerfiles replaced
-`--no-cache-dir` with a BuildKit cache mount:
+**3. A pip cache mount.** Both Dockerfiles replaced `--no-cache-dir` with a
+BuildKit cache mount:
 
 ```dockerfile
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --default-timeout=600 --retries=10 -r requirements.txt
 ```
 
-A cancelled or failed build now resumes from what it already downloaded
-instead of starting over. The cache lives in the builder, not in the image, so
-the image stays the same size.
+The cache lives in the builder, not in the image, so image size is unchanged.
+
+> **How much this actually helps depends on your builder, and it may be
+> nothing.** Measured on Docker 27.3.1 using the default `docker` driver
+> (BuildKit embedded in the daemon), the mount is **discarded between
+> builds** — a file written to it in one build is gone in the next, and a
+> `--no-cache` rebuild re-downloaded all 118 packages including the 191.8 MB
+> torch wheel (277s cold vs 215s, with `Using cached: 0`). Cache mounts
+> persist reliably on the `docker-container` driver:
+>
+> ```bash
+> docker buildx create --name resolveai --driver docker-container --use
+> ```
+>
+> This does not affect the normal development loop. Docker's ordinary *layer*
+> cache works regardless, so a plain `docker compose up -d --build` skips the
+> pip step entirely unless `requirements.txt` changed. The mount only matters
+> when you deliberately bust the layer cache with `--no-cache`.
 
 **4. The Hugging Face model cache is a volume.** `ai_service` downloads
 `cardiffnlp/twitter-xlm-roberta-base-sentiment` (~1.1 GB) the first time it
@@ -84,7 +99,8 @@ docker compose up -d
 ```
 
 `--no-cache` is needed only once, to drop any layer that was built from the
-old requirements file.
+old requirements file. Expect it to re-download everything (~5 minutes); see
+the note above on why the pip cache may not spare you that.
 
 ## Checking what actually got installed
 

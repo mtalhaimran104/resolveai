@@ -46,8 +46,12 @@ The defaults in `.env.example` work out of the box for local development.
 
 The first `ai_service` build downloads roughly **700 MB** of Python packages
 (PyTorch, transformers, scikit-learn, pandas) and produces a ~1.6 GB image.
-On a normal connection that is about **five minutes**. Later builds reuse
-Docker's layer cache and the pip cache and finish in seconds.
+On a normal connection that is about **five minutes**.
+
+Later builds reuse Docker's layer cache and finish in seconds — the pip step
+is skipped entirely unless `requirements.txt` changed. Adding `--no-cache`
+throws that away and costs the full five minutes again, so use it only when
+you specifically need to discard a stale layer.
 
 The first time `ai_service` *starts*, it also downloads the sentiment model
 from Hugging Face (~1.1 GB) into the `hf_cache` volume. That happens once and
@@ -203,6 +207,13 @@ Prefer `docker compose down` for everyday use. `-v` means the next start
 re-downloads the Hugging Face model and you lose all local data.
 
 ## Troubleshooting
+
+**Every rebuild re-downloads all the packages.**
+Docker's *layer* cache should make a plain `docker compose up -d --build` skip
+the pip step. If you are passing `--no-cache`, stop — that is what discards
+it. The BuildKit pip cache mount is not a reliable fallback: on the default
+`docker` builder driver it is dropped between builds. See
+[`docs/docker-build-performance.md`](docs/docker-build-performance.md).
 
 **The build has been running for over an hour.**
 Read [`docs/docker-build-performance.md`](docs/docker-build-performance.md).
