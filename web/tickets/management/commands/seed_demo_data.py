@@ -95,6 +95,12 @@ PRIORITY_MAP = {
 
 RESOLVED_STATUSES = {"RESOLVED", "CLOSED"}
 
+
+def _stamp(instance, model, when):
+    """Force an auto_now_add timestamp to a chosen moment."""
+    model.objects.filter(pk=instance.pk).update(created_at=when, updated_at=when)
+    return instance
+
 # (subject, description, fallback_category, fallback_priority, status)
 TICKETS = [
  ("Cannot download my transcript","I have been trying to download my official transcript from the student portal for three days. The download button returns an error page every time. I need it for a scholarship application due next week.","Transcript","HIGH","OPEN"),
@@ -294,54 +300,96 @@ class Command(BaseCommand):
 
             # Spread creation over the last 60 days so the reports pages have a
             # time series to plot rather than a single spike at setup time.
+            #
+            # Every related row is dated inside the ticket's own lifetime.
+            # Timestamps are auto_now/auto_now_add, so they have to be forced
+            # with update() after the fact -- otherwise a ticket opened 60
+            # days ago carries a reply written "now", and the resolution-time
+            # report honestly reports a first response of several weeks.
             age_days = random.randint(0, 60)
             opened = now - timedelta(days=age_days, hours=random.randint(0, 23))
-            closed = opened + timedelta(hours=random.randint(2, 96))
+
+            first_reply_at = opened + timedelta(
+                minutes=random.randint(15, 600)
+            )
+            resolved_at = first_reply_at + timedelta(
+                hours=random.randint(1, 72)
+            )
+            if resolved_at > now:
+                resolved_at = now
+
+            is_resolved = status in RESOLVED_STATUSES
+
             Ticket.objects.filter(pk=ticket.pk).update(
                 created_at=opened,
-                updated_at=closed if status in RESOLVED_STATUSES else opened,
+                updated_at=resolved_at if is_resolved else first_reply_at,
+                resolved_at=resolved_at if is_resolved else None,
             )
 
-            TicketHistory.objects.create(
-                ticket=ticket,
-                actor=requester,
-                action="CREATED",
-                description="Ticket created",
+            _stamp(
+                TicketHistory.objects.create(
+                    ticket=ticket,
+                    actor=requester,
+                    action="CREATED",
+                    description="Ticket created",
+                ),
+                TicketHistory,
+                opened,
             )
 
             if assigned is not None:
-                TicketHistory.objects.create(
-                    ticket=ticket,
-                    actor=assigned,
-                    action="ASSIGNED",
-                    description=f"Assigned to {assigned.username}",
+                _stamp(
+                    TicketHistory.objects.create(
+                        ticket=ticket,
+                        actor=assigned,
+                        action="ASSIGNED",
+                        description=f"Assigned to {assigned.username}",
+                    ),
+                    TicketHistory,
+                    first_reply_at - timedelta(minutes=5),
                 )
-                TicketComment.objects.create(
-                    ticket=ticket,
-                    author=assigned,
-                    message=random.choice(AGENT_REPLIES),
-                    is_internal=False,
-                )
-                if random.random() < 0.5:
+                _stamp(
                     TicketComment.objects.create(
                         ticket=ticket,
-                        author=requester,
-                        message=random.choice(REQUESTER_FOLLOWUPS),
+                        author=assigned,
+                        message=random.choice(AGENT_REPLIES),
                         is_internal=False,
+                    ),
+                    TicketComment,
+                    first_reply_at,
+                )
+                if random.random() < 0.5:
+                    _stamp(
+                        TicketComment.objects.create(
+                            ticket=ticket,
+                            author=requester,
+                            message=random.choice(REQUESTER_FOLLOWUPS),
+                            is_internal=False,
+                        ),
+                        TicketComment,
+                        first_reply_at + timedelta(hours=1),
                     )
 
-            if status in RESOLVED_STATUSES:
-                TicketComment.objects.create(
-                    ticket=ticket,
-                    author=assigned or requester,
-                    message="This has now been resolved. Closing the ticket.",
-                    is_internal=False,
+            if is_resolved:
+                _stamp(
+                    TicketComment.objects.create(
+                        ticket=ticket,
+                        author=assigned or requester,
+                        message="This has now been resolved. Closing the ticket.",
+                        is_internal=False,
+                    ),
+                    TicketComment,
+                    resolved_at,
                 )
-                TicketHistory.objects.create(
-                    ticket=ticket,
-                    actor=assigned or requester,
-                    action="STATUS_CHANGED",
-                    description=f"Status changed to {status}",
+                _stamp(
+                    TicketHistory.objects.create(
+                        ticket=ticket,
+                        actor=assigned or requester,
+                        action="STATUS_CHANGED",
+                        description=f"Status changed to {status}",
+                    ),
+                    TicketHistory,
+                    resolved_at,
                 )
 
             created.append(ticket)
