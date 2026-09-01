@@ -1,100 +1,97 @@
 # ResolveAI
 
-**ResolveAI** is an AI-powered help desk and support-ticket platform.
+**ResolveAI** is an AI-powered help desk and support-ticket platform built for
+The Islamia University of Bahawalpur.
 
-This repository currently contains:
+It is a two-service application: a **Django** web application for the help desk
+itself, and a **FastAPI** service that runs the AI/ML models (ticket
+classification, priority prediction, sentiment analysis, summarisation and FAQ
+retrieval). Both run in Docker alongside a MySQL 8 database.
 
-- **Phase 1: Base Project Boilerplate and First Django Dashboard Page** — a
-  clean, understandable foundation that the rest of the project is built on.
-- **Phase 2: Identity and RBAC Models** — the custom user model, roles,
-  permissions and their migrations, including a seeded superadmin account.
+## Contents
 
-## Phase 1 Scope
-
-- A Dockerized Django web application
-- A MySQL database container
-- A simple Django project structure with one app (`dashboard`)
-- AdminLTE 4 integrated into Django templates
-- One working dashboard page with static mock data
-- Django Admin enabled at `/admin/`
-
-## Phase 2 Scope
-
-- A custom user model (`accounts.User`, table `users`)
-- Role-based access control: `roles`, `permissions`, `user_roles`,
-  `role_permissions`
-- A data migration seeding the four roles (REQUESTER, AGENT, SUPERVISOR,
-  ADMIN) and the permission catalogue
-- A data migration creating the `superadmin` account
-- Model tests covering RBAC and the seed migrations
-
-It does **not** yet include signup/login screens, ticket management or the
-FastAPI AI/ML service. Those arrive in later phases.
-
-New models must follow the conventions in
-[`docs/phase-2-models-and-migrations.md`](docs/phase-2-models-and-migrations.md).
-
-## Technology Stack (Phase 1)
-
-- [Django](https://www.djangoproject.com/) — web application
-- [AdminLTE 4](https://adminlte.io/) — dashboard UI (Bootstrap 5 based)
-- [MySQL 8](https://www.mysql.com/) — database
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) — local environment
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [How Long the First Build Takes](#how-long-the-first-build-takes)
+- [Services](#services)
+- [Logging In](#logging-in)
+- [URLs](#urls)
+- [The AI Service API](#the-ai-service-api)
+- [Project Structure](#project-structure)
+- [Common Commands](#common-commands)
+- [Stopping and Resetting](#stopping-and-resetting)
+- [Troubleshooting](#troubleshooting)
+- [Documentation](#documentation)
 
 ## Prerequisites
 
-- Docker and Docker Compose installed
-- Nothing else — Python and MySQL both run inside containers
+- Docker and Docker Compose (Docker Desktop on Windows or macOS)
+- About **8 GB of free disk space** for images, volumes and the model cache
+- Nothing else — Python, MySQL and every dependency run inside containers
 
-## Environment Setup
-
-Copy the example environment file and adjust values if needed:
+## Quick Start
 
 ```bash
 cp .env.example .env
-```
-
-The defaults work out of the box for local development.
-
-## Build and Start the Project
-
-```bash
-docker compose up --build
-```
-
-This starts two containers:
-
-- `web` — the Django application, served on port `8000`
-- `db` — the MySQL 8 database
-
-Wait until `db` reports healthy and Django's development server log
-appears before opening the app.
-
-## Run Migrations
-
-In a second terminal, once the containers are up:
-
-```bash
+docker compose up -d --build
 docker compose exec web python manage.py migrate
 ```
 
-> **Upgrading from Phase 1?** Phase 2 introduces a custom user model, which
-> Django can only create on a database that has never been migrated. Reset
-> the volume once — `docker compose down -v`, then `up` and `migrate`
-> again. This deletes all local data.
+Then open <http://localhost:8000/> and log in with `superadmin` /
+`ChangeMe123!`.
 
-## Log In
+The defaults in `.env.example` work out of the box for local development.
 
-Migrations create a super administrator for you, so there is no
-`createsuperuser` step:
+## How Long the First Build Takes
+
+The first `ai_service` build downloads roughly **700 MB** of Python packages
+(PyTorch, transformers, scikit-learn, pandas) and produces a ~1.6 GB image.
+On a normal connection that is about **five minutes**. Later builds reuse
+Docker's layer cache and the pip cache and finish in seconds.
+
+The first time `ai_service` *starts*, it also downloads the sentiment model
+from Hugging Face (~1.1 GB) into the `hf_cache` volume. That happens once and
+survives `docker compose down` / `up`; only `docker compose down -v` discards
+it.
+
+> **If a build runs for hours, something is wrong.** The usual cause is a
+> dependency pulling the CUDA build of PyTorch (~3.2 GB of unused NVIDIA
+> packages) instead of the CPU build this project pins. See
+> [`docs/docker-build-performance.md`](docs/docker-build-performance.md) for
+> the diagnosis and the fix.
+
+## Services
+
+| Service      | Image             | Host port | Purpose                          |
+| ------------ | ----------------- | --------- | -------------------------------- |
+| `web`        | built from `web/` | `8000`    | Django help desk application     |
+| `ai_service` | built from `ai_service/` | `8001` | FastAPI AI/ML inference service |
+| `db`         | `mysql:8.4`       | `3307`    | MySQL 8 database                 |
+
+`web` waits for `db` to report healthy before starting. `web` reaches the AI
+service over the compose network at `http://ai_service:8000`, configurable
+with `AI_SERVICE_URL`.
+
+Named volumes:
+
+| Volume       | Holds                                                    |
+| ------------ | -------------------------------------------------------- |
+| `mysql_data` | the MySQL data directory                                  |
+| `media_data` | user-uploaded files (ticket attachments)                  |
+| `hf_cache`   | the downloaded Hugging Face models (~1.1 GB)              |
+
+## Logging In
+
+Migrations create a super administrator, so there is no `createsuperuser`
+step:
 
 | Username     | Password       |
 | ------------ | -------------- |
 | `superadmin` | `ChangeMe123!` |
 
-Both are read from `SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` in `.env` —
-change them there before the first `migrate` if you want different ones, or
-afterwards with:
+Both come from `SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` in `.env`. Change
+them there *before* the first `migrate` to get different ones, or afterwards
+with:
 
 ```bash
 docker compose exec web python manage.py changepassword superadmin
@@ -102,92 +99,151 @@ docker compose exec web python manage.py changepassword superadmin
 
 ## URLs
 
-- Dashboard: <http://localhost:8000/>
-- Django Admin: <http://localhost:8000/admin/>
+| Page                | URL                                               |
+| ------------------- | ------------------------------------------------- |
+| Dashboard           | <http://localhost:8000/>                          |
+| Tickets             | <http://localhost:8000/tickets/>                  |
+| Knowledge base      | <http://localhost:8000/knowledge-base/>           |
+| Reports             | <http://localhost:8000/reports/>                  |
+| Categories          | <http://localhost:8000/categories/>               |
+| User administration | <http://localhost:8000/accounts/users/>           |
+| Django Admin        | <http://localhost:8000/admin/>                    |
+| AI service docs     | <http://localhost:8001/docs>                      |
+
+## The AI Service API
+
+The FastAPI service exposes interactive docs at <http://localhost:8001/docs>.
+Django calls it server-side; these are the endpoints:
+
+| Endpoint                          | Method | Purpose                                  |
+| --------------------------------- | ------ | ---------------------------------------- |
+| `/api/v1/classification/predict`  | POST   | Route a ticket to a category             |
+| `/api/v1/classification/metrics`  | GET    | Classifier evaluation metrics            |
+| `/api/v1/priority/predict`        | POST   | Predict ticket priority                  |
+| `/api/v1/priority/metrics`        | GET    | Priority model evaluation metrics        |
+| `/api/v1/sentiment/predict`       | POST   | Multilingual sentiment of ticket text    |
+| `/api/v1/summarization/predict`   | POST   | Summarise a ticket thread                |
+| `/faq/`                           | POST   | Retrieve the closest FAQ answer          |
+
+Sentiment uses `cardiffnlp/twitter-xlm-roberta-base-sentiment` on **CPU**.
+Everything else is scikit-learn or TF-IDF based. There is no GPU anywhere in
+this project — see [Troubleshooting](#troubleshooting).
 
 ## Project Structure
 
 ```text
-resolve-ai/
-├── .env.example
-├── .gitignore
-├── README.md
+resolveai/
 ├── docker-compose.yml
+├── .env.example
 │
-├── db/
-│   └── init/               # SQL run once against a fresh MySQL volume
+├── db/init/                    # SQL run once against a fresh MySQL volume
+├── data/                       # FAQ dataset and other CSV inputs
+├── training/                   # Model training scripts
+├── notebooks/                  # Exploratory notebooks
 │
-├── web/
+├── web/                        # Django application
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── manage.py
-│   │
-│   ├── config/            # Django project settings, URLs, WSGI/ASGI
-│   ├── core/              # Shared abstract models (no tables of its own)
-│   ├── accounts/          # User, Role, Permission + RBAC migrations
-│   ├── dashboard/         # The dashboard app (views, urls, tests)
-│   │
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── includes/      # navbar, sidebar, footer, messages
-│   │   └── dashboard/
-│   │       └── index.html
-│   │
+│   ├── config/                 # Settings, root URLs, WSGI/ASGI
+│   ├── core/                   # Shared abstract models
+│   ├── accounts/               # User, Role, Permission + RBAC, auth pages
+│   ├── dashboard/              # Dashboard, notifications, settings pages
+│   ├── organization/           # Departments and organisational structure
+│   ├── classification/         # Ticket categories
+│   ├── tickets/                # Ticket model and CRUD
+│   ├── knowledge/              # Knowledge base articles
+│   ├── reports/                # Reporting and analytics pages
+│   ├── ai/                     # Client for the FastAPI service
+│   ├── templates/              # AdminLTE 4 templates
 │   └── static/
-│       ├── adminlte/      # AdminLTE 4 CSS/JS, copied from the template
-│       └── resolve_ai/    # ResolveAI-specific CSS/JS
 │
-└── docs/
-    ├── phase-1-setup.md
-    └── phase-2-models-and-migrations.md
+└── ai_service/                 # FastAPI AI/ML service
+    ├── Dockerfile
+    ├── requirements.txt
+    └── app/
+        ├── main.py
+        ├── api/routers/        # One router per AI capability
+        ├── services/           # Business logic per capability
+        ├── models/             # Model loading and inference
+        ├── retrieval/          # FAQ retrieval
+        ├── schemas/            # Pydantic request/response models
+        └── core/               # Config, database, helpers
 ```
 
-## Common Docker Commands
+## Common Commands
 
-| Task                          | Command                                             |
-| ------------------------------ | ---------------------------------------------------- |
-| Start the project               | `docker compose up --build`                          |
-| Start in the background         | `docker compose up -d`                                |
-| View logs                       | `docker compose logs -f web`                          |
-| Run a Django management command | `docker compose exec web python manage.py <command>`  |
-| Open a shell in the web container | `docker compose exec web bash`                      |
-| Run the test suite              | `docker compose exec web python manage.py test`       |
+| Task                              | Command                                              |
+| --------------------------------- | ---------------------------------------------------- |
+| Start everything                  | `docker compose up -d --build`                       |
+| View web logs                     | `docker compose logs -f web`                         |
+| View AI service logs              | `docker compose logs -f ai_service`                  |
+| Run a Django management command   | `docker compose exec web python manage.py <command>` |
+| Make migrations                   | `docker compose exec web python manage.py makemigrations` |
+| Apply migrations                  | `docker compose exec web python manage.py migrate`   |
+| Open a shell in the web container | `docker compose exec web bash`                       |
+| Run the test suite                | `docker compose exec web python manage.py test`      |
+| Rebuild just the AI service       | `docker compose build ai_service`                    |
 
-## Stop and Reset the Project
+## Stopping and Resetting
 
-Stop the containers (keeps the database volume):
+Stop the containers, keeping the database and model cache:
 
 ```bash
 docker compose down
 ```
 
-Stop the containers and delete the database volume (full reset):
+Full reset — **deletes the database, uploaded media and the 1.1 GB model
+cache**:
 
 ```bash
 docker compose down -v
 ```
 
-## Known Limitations
+Prefer `docker compose down` for everyday use. `-v` means the next start
+re-downloads the Hugging Face model and you lose all local data.
 
-- No signup or login screens yet — users and roles exist in the database and
-  in Django Admin, but the public-facing auth pages are Phase 3
-- No ticket, department or knowledge-base models — dashboard data is still
-  static mock data
-- Sidebar links other than **Dashboard** are placeholders (`#`)
-- No AI/ML service — the dashboard shows a "not configured yet" card instead
+## Troubleshooting
 
-## Next Planned Phase
+**The build has been running for over an hour.**
+Read [`docs/docker-build-performance.md`](docs/docker-build-performance.md).
+Verify that CPU-only PyTorch was installed:
 
-Phase 3 adds the signup and login screens on top of the Phase 2 models
-(registration that grants the REQUESTER role, login, logout, and role-aware
-navigation), followed by the ticket-management data model and CRUD pages.
+```bash
+docker compose exec ai_service pip list | grep -i -E "nvidia|torch|triton|cuda"
+```
+
+The only line should be `torch 2.13.0+cpu`. Any `nvidia-*` or `triton` package
+means the 3.2 GB CUDA build slipped in — check that the `--extra-index-url`
+line and the `+cpu` pin are still in `ai_service/requirements.txt`.
+
+**Docker has run out of disk space.**
+Check what is being held with `docker system df`. Reclaim dangling images and
+build cache with `docker image prune` and `docker builder prune`. Be careful
+with `docker volume prune`: a stopped project's volumes count as *dangling*,
+so it will happily delete `resolveai_mysql_data` along with the junk.
+
+**`web` cannot reach the AI service.**
+`AI_SERVICE_URL` defaults to `http://ai_service:8000` — the internal compose
+address and port, not the `8001` published on the host. Only change it if you
+run the AI service outside Docker.
+
+**The first request to a sentiment endpoint is very slow.**
+That is the one-time Hugging Face model download filling the `hf_cache`
+volume. Watch it with `docker compose logs -f ai_service`.
+
+**Migrations fail after pulling new models.**
+A custom user model can only be created against a database that has never been
+migrated. If you are upgrading a very old local database, reset it once with
+`docker compose down -v`, then `up` and `migrate`. This deletes local data.
 
 ## Documentation
 
+- [`docs/docker-build-performance.md`](docs/docker-build-performance.md) — why
+  the AI service build was slow, and the rules that keep it fast
 - [`docs/phase-1-setup.md`](docs/phase-1-setup.md) — how the boilerplate,
   Docker setup and templates fit together
 - [`docs/phase-2-models-and-migrations.md`](docs/phase-2-models-and-migrations.md)
   — the identity/RBAC models, the migration workflow, and **the pattern to
-  follow when adding the remaining modules**
+  follow when adding new modules**
 - `docs/ResolveAI_Database_Schema_Design.pdf` — the full target schema
 - `docs/ResolveAI_Complete_Project_SRS_Proposal.pdf` — project requirements
