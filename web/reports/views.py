@@ -1,7 +1,9 @@
+import json
 from datetime import timedelta
 
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Q
+from django.db.models.functions import TruncDay, TruncMonth, TruncWeek
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -9,8 +11,129 @@ from accounts.models import User, RoleCode
 from django.contrib.admin.views.decorators import staff_member_required
 
 from accounts.decorators import admin_required
-from tickets.models import Ticket, TicketHistory
+from ai.services import (
+    AIServiceError,
+    get_classification_model_metrics,
+)
+from organization.models import Department
+from tickets.models import Ticket, TicketComment, TicketHistory
 from classification.models import TicketCategory
+
+
+# ---------------------------------------------------------------------
+# SHARED REPORT HELPERS
+# ---------------------------------------------------------------------
+
+RESOLVED_STATUSES = ["RESOLVED", "CLOSED"]
+
+# Target hours from creation to resolution, by priority. These are constants
+# until the project grows a real SLA model -- there is no SLA table yet, so
+# nothing per-department or per-category can be expressed here. They are used
+# only to flag breaches; every other number on the report is measured.
+SLA_TARGET_HOURS = {
+    "CRITICAL": 4,
+    "HIGH": 8,
+    "MEDIUM": 24,
+    "LOW": 48,
+}
+
+TRUNC_BY_GROUPING = {
+    "day": TruncDay,
+    "week": TruncWeek,
+    "month": TruncMonth,
+}
+
+LABEL_FORMAT_BY_GROUPING = {
+    "day": "%b %d",
+    "week": "%b %d",
+    "month": "%b %Y",
+}
+
+
+def _resolution_duration():
+    """resolved_at - created_at, as a database-side expression."""
+    return ExpressionWrapper(
+        F("resolved_at") - F("created_at"),
+        output_field=DurationField(),
+    )
+
+
+def _format_duration(total_seconds):
+    """Render a duration the way the report cards do: '18h 40m', '24m'."""
+    if total_seconds is None:
+        return "\u2014"
+
+    minutes = int(round(total_seconds / 60))
+    hours, minutes = divmod(minutes, 60)
+
+    if hours >= 24:
+        days, hours = divmod(hours, 24)
+        return f"{days}d {hours}h"
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+def _average_seconds(queryset):
+    """Mean resolution time in seconds, or None when nothing is resolved."""
+    average = (
+        queryset
+        .filter(resolved_at__isnull=False)
+        .annotate(duration=_resolution_duration())
+        .aggregate(value=Avg("duration"))["value"]
+    )
+    return average.total_seconds() if average else None
+
+
+def _percent_change(current, previous):
+    """Percent change between two periods, rounded, guarding divide-by-zero."""
+    if not previous:
+        return None
+    return round(((current - previous) / previous) * 100)
+
+
+def _first_response_seconds_by_ticket():
+    """Seconds from ticket creation to its first reply, keyed by ticket id.
+
+    "First response" is the earliest public comment written by somebody other
+    than the requester -- the closest thing to a reply that the schema
+    records. Tickets nobody has answered are absent rather than zero.
+    """
+    first_seen = {}
+
+    comments = (
+        TicketComment.objects
+        .filter(is_internal=False)
+        .exclude(author=F("ticket__requester"))
+        .values("ticket_id", "created_at", "ticket__created_at")
+        .order_by("ticket_id", "created_at")
+    )
+
+    for comment in comments:
+        ticket_id = comment["ticket_id"]
+        if ticket_id in first_seen:
+            continue
+        delta = comment["created_at"] - comment["ticket__created_at"]
+        if delta.total_seconds() >= 0:
+            first_seen[ticket_id] = delta.total_seconds()
+
+    return first_seen
+
+
+def _mean(values):
+    values = [v for v in values if v is not None]
+    return sum(values) / len(values) if values else None
+
+
+def _parse_date(value):
+    """Parse a YYYY-MM-DD filter value into an aware datetime, or None."""
+    if not value:
+        return None
+    try:
+        parsed = timezone.datetime.strptime(value, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return None
+    return timezone.make_aware(parsed, timezone.get_current_timezone())
 
 
 # ---------------------------------------------------------------------
