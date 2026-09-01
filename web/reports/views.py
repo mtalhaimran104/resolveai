@@ -573,12 +573,135 @@ def reports_dashboard(request):
 
 @admin_required
 def ticket_volume_report(request):
+    """Tickets opened against tickets resolved, over a chosen window.
+
+    Supports the filters the template already renders: date range, grouping,
+    department, category and status.
+    """
+    grouping = request.GET.get("group_by") or "week"
+    if grouping not in TRUNC_BY_GROUPING:
+        grouping = "week"
+
+    now = timezone.now()
+    date_to = _parse_date(request.GET.get("date_to")) or now
+    date_from = _parse_date(request.GET.get("date_from")) or (
+        date_to - timedelta(days=60)
+    )
+    if date_from > date_to:
+        date_from, date_to = date_to, date_from
+
+    selected_department = request.GET.get("department") or ""
+    selected_category = request.GET.get("category") or ""
+    selected_status = request.GET.get("status") or ""
+
+    tickets = Ticket.objects.all()
+
+    if selected_department.isdigit():
+        tickets = tickets.filter(department_id=int(selected_department))
+    if selected_category.isdigit():
+        tickets = tickets.filter(category_id=int(selected_category))
+    if selected_status:
+        tickets = tickets.filter(
+            status=selected_status.replace("-", "_").upper()
+        )
+
+    truncate = TRUNC_BY_GROUPING[grouping]
+    label_format = LABEL_FORMAT_BY_GROUPING[grouping]
+
+    def buckets(queryset, field):
+        rows = (
+            queryset
+            .filter(**{
+                f"{field}__gte": date_from,
+                f"{field}__lte": date_to,
+            })
+            .annotate(bucket=truncate(field))
+            .values("bucket")
+            .annotate(total=Count("id"))
+            .order_by("bucket")
+        )
+        return {row["bucket"]: row["total"] for row in rows if row["bucket"]}
+
+    opened = buckets(tickets, "created_at")
+    resolved = buckets(
+        tickets.filter(resolved_at__isnull=False), "resolved_at"
+    )
+
+    periods = sorted(set(opened) | set(resolved))
+
+    chart_labels = [period.strftime(label_format) for period in periods]
+    chart_new_tickets = [opened.get(period, 0) for period in periods]
+    chart_resolved_tickets = [resolved.get(period, 0) for period in periods]
+
+    volume_data = [
+        {
+            "period": label,
+            "new_tickets": new_count,
+            "resolved_tickets": resolved_count,
+            "net_change": new_count - resolved_count,
+            "in_progress": period == periods[-1] if periods else False,
+        }
+        for period, label, new_count, resolved_count in zip(
+            periods, chart_labels, chart_new_tickets, chart_resolved_tickets
+        )
+    ]
+    volume_data.reverse()
+
+    # Compare the window against the equally long window before it, which is
+    # what the "vs previous period" wording on the cards means.
+    window = date_to - date_from
+    previous_from = date_from - window
+
+    current_new = sum(chart_new_tickets)
+    current_resolved = sum(chart_resolved_tickets)
+
+    previous_new = tickets.filter(
+        created_at__gte=previous_from, created_at__lt=date_from
+    ).count()
+    previous_resolved = tickets.filter(
+        resolved_at__gte=previous_from, resolved_at__lt=date_from
+    ).count()
+
+    current_seconds = _average_seconds(
+        tickets.filter(resolved_at__gte=date_from, resolved_at__lte=date_to)
+    )
+    previous_seconds = _average_seconds(
+        tickets.filter(resolved_at__gte=previous_from, resolved_at__lt=date_from)
+    )
 
     return render(
         request,
         "reports/ticket-volume.html",
         {
             "page_title": "Ticket Volume",
+
+            "group_by": grouping,
+            "date_from": date_from.date().isoformat(),
+            "date_to": date_to.date().isoformat(),
+
+            "departments": Department.objects.order_by("name"),
+            "categories": TicketCategory.objects.filter(
+                is_active=True
+            ).order_by("name"),
+            "selected_department": selected_department,
+            "selected_category": selected_category,
+            "selected_status": selected_status,
+
+            "volume_data": volume_data,
+            "chart_labels": json.dumps(chart_labels),
+            "chart_new_tickets": json.dumps(chart_new_tickets),
+            "chart_resolved_tickets": json.dumps(chart_resolved_tickets),
+
+            "total_new_tickets": current_new,
+            "total_resolved_tickets": current_resolved,
+            "new_ticket_change": _percent_change(current_new, previous_new),
+            "resolved_ticket_change": _percent_change(
+                current_resolved, previous_resolved
+            ),
+            "resolution_time_change": _percent_change(
+                current_seconds or 0, previous_seconds or 0
+            ),
+            "backlog_change": current_new - current_resolved,
         },
     )
 
