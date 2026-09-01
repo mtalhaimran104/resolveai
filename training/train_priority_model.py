@@ -216,6 +216,7 @@ def main():
     )
 
     metrics = {
+        "model_version": "1.0",
         "accuracy": round(float(accuracy) * 100, 2),
         "precision": round(float(precision_score(y_test, predictions, average="macro")) * 100, 2),
         "recall": round(float(recall_score(y_test, predictions, average="macro")) * 100, 2),

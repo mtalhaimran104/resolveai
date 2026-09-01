@@ -84,7 +84,7 @@ The cache lives in the builder, not in the image, so image size is unchanged.
 > when you deliberately bust the layer cache with `--no-cache`.
 
 **4. The Hugging Face model cache is a volume.** `ai_service` downloads
-`cardiffnlp/twitter-xlm-roberta-base-sentiment` (~1.1 GB) the first time it
+`cardiffnlp/twitter-xlm-roberta-base-sentiment` (~2.1 GB) the first time it
 starts. `HF_HOME=/models` plus the `hf_cache` volume in `docker-compose.yml`
 keeps it across container recreation, so only the very first start pays it.
 

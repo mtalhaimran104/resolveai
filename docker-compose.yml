@@ -41,7 +41,7 @@ services:
     volumes:
       - ./ai_service/app/models:/app/app/models
       - ./data:/data:ro
-      # Persists the Hugging Face model cache (~1.1 GB) across container
+      # Persists the Hugging Face model cache (~2.1 GB) across container
       # recreation, so only the very first start pays the download.
       - hf_cache:/models
     environment:

@@ -54,7 +54,7 @@ throws that away and costs the full five minutes again, so use it only when
 you specifically need to discard a stale layer.
 
 The first time `ai_service` *starts*, it also downloads the sentiment model
-from Hugging Face (~1.1 GB) into the `hf_cache` volume. That happens once and
+from Hugging Face (~2.1 GB) into the `hf_cache` volume. That happens once and
 survives `docker compose down` / `up`; only `docker compose down -v` discards
 it.
 
@@ -82,7 +82,45 @@ Named volumes:
 | ------------ | -------------------------------------------------------- |
 | `mysql_data` | the MySQL data directory                                  |
 | `media_data` | user-uploaded files (ticket attachments)                  |
-| `hf_cache`   | the downloaded Hugging Face models (~1.1 GB)              |
+| `hf_cache`   | the downloaded Hugging Face models (~2.1 GB)              |
+
+## Train the Models Before First Start
+
+The trained model artifacts are gitignored, so a fresh clone has none and
+`ai_service` will **exit immediately** with:
+
+```
+FileNotFoundError: Classification model not found:
+    /app/app/models/ticket_classification/ticket_classification_model.pkl
+```
+
+The models load at import time, so one missing file takes down the whole
+service, including the endpoints that do not need it. Train them once:
+
+```bash
+docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/project -w /project \
+    -e HOME=/tmp resolveai-ai_service:latest python training/train_category_model.py
+
+docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/project -w /project \
+    -e HOME=/tmp resolveai-ai_service:latest python training/train_priority_model.py
+
+docker compose up -d ai_service
+```
+
+This writes four `.pkl` files plus `model_metrics.json` into
+`ai_service/app/models/`, which is bind-mounted, so no rebuild is needed. The
+`-u` flag keeps the files owned by you rather than root. Takes about a minute
+and needs no GPU.
+
+Verify:
+
+```bash
+curl -s http://localhost:8001/api/v1/classification/metrics
+curl -s http://localhost:8001/api/v1/priority/metrics
+```
+
+Both should return `"status": true`. Current models score 98.07% accuracy
+(classification, 19 categories) and 98.31% (priority, 4 classes).
 
 ## Logging In
 
@@ -196,7 +234,7 @@ Stop the containers, keeping the database and model cache:
 docker compose down
 ```
 
-Full reset — **deletes the database, uploaded media and the 1.1 GB model
+Full reset — **deletes the database, uploaded media and the 2.1 GB model
 cache**:
 
 ```bash
