@@ -460,33 +460,55 @@ def reports_dashboard(request):
 
     if average_resolution_minutes is not None:
 
-        total_minutes = round(
-            average_resolution_minutes
-        )
-
-        hours = total_minutes // 60
-        minutes = total_minutes % 60
-
-        average_resolution_display = (
-            f"{hours}h {minutes}m"
+        average_resolution_display = _format_duration(
+            average_resolution_minutes * 60
         )
 
     else:
 
-        # Controlled demo value
-        average_resolution_display = "18h 40m"
+        # No ticket has been resolved yet. Show that, rather than a number.
+        average_resolution_display = "\u2014"
 
     # ---------------------------------------------------------------
-    # 10. AI accuracy - CONTROLLED DEMO
+    # 10. AI classification accuracy
+    #
+    # The model's own held-out accuracy, straight from the service that
+    # serves it. Falling back to the mean confidence recorded on tickets
+    # keeps the card populated when the service is unreachable -- that is a
+    # different measure, so it is flagged as such.
     # ---------------------------------------------------------------
 
-    ai_accuracy = 91.4
+    ai_accuracy = None
+    ai_accuracy_is_demo = False
+
+    try:
+        metrics = get_classification_model_metrics()
+    except AIServiceError:
+        metrics = None
+
+    if metrics and metrics.get("status"):
+        ai_accuracy = (metrics.get("data") or {}).get("accuracy")
+
+    if ai_accuracy is None:
+        mean_confidence = tickets.filter(
+            ai_confidence__isnull=False
+        ).aggregate(value=Avg("ai_confidence"))["value"]
+        if mean_confidence is not None:
+            ai_accuracy = round(float(mean_confidence), 1)
+
+    if ai_accuracy is None:
+        ai_accuracy = "\u2014"
 
     # ---------------------------------------------------------------
-    # 11. Customer satisfaction - CONTROLLED DEMO
+    # 11. Customer satisfaction
+    #
+    # Nothing in the schema records satisfaction: there is no rating on a
+    # ticket and no survey model. Rather than print an invented score, the
+    # card reports that it is not tracked yet. Wire this up when a rating
+    # field or survey model exists.
     # ---------------------------------------------------------------
 
-    satisfaction_score = 4.4
+    satisfaction_score = None
 
     # ---------------------------------------------------------------
     # Dashboard context
@@ -529,8 +551,8 @@ def reports_dashboard(request):
         # Agents
         "agent_workload": agent_workload,
 
-        # Demo indicators
-        "ai_accuracy_is_demo": True,
+        # Which numbers are measured, and which are not yet available
+        "ai_accuracy_is_demo": ai_accuracy_is_demo,
         "satisfaction_is_demo": True,
         "resolution_time_is_demo": (
             average_resolution_minutes is None
