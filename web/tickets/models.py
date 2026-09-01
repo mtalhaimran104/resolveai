@@ -26,6 +26,8 @@ class Ticket(TimeStampedModel):
         NEUTRAL = "NEUTRAL", "Neutral"
         NEGATIVE = "NEGATIVE", "Negative"
 
+    RESOLVED_STATUSES = {Status.RESOLVED, Status.CLOSED}
+
     ticket_number = models.CharField(
         max_length=32,
         unique=True,
@@ -93,6 +95,15 @@ class Ticket(TimeStampedModel):
         blank=True,
     )
 
+    resolved_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=(
+            "When the ticket first reached a resolved or closed state. "
+            "Set automatically on save; cleared if the ticket is reopened."
+        ),
+    )
+
     class Meta:
         db_table = "tickets"
         ordering = ["-created_at"]
@@ -100,7 +111,7 @@ class Ticket(TimeStampedModel):
     def __str__(self):
         return f"{self.ticket_number} - {self.subject}"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, update_fields=None, **kwargs):
         if not self.ticket_number:
             year = timezone.now().year
 
@@ -118,6 +129,22 @@ class Ticket(TimeStampedModel):
             )
 
             self.ticket_number = f"RA-{year}-{last_seq + 1:06d}"
+
+        # Stamp the moment a ticket first becomes resolved, and clear it if
+        # the ticket is reopened, so reporting can measure how long tickets
+        # actually take rather than inferring it from updated_at -- which any
+        # later comment or edit would move.
+        if self.status in self.RESOLVED_STATUSES:
+            if self.resolved_at is None:
+                self.resolved_at = timezone.now()
+        else:
+            self.resolved_at = None
+
+        if update_fields is not None:
+            update_fields = set(update_fields)
+            if "status" in update_fields:
+                update_fields.add("resolved_at")
+            kwargs["update_fields"] = update_fields
 
         super().save(*args, **kwargs)
 
