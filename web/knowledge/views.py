@@ -24,7 +24,6 @@ def article_list(request):
         "knowledge-base/article-list.html",
         {
             "articles": articles,
-            "current": "knowledge_article_list",
         },
     )
 
@@ -101,7 +100,6 @@ def article_create(request):
         {
             "form": form,
             "categories": categories,
-            "current": "knowledge_article_create",
         },
     )
 
@@ -406,7 +404,6 @@ def article_detail(request, pk):
         "knowledge-base/article-detail.html",
         {
             "article": article,
-            "current": "knowledge_article_detail",
         },
     )
 
@@ -478,7 +475,6 @@ def article_edit(request, pk):
         "knowledge-base/article-edit.html",
         {
             "article": article,
-            "current": "knowledge_article_edit",
         },
     )
 
@@ -539,7 +535,6 @@ def public_knowledge_base(request):
         "knowledge-base/public-knowledge-base.html",
         {
             "articles": articles,
-            "current": "public_knowledge_base",
         },
     )
 
@@ -558,7 +553,6 @@ def public_article_detail(request, slug):
         "knowledge/public-article-detail.html",
         {
             "article": article,
-            "current": "public_knowledge_base",
         },
     )
 
@@ -579,6 +573,5 @@ def article_versions(request, pk):
         {
             "article": article,
             "versions": versions,
-            "current": "knowledge_article_versions",
         },
     )
