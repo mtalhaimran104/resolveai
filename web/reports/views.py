@@ -713,12 +713,129 @@ def ticket_volume_report(request):
 
 @admin_required
 def resolution_time_report(request):
+    """How long tickets take: first response, resolution, and SLA breaches."""
+    now = timezone.now()
+    window_start = now - timedelta(days=60)
+    previous_start = window_start - timedelta(days=60)
+
+    tickets = Ticket.objects.all()
+    resolved = tickets.filter(resolved_at__isnull=False)
+    in_window = resolved.filter(resolved_at__gte=window_start)
+
+    # -- average resolution, this window against the one before it --------
+    average_seconds = _average_seconds(in_window)
+    previous_seconds = _average_seconds(
+        resolved.filter(
+            resolved_at__gte=previous_start,
+            resolved_at__lt=window_start,
+        )
+    )
+    resolution_change = _percent_change(
+        average_seconds or 0, previous_seconds or 0
+    )
+
+    # -- average first response -------------------------------------------
+    first_response = _first_response_seconds_by_ticket()
+    average_first_response = _mean(first_response.values())
+
+    # -- by priority -------------------------------------------------------
+    priority_labels = []
+    priority_hours = []
+    priority_rows = []
+
+    for code, label in Ticket.Priority.choices:
+        subset = resolved.filter(priority=code)
+        seconds = _average_seconds(subset)
+        target_hours = SLA_TARGET_HOURS.get(code)
+
+        priority_labels.append(label)
+        priority_hours.append(
+            round(seconds / 3600, 1) if seconds else 0
+        )
+
+        breaches = 0
+        if target_hours:
+            breaches = (
+                subset
+                .annotate(duration=_resolution_duration())
+                .filter(duration__gt=timedelta(hours=target_hours))
+                .count()
+            )
+
+        priority_rows.append({
+            "priority": label,
+            "priority_code": code,
+            "first_response": _format_duration(_mean([
+                first_response.get(ticket_id)
+                for ticket_id in subset.values_list("id", flat=True)
+            ])),
+            "resolution": _format_duration(seconds),
+            "resolved_count": subset.count(),
+            "sla_target": f"{target_hours}h" if target_hours else "\u2014",
+            "breaches": breaches,
+        })
+
+    sla_breaches = sum(row["breaches"] for row in priority_rows)
+
+    # -- by department -----------------------------------------------------
+    department_rows = (
+        resolved
+        .exclude(department__isnull=True)
+        .values("department__name")
+        .annotate(
+            average=Avg(_resolution_duration()),
+            total=Count("id"),
+        )
+        .order_by("-total")
+    )
+    department_labels = [row["department__name"] for row in department_rows]
+    department_hours = [
+        round(row["average"].total_seconds() / 3600, 1)
+        if row["average"] else 0
+        for row in department_rows
+    ]
+
+    # -- trend over the window --------------------------------------------
+    trend_rows = (
+        in_window
+        .annotate(bucket=TruncWeek("resolved_at"))
+        .values("bucket")
+        .annotate(average=Avg(_resolution_duration()))
+        .order_by("bucket")
+    )
+    trend_labels = [
+        row["bucket"].strftime("%b %d") for row in trend_rows if row["bucket"]
+    ]
+    trend_hours = [
+        round(row["average"].total_seconds() / 3600, 1)
+        if row["average"] else 0
+        for row in trend_rows if row["bucket"]
+    ]
 
     return render(
         request,
         "reports/resolution-time.html",
         {
             "page_title": "Resolution Time",
+
+            "average_first_response_display": _format_duration(
+                average_first_response
+            ),
+            "average_resolution_display": _format_duration(average_seconds),
+            "sla_breaches": sla_breaches,
+            "resolution_change": resolution_change,
+
+            "priority_labels": json.dumps(priority_labels),
+            "priority_hours": json.dumps(priority_hours),
+            "priority_rows": priority_rows,
+
+            "department_labels": json.dumps(department_labels),
+            "department_hours": json.dumps(department_hours),
+
+            "trend_labels": json.dumps(trend_labels),
+            "trend_hours": json.dumps(trend_hours),
+
+            "resolved_total": in_window.count(),
         },
     )
 
