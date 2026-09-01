@@ -1,4 +1,4 @@
-﻿from datetime import timedelta
+from datetime import date, timedelta
 from pathlib import Path
 import json
 
@@ -9,11 +9,80 @@ from django.db.models import Avg
 from django.http import HttpResponseForbidden
 from django.utils import timezone
 from django.db.models import Count
+from django.db.models.functions import TruncMonth
 User = get_user_model()
 from accounts.decorators import admin_required
+from accounts.models import RoleCode
+from knowledge.models import KnowledgeArticle
 from tickets.models import Ticket, TicketHistory
 from ai.models import AIAnalysis
 from ai.services import get_classification_model_metrics, get_priority_model_metrics, AIServiceError
+
+
+# ---------------------------------------------------------------------
+# CHART HELPERS
+# ---------------------------------------------------------------------
+
+MONTHS_ON_DASHBOARD = 7
+
+
+def _month_start(year, month):
+    """First instant of a month, timezone aware."""
+    return timezone.make_aware(
+        timezone.datetime(year, month, 1),
+        timezone.get_current_timezone(),
+    )
+
+
+def _recent_months(count):
+    """The last `count` months as (year, month), oldest first."""
+    today = timezone.localtime().date()
+    months = []
+    year, month = today.year, today.month
+
+    for _ in range(count):
+        months.append((year, month))
+        month -= 1
+        if month == 0:
+            month, year = 12, year - 1
+
+    return list(reversed(months))
+
+
+def _count_by_month(queryset, field):
+    """Rows per calendar month, keyed by (year, month).
+
+    One grouped query rather than one query per bucket.
+    """
+    rows = (
+        queryset
+        .annotate(bucket=TruncMonth(field))
+        .values("bucket")
+        .annotate(total=Count("id"))
+    )
+    return {
+        (row["bucket"].year, row["bucket"].month): row["total"]
+        for row in rows
+        if row["bucket"] is not None
+    }
+
+
+def _ai_service_health():
+    """Ask the AI service whether it is actually up.
+
+    Returns (label, css_class) for the dashboard health pill. The card used
+    to be the literal string "Operational", so it stayed green even with the
+    service stopped -- exactly when it needed to be red.
+    """
+    try:
+        response = get_classification_model_metrics()
+    except AIServiceError:
+        return "Unavailable", "down"
+
+    if response.get("status"):
+        return "Operational", "up"
+    return "Degraded", "degraded"
+
 
 
 # ---------------------------------------------------------------------
@@ -57,38 +126,48 @@ def _admin_dashboard(request):
     total = tickets.count()
 
     # ---------------------------------------------------------------
-    # DEMO DASHBOARD CHART DATA
+    # CHART DATA
+    #
+    # All three charts are driven by the database. The templates drop
+    # these straight into JavaScript with |safe, so they are serialised
+    # as JSON here rather than relying on Python's repr.
     # ---------------------------------------------------------------
 
-    # User Growth
-    user_growth_labels = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"
-    ]
+    months = _recent_months(MONTHS_ON_DASHBOARD)
+    month_labels = [date(y, m, 1).strftime("%b %Y") for y, m in months]
 
-    user_growth_data = [
-        42, 58, 76, 103, 141, 188, 235
-    ]
+    # Ticket trend: how many tickets were opened in each of those months.
+    tickets_per_month = _count_by_month(Ticket.objects.all(), "created_at")
+    ticket_trend_data = [tickets_per_month.get(key, 0) for key in months]
 
-    # Ticket Trend
-    ticket_trend_labels = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"
-    ]
+    # User growth: cumulative user count at the end of each month, which is
+    # what "growth" means on this chart -- not new signups per month.
+    users_per_month = _count_by_month(User.objects.all(), "created_at")
+    earlier_users = User.objects.filter(
+        created_at__lt=_month_start(*months[0])
+    ).count()
 
-    ticket_trend_data = [
-        24, 31, 45, 39, 57, 68, 82
-    ]
+    user_growth_data = []
+    running_total = earlier_users
+    for key in months:
+        running_total += users_per_month.get(key, 0)
+        user_growth_data.append(running_total)
 
-    # Tickets by Department
-    department_labels = [
-        "IT Support",
-        "Finance",
-        "Examination",
-        "General",
-    ]
+    # Tickets by department, largest first. Tickets with no department are
+    # grouped rather than dropped, so the donut always sums to the total.
+    department_rows = (
+        tickets.exclude(department__isnull=True)
+        .values("department__name")
+        .annotate(total=Count("id"))
+        .order_by("-total")
+    )
+    department_labels = [row["department__name"] for row in department_rows]
+    department_ticket_data = [row["total"] for row in department_rows]
 
-    department_ticket_data = [
-        82, 64, 78, 55
-    ]
+    undepartmented = tickets.filter(department__isnull=True).count()
+    if undepartmented:
+        department_labels.append("Unassigned")
+        department_ticket_data.append(undepartmented)
 
     # ---------------------------------------------------------------
     # EXISTING TICKET STATISTICS
@@ -173,10 +252,21 @@ def _admin_dashboard(request):
         
     ]
     activities = (
-    TicketHistory.objects
-    .select_related("ticket", "actor")
-    .order_by("-created_at")[:10]
-)
+        TicketHistory.objects
+        .select_related("ticket", "actor")
+        .order_by("-created_at")[:10]
+    )
+
+    active_agents = (
+        User.objects
+        .filter(is_active=True, roles__code=RoleCode.AGENT)
+        .distinct()
+        .count()
+    )
+
+    knowledge_articles = KnowledgeArticle.objects.count()
+
+    ai_status, ai_status_class = _ai_service_health()
     return render(request, "dashboard/index.html", {
         "page_title": "Dashboard",
         
@@ -186,34 +276,28 @@ def _admin_dashboard(request):
 
         # Stat cards
         "total_users": User.objects.count(),
-        "active_agents": 18,
+        "active_agents": active_agents,
         "total_tickets": total,
-        "open_tickets": 82,
-        "knowledge_articles": 64,
-        "ai_status": "Operational",
-        "ai_status_class": "up",
+        "open_tickets": status_counts[Ticket.Status.OPEN],
+        "knowledge_articles": knowledge_articles,
+        "ai_status": ai_status,
+        "ai_status_class": ai_status_class,
 
         # User Growth chart
-        "user_growth_labels": user_growth_labels,
-        "user_growth_data": user_growth_data,
+        "user_growth_labels": json.dumps(month_labels),
+        "user_growth_data": json.dumps(user_growth_data),
 
         # Ticket Trend chart
-        "ticket_trend_labels": ticket_trend_labels,
-        "ticket_trend_data": ticket_trend_data,
+        "ticket_trend_labels": json.dumps(month_labels),
+        "ticket_trend_data": json.dumps(ticket_trend_data),
 
         # Department donut chart
-        "department_labels": department_labels,
-        "department_ticket_data": department_ticket_data,
+        "department_labels": json.dumps(department_labels),
+        "department_ticket_data": json.dumps(department_ticket_data),
 
         # Timeline
         "activities": activities,
     })
-    # return render(request, "dashboard/index.html", {
-    #     "page_title": "Dashboard",
-    #     "summary_cards": summary_cards,
-    #     "recent_tickets": recent_tickets,
-    #     "status_summary": status_summary,
-    # })
 
 
 def _supervisor_dashboard(request):
