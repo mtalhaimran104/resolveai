@@ -122,6 +122,37 @@ curl -s http://localhost:8001/api/v1/priority/metrics
 Both should return `"status": true`. Current models score 98.07% accuracy
 (classification, 19 categories) and 98.31% (priority, 4 classes).
 
+## Seed Demo Data
+
+A fresh database has roles, departments and the 19 ticket categories, but no
+tickets — so the dashboard, queues and reports all render empty. Seed 60
+realistic tickets:
+
+```bash
+docker compose exec web python manage.py seed_demo_data --with-ai
+```
+
+`--with-ai` does not invent the AI fields. It calls the running FastAPI
+service for every ticket, so `category`, `priority` and `sentiment` are real
+model predictions and the `ai_analyses` table is written by the service itself,
+exactly as in production. Drop the flag to seed without touching the AI
+service.
+
+This creates 8 requesters, 4 agents, 1 supervisor, 60 tickets spread over the
+last 60 days, plus comments and history rows. Demo accounts all use the
+password `DemoPass123!` and are named `demo_*`.
+
+Remove it all again — and only it — with:
+
+```bash
+docker compose exec web python manage.py seed_demo_data --flush
+```
+
+> Ticket lists are role-scoped. `/tickets/` is *your own* tickets, so it is
+> empty for `superadmin`, who files none. The populated queues are
+> `/tickets/admin/`, `/tickets/supervisor/unassigned/`, `/tickets/agent/`,
+> `/tickets/critical/` and `/tickets/resolved/`.
+
 ## Logging In
 
 Migrations create a super administrator, so there is no `createsuperuser`
