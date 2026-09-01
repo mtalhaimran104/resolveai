@@ -49,12 +49,12 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            <span class="ra-health-dot up"></span>
-                            Operational
+                            <span class="ra-health-dot {{ service_status_class|default:'degraded' }}"></span>
+                            {{ service_status|default:'Unknown' }}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            Uptime 99.94% (30d)
+                            {{ analysis_count|default:'0' }} analyses recorded
                         </div>
                     </div>
                 </div>
@@ -69,11 +69,11 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            142 ms
+                            {% if p95_response_ms %}{{ p95_response_ms }} ms{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            p95 across last 1,000 calls
+                            p95 across last {{ sample_size|default:'0' }} calls
                         </div>
                     </div>
                 </div>
@@ -87,12 +87,12 @@
                             Error Rate
                         </div>
 
-                        <div class="ra-stat-value fs-5 text-success">
-                            0.4%
+                        <div class="ra-stat-value fs-5 {{ error_rate_class|default:'text-success' }}">
+                            {% if error_rate is not None %}{{ error_rate }}%{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            Last 24 hours
+                            Across all recorded analyses
                         </div>
                     </div>
                 </div>
@@ -107,11 +107,11 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            09:52 AM
+                            {% if last_success_at %}{{ last_success_at|date:"h:i A" }}{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            2026-07-30
+                            {% if last_success_at %}{{ last_success_at|date:"Y-m-d" }}{% else %}No successful calls yet{% endif %}
                         </div>
                     </div>
                 </div>
