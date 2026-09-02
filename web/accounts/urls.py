@@ -29,6 +29,7 @@ urlpatterns = [
             template_name="auth/forgot-password.html",
             email_template_name="auth/password-reset-email.txt",
             subject_template_name="auth/password-reset-subject.txt",
+            success_url="/accounts/forgot-password/done/",
         ),
         name="password_reset",
     ),
@@ -60,3 +61,7 @@ urlpatterns = [
     name="agent_performance",
 ),
 ]
+
+
+
+
