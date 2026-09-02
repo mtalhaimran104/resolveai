@@ -1809,7 +1809,7 @@ def ticket_history(request, pk):
             "events": events,
             "back_url_name": back_url_name,
             "page_title": (
-                f"History â€” "
+                f"History — "
                 f"{ticket.ticket_number}"
             ),
         },
@@ -1945,6 +1945,7 @@ def critical_ticket_list(request):
             "tickets": page_obj,
             "page_obj": page_obj,
             "page_title": "Critical Tickets",
+            **_ticket_list_filter_context(request),
         },
     )
 
@@ -1995,6 +1996,7 @@ def waiting_for_user_list(request):
             "tickets": page_obj,
             "page_obj": page_obj,
             "page_title": "Waiting for User",
+            **_ticket_list_filter_context(request),
         },
     )
 
@@ -2048,6 +2050,7 @@ def resolved_ticket_list(request):
             "tickets": page_obj,
             "page_obj": page_obj,
             "page_title": "Resolved / Closed Tickets",
+            **_ticket_list_filter_context(request),
         },
     )
 
