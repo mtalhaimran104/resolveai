@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from accounts.models import User, RoleCode
 from django.contrib.admin.views.decorators import staff_member_required
-
+from ai.models import AISuggestion
 from accounts.decorators import admin_required
 from ai.services import (
     AIServiceError,
@@ -1562,11 +1562,21 @@ def customer_satisfaction_report(request):
 
 @admin_required
 def low_confidence_results(request):
+    suggestions = AISuggestion.objects.select_related(
+        "ticket",
+        "used_by",
+    ).order_by("-created_at")
+
+    paginator = Paginator(suggestions, 5)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         "reports/low-confidence-results.html",
         {
-            "page_title": "Low Confidence Results",
+            "page_title": "AI Suggestions",
+            "suggestions": page_obj,
+            "page_obj": page_obj,
         },
     )
