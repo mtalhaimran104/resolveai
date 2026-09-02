@@ -1,4 +1,4 @@
-﻿
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1333,6 +1333,7 @@ def unassigned_ticket_list(request):
             ),
 
             "page_title": "Unassigned Tickets",
+            **_ticket_list_filter_context(request),
         },
     )
 
@@ -1372,34 +1373,45 @@ def assigned_ticket_list(request):
     # -----------------------------------------------------------------
 
     if is_privileged:
+        tickets = _filter_tickets(
+            request,
+            tickets,
+        )
+
         page_obj = _paginate(
             request,
             tickets,
         )
 
+        context = {
+            "tickets": page_obj,
+            "page_obj": page_obj,
+
+            "total_assigned": tickets.count(),
+
+            "open_among_assigned": (
+                tickets.filter(
+                    status__in=open_statuses
+                ).count()
+            ),
+
+            "critical_assigned": (
+                tickets.filter(
+                    priority=Ticket.Priority.CRITICAL
+                ).count()
+            ),
+
+            "page_title": "Assigned Tickets",
+        }
+
+        context.update(
+            _ticket_list_filter_context(request)
+        )
+
         return render(
             request,
             "queue/assigned-tickets.html",
-            {
-                "tickets": page_obj,
-                "page_obj": page_obj,
-
-                "total_assigned": tickets.count(),
-
-                "open_among_assigned": (
-                    tickets.filter(
-                        status__in=open_statuses
-                    ).count()
-                ),
-
-                "critical_assigned": (
-                    tickets.filter(
-                        priority=Ticket.Priority.CRITICAL
-                    ).count()
-                ),
-
-                "page_title": "Assigned Tickets",
-            },
+            context,
         )
 
     # -----------------------------------------------------------------
@@ -1442,6 +1454,7 @@ def assigned_ticket_list(request):
             ),
 
             "page_title": "Assigned to Me",
+            **_ticket_list_filter_context(request),
         },
     )
 
