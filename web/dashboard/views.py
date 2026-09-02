@@ -204,7 +204,9 @@ def _admin_dashboard(request):
         # Department donut chart
         "department_labels": department_labels,
         "department_ticket_data": department_ticket_data,
-
+        # Ticket volume trend chart
+        "volume_labels": ticket_trend_labels,
+        "volume_values": ticket_trend_data,
         # Timeline
         "activities": activities,
     })

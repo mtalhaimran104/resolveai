@@ -1878,7 +1878,10 @@ def critical_ticket_list(request):
         tickets = tickets.filter(
             assigned_to=request.user
         )
-
+    tickets = _filter_tickets(
+    request,
+    tickets,
+)
     page_obj = _paginate(
         request,
         tickets,
