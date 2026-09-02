@@ -14,7 +14,6 @@ def category_list(request):
     return render(request, "categories/category-list.html", {
         "categories": page_obj,
         "page_obj": page_obj,
-        "current": "category-list",
     })
 
 
@@ -23,7 +22,6 @@ def category_detail(request, pk):
     category = get_object_or_404(TicketCategory, pk=pk)
     return render(request, "categories/category-detail.html", {
         "category": category,
-        "current": "category-detail",
     })
 
 
@@ -57,7 +55,7 @@ def category_create(request):
             messages.success(request, f"Category '{category.name}' created successfully.")
             return redirect("category_detail", pk=category.pk)
 
-    return render(request, "categories/category-create.html", {"current": "category-create"})
+    return render(request, "categories/category-create.html", {})
 
 
 @supervisor_or_admin_required
@@ -89,7 +87,6 @@ def category_edit(request, pk):
 
     return render(request, "categories/category-edit.html", {
         "category": category,
-        "current": "category-edit",
     })
 
 

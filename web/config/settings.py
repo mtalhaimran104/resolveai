@@ -95,6 +95,7 @@ TEMPLATES = [
                 "django.template.context_processors.csrf",
                 "accounts.context_processors.user_roles",
                 "accounts.context_processors.sidebar_counts",
+                "core.context_processors.active_menu",
             ],
         },
     },

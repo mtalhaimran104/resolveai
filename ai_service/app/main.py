@@ -1,4 +1,4 @@
-# app/main.py
+﻿# app/main.py
 
 from fastapi import FastAPI
 
@@ -32,18 +32,13 @@ app = FastAPI(
 app.include_router(
     classification.router
 )
+
 app.include_router(
     priority_prediction.router
 )
 
 app.include_router(
     faq.router
-)
-app.include_router(
-    classification.router
-)
-app.include_router(
-    priority_prediction.router
 )
 
 app.include_router(
