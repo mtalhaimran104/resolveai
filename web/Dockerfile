@@ -6,7 +6,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --default-timeout=600 --retries=10 -r requirements.txt
+# BuildKit cache mount: a cancelled or failed build resumes from the pip cache
+# instead of re-downloading everything.
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --default-timeout=600 --retries=10 -r requirements.txt
 
 COPY . .
 

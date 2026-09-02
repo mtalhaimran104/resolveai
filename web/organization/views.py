@@ -17,7 +17,6 @@ def department_list(request):
         {
             "departments": page_obj,
             "page_obj": page_obj,
-            "current": "department_list",
         },
     )
 
@@ -31,7 +30,6 @@ def department_detail(request, pk):
         "departments/department-detail.html",
         {
             "department": department,
-            "current": "department_detail",
         },
     )
 
@@ -77,7 +75,6 @@ def department_create(request):
         request,
         "departments/department-create.html",
         {
-            "current": "department_create",
         },
     )
 
@@ -130,7 +127,6 @@ def department_edit(request, pk):
         "departments/department-edit.html",
         {
             "department": department,
-            "current": "department_edit",
         },
     )
 

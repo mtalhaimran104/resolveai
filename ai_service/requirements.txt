@@ -1,17 +1,36 @@
-﻿fastapi==0.141.1
+# ---------------------------------------------------------------------------
+# CPU-only PyTorch.
+#
+# The default PyPI `torch` wheel bundles the whole NVIDIA CUDA stack
+# (cudnn, nccl, triton, cuda-toolkit, ...) which is ~3 GB of downloads.
+# This service runs inference on CPU only (see app/models/sentiment_model.py:
+# DEVICE = torch.device("cpu")), so none of that is ever used.
+#
+# The +cpu wheels below come from PyTorch's own index and are ~185 MB total.
+# Do not remove the --extra-index-url line or the `+cpu` pin.
+# ---------------------------------------------------------------------------
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.13.0+cpu; sys_platform != "darwin"
+torch==2.13.0; sys_platform == "darwin"
+
+# --- web framework ---------------------------------------------------------
+fastapi==0.141.1
 uvicorn==0.52.1
 
-torch
-transformers
-sentencepiece
-protobuf
-tiktoken
+# --- NLP -------------------------------------------------------------------
+transformers==5.16.1
+sentencepiece==0.2.2
+protobuf==7.36.1
+tiktoken==0.14.0
 
+# --- classical ML ----------------------------------------------------------
 scikit-learn==1.9.0
 joblib==1.5.3
 numpy==2.4.6
-pandas
+pandas==3.0.5
 
+# --- database --------------------------------------------------------------
 sqlalchemy==2.0.48
 pymysql==1.1.2
-cryptography
+cryptography==50.0.1

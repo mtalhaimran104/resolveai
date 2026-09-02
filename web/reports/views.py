@@ -1,7 +1,9 @@
+import json
 from datetime import timedelta
 
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Q
+from django.db.models.functions import TruncDay, TruncMonth, TruncWeek
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -9,8 +11,129 @@ from accounts.models import User, RoleCode
 from django.contrib.admin.views.decorators import staff_member_required
 
 from accounts.decorators import admin_required
-from tickets.models import Ticket, TicketHistory
+from ai.services import (
+    AIServiceError,
+    get_classification_model_metrics,
+)
+from organization.models import Department
+from tickets.models import Ticket, TicketComment, TicketHistory
 from classification.models import TicketCategory
+
+
+# ---------------------------------------------------------------------
+# SHARED REPORT HELPERS
+# ---------------------------------------------------------------------
+
+RESOLVED_STATUSES = ["RESOLVED", "CLOSED"]
+
+# Target hours from creation to resolution, by priority. These are constants
+# until the project grows a real SLA model -- there is no SLA table yet, so
+# nothing per-department or per-category can be expressed here. They are used
+# only to flag breaches; every other number on the report is measured.
+SLA_TARGET_HOURS = {
+    "CRITICAL": 4,
+    "HIGH": 8,
+    "MEDIUM": 24,
+    "LOW": 48,
+}
+
+TRUNC_BY_GROUPING = {
+    "day": TruncDay,
+    "week": TruncWeek,
+    "month": TruncMonth,
+}
+
+LABEL_FORMAT_BY_GROUPING = {
+    "day": "%b %d",
+    "week": "%b %d",
+    "month": "%b %Y",
+}
+
+
+def _resolution_duration():
+    """resolved_at - created_at, as a database-side expression."""
+    return ExpressionWrapper(
+        F("resolved_at") - F("created_at"),
+        output_field=DurationField(),
+    )
+
+
+def _format_duration(total_seconds):
+    """Render a duration the way the report cards do: '18h 40m', '24m'."""
+    if total_seconds is None:
+        return "\u2014"
+
+    minutes = int(round(total_seconds / 60))
+    hours, minutes = divmod(minutes, 60)
+
+    if hours >= 24:
+        days, hours = divmod(hours, 24)
+        return f"{days}d {hours}h"
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+def _average_seconds(queryset):
+    """Mean resolution time in seconds, or None when nothing is resolved."""
+    average = (
+        queryset
+        .filter(resolved_at__isnull=False)
+        .annotate(duration=_resolution_duration())
+        .aggregate(value=Avg("duration"))["value"]
+    )
+    return average.total_seconds() if average else None
+
+
+def _percent_change(current, previous):
+    """Percent change between two periods, rounded, guarding divide-by-zero."""
+    if not previous:
+        return None
+    return round(((current - previous) / previous) * 100)
+
+
+def _first_response_seconds_by_ticket():
+    """Seconds from ticket creation to its first reply, keyed by ticket id.
+
+    "First response" is the earliest public comment written by somebody other
+    than the requester -- the closest thing to a reply that the schema
+    records. Tickets nobody has answered are absent rather than zero.
+    """
+    first_seen = {}
+
+    comments = (
+        TicketComment.objects
+        .filter(is_internal=False)
+        .exclude(author=F("ticket__requester"))
+        .values("ticket_id", "created_at", "ticket__created_at")
+        .order_by("ticket_id", "created_at")
+    )
+
+    for comment in comments:
+        ticket_id = comment["ticket_id"]
+        if ticket_id in first_seen:
+            continue
+        delta = comment["created_at"] - comment["ticket__created_at"]
+        if delta.total_seconds() >= 0:
+            first_seen[ticket_id] = delta.total_seconds()
+
+    return first_seen
+
+
+def _mean(values):
+    values = [v for v in values if v is not None]
+    return sum(values) / len(values) if values else None
+
+
+def _parse_date(value):
+    """Parse a YYYY-MM-DD filter value into an aware datetime, or None."""
+    if not value:
+        return None
+    try:
+        parsed = timezone.datetime.strptime(value, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return None
+    return timezone.make_aware(parsed, timezone.get_current_timezone())
 
 
 # ---------------------------------------------------------------------
@@ -337,33 +460,55 @@ def reports_dashboard(request):
 
     if average_resolution_minutes is not None:
 
-        total_minutes = round(
-            average_resolution_minutes
-        )
-
-        hours = total_minutes // 60
-        minutes = total_minutes % 60
-
-        average_resolution_display = (
-            f"{hours}h {minutes}m"
+        average_resolution_display = _format_duration(
+            average_resolution_minutes * 60
         )
 
     else:
 
-        # Controlled demo value
-        average_resolution_display = "18h 40m"
+        # No ticket has been resolved yet. Show that, rather than a number.
+        average_resolution_display = "\u2014"
 
     # ---------------------------------------------------------------
-    # 10. AI accuracy - CONTROLLED DEMO
+    # 10. AI classification accuracy
+    #
+    # The model's own held-out accuracy, straight from the service that
+    # serves it. Falling back to the mean confidence recorded on tickets
+    # keeps the card populated when the service is unreachable -- that is a
+    # different measure, so it is flagged as such.
     # ---------------------------------------------------------------
 
-    ai_accuracy = 91.4
+    ai_accuracy = None
+    ai_accuracy_is_demo = False
+
+    try:
+        metrics = get_classification_model_metrics()
+    except AIServiceError:
+        metrics = None
+
+    if metrics and metrics.get("status"):
+        ai_accuracy = (metrics.get("data") or {}).get("accuracy")
+
+    if ai_accuracy is None:
+        mean_confidence = tickets.filter(
+            ai_confidence__isnull=False
+        ).aggregate(value=Avg("ai_confidence"))["value"]
+        if mean_confidence is not None:
+            ai_accuracy = round(float(mean_confidence), 1)
+
+    if ai_accuracy is None:
+        ai_accuracy = "\u2014"
 
     # ---------------------------------------------------------------
-    # 11. Customer satisfaction - CONTROLLED DEMO
+    # 11. Customer satisfaction
+    #
+    # Nothing in the schema records satisfaction: there is no rating on a
+    # ticket and no survey model. Rather than print an invented score, the
+    # card reports that it is not tracked yet. Wire this up when a rating
+    # field or survey model exists.
     # ---------------------------------------------------------------
 
-    satisfaction_score = 4.4
+    satisfaction_score = None
 
     # ---------------------------------------------------------------
     # Dashboard context
@@ -406,8 +551,8 @@ def reports_dashboard(request):
         # Agents
         "agent_workload": agent_workload,
 
-        # Demo indicators
-        "ai_accuracy_is_demo": True,
+        # Which numbers are measured, and which are not yet available
+        "ai_accuracy_is_demo": ai_accuracy_is_demo,
         "satisfaction_is_demo": True,
         "resolution_time_is_demo": (
             average_resolution_minutes is None
@@ -428,12 +573,135 @@ def reports_dashboard(request):
 
 @admin_required
 def ticket_volume_report(request):
+    """Tickets opened against tickets resolved, over a chosen window.
+
+    Supports the filters the template already renders: date range, grouping,
+    department, category and status.
+    """
+    grouping = request.GET.get("group_by") or "week"
+    if grouping not in TRUNC_BY_GROUPING:
+        grouping = "week"
+
+    now = timezone.now()
+    date_to = _parse_date(request.GET.get("date_to")) or now
+    date_from = _parse_date(request.GET.get("date_from")) or (
+        date_to - timedelta(days=60)
+    )
+    if date_from > date_to:
+        date_from, date_to = date_to, date_from
+
+    selected_department = request.GET.get("department") or ""
+    selected_category = request.GET.get("category") or ""
+    selected_status = request.GET.get("status") or ""
+
+    tickets = Ticket.objects.all()
+
+    if selected_department.isdigit():
+        tickets = tickets.filter(department_id=int(selected_department))
+    if selected_category.isdigit():
+        tickets = tickets.filter(category_id=int(selected_category))
+    if selected_status:
+        tickets = tickets.filter(
+            status=selected_status.replace("-", "_").upper()
+        )
+
+    truncate = TRUNC_BY_GROUPING[grouping]
+    label_format = LABEL_FORMAT_BY_GROUPING[grouping]
+
+    def buckets(queryset, field):
+        rows = (
+            queryset
+            .filter(**{
+                f"{field}__gte": date_from,
+                f"{field}__lte": date_to,
+            })
+            .annotate(bucket=truncate(field))
+            .values("bucket")
+            .annotate(total=Count("id"))
+            .order_by("bucket")
+        )
+        return {row["bucket"]: row["total"] for row in rows if row["bucket"]}
+
+    opened = buckets(tickets, "created_at")
+    resolved = buckets(
+        tickets.filter(resolved_at__isnull=False), "resolved_at"
+    )
+
+    periods = sorted(set(opened) | set(resolved))
+
+    chart_labels = [period.strftime(label_format) for period in periods]
+    chart_new_tickets = [opened.get(period, 0) for period in periods]
+    chart_resolved_tickets = [resolved.get(period, 0) for period in periods]
+
+    volume_data = [
+        {
+            "period": label,
+            "new_tickets": new_count,
+            "resolved_tickets": resolved_count,
+            "net_change": new_count - resolved_count,
+            "in_progress": period == periods[-1] if periods else False,
+        }
+        for period, label, new_count, resolved_count in zip(
+            periods, chart_labels, chart_new_tickets, chart_resolved_tickets
+        )
+    ]
+    volume_data.reverse()
+
+    # Compare the window against the equally long window before it, which is
+    # what the "vs previous period" wording on the cards means.
+    window = date_to - date_from
+    previous_from = date_from - window
+
+    current_new = sum(chart_new_tickets)
+    current_resolved = sum(chart_resolved_tickets)
+
+    previous_new = tickets.filter(
+        created_at__gte=previous_from, created_at__lt=date_from
+    ).count()
+    previous_resolved = tickets.filter(
+        resolved_at__gte=previous_from, resolved_at__lt=date_from
+    ).count()
+
+    current_seconds = _average_seconds(
+        tickets.filter(resolved_at__gte=date_from, resolved_at__lte=date_to)
+    )
+    previous_seconds = _average_seconds(
+        tickets.filter(resolved_at__gte=previous_from, resolved_at__lt=date_from)
+    )
 
     return render(
         request,
         "reports/ticket-volume.html",
         {
             "page_title": "Ticket Volume",
+
+            "group_by": grouping,
+            "date_from": date_from.date().isoformat(),
+            "date_to": date_to.date().isoformat(),
+
+            "departments": Department.objects.order_by("name"),
+            "categories": TicketCategory.objects.filter(
+                is_active=True
+            ).order_by("name"),
+            "selected_department": selected_department,
+            "selected_category": selected_category,
+            "selected_status": selected_status,
+
+            "volume_data": volume_data,
+            "chart_labels": json.dumps(chart_labels),
+            "chart_new_tickets": json.dumps(chart_new_tickets),
+            "chart_resolved_tickets": json.dumps(chart_resolved_tickets),
+
+            "total_new_tickets": current_new,
+            "total_resolved_tickets": current_resolved,
+            "new_ticket_change": _percent_change(current_new, previous_new),
+            "resolved_ticket_change": _percent_change(
+                current_resolved, previous_resolved
+            ),
+            "resolution_time_change": _percent_change(
+                current_seconds or 0, previous_seconds or 0
+            ),
+            "backlog_change": current_new - current_resolved,
         },
     )
 
@@ -445,12 +713,129 @@ def ticket_volume_report(request):
 
 @admin_required
 def resolution_time_report(request):
+    """How long tickets take: first response, resolution, and SLA breaches."""
+    now = timezone.now()
+    window_start = now - timedelta(days=60)
+    previous_start = window_start - timedelta(days=60)
+
+    tickets = Ticket.objects.all()
+    resolved = tickets.filter(resolved_at__isnull=False)
+    in_window = resolved.filter(resolved_at__gte=window_start)
+
+    # -- average resolution, this window against the one before it --------
+    average_seconds = _average_seconds(in_window)
+    previous_seconds = _average_seconds(
+        resolved.filter(
+            resolved_at__gte=previous_start,
+            resolved_at__lt=window_start,
+        )
+    )
+    resolution_change = _percent_change(
+        average_seconds or 0, previous_seconds or 0
+    )
+
+    # -- average first response -------------------------------------------
+    first_response = _first_response_seconds_by_ticket()
+    average_first_response = _mean(first_response.values())
+
+    # -- by priority -------------------------------------------------------
+    priority_labels = []
+    priority_hours = []
+    priority_rows = []
+
+    for code, label in Ticket.Priority.choices:
+        subset = resolved.filter(priority=code)
+        seconds = _average_seconds(subset)
+        target_hours = SLA_TARGET_HOURS.get(code)
+
+        priority_labels.append(label)
+        priority_hours.append(
+            round(seconds / 3600, 1) if seconds else 0
+        )
+
+        breaches = 0
+        if target_hours:
+            breaches = (
+                subset
+                .annotate(duration=_resolution_duration())
+                .filter(duration__gt=timedelta(hours=target_hours))
+                .count()
+            )
+
+        priority_rows.append({
+            "priority": label,
+            "priority_code": code,
+            "first_response": _format_duration(_mean([
+                first_response.get(ticket_id)
+                for ticket_id in subset.values_list("id", flat=True)
+            ])),
+            "resolution": _format_duration(seconds),
+            "resolved_count": subset.count(),
+            "sla_target": f"{target_hours}h" if target_hours else "\u2014",
+            "breaches": breaches,
+        })
+
+    sla_breaches = sum(row["breaches"] for row in priority_rows)
+
+    # -- by department -----------------------------------------------------
+    department_rows = (
+        resolved
+        .exclude(department__isnull=True)
+        .values("department__name")
+        .annotate(
+            average=Avg(_resolution_duration()),
+            total=Count("id"),
+        )
+        .order_by("-total")
+    )
+    department_labels = [row["department__name"] for row in department_rows]
+    department_hours = [
+        round(row["average"].total_seconds() / 3600, 1)
+        if row["average"] else 0
+        for row in department_rows
+    ]
+
+    # -- trend over the window --------------------------------------------
+    trend_rows = (
+        in_window
+        .annotate(bucket=TruncWeek("resolved_at"))
+        .values("bucket")
+        .annotate(average=Avg(_resolution_duration()))
+        .order_by("bucket")
+    )
+    trend_labels = [
+        row["bucket"].strftime("%b %d") for row in trend_rows if row["bucket"]
+    ]
+    trend_hours = [
+        round(row["average"].total_seconds() / 3600, 1)
+        if row["average"] else 0
+        for row in trend_rows if row["bucket"]
+    ]
 
     return render(
         request,
         "reports/resolution-time.html",
         {
             "page_title": "Resolution Time",
+
+            "average_first_response_display": _format_duration(
+                average_first_response
+            ),
+            "average_resolution_display": _format_duration(average_seconds),
+            "sla_breaches": sla_breaches,
+            "resolution_change": resolution_change,
+
+            "priority_labels": json.dumps(priority_labels),
+            "priority_hours": json.dumps(priority_hours),
+            "priority_rows": priority_rows,
+
+            "department_labels": json.dumps(department_labels),
+            "department_hours": json.dumps(department_hours),
+
+            "trend_labels": json.dumps(trend_labels),
+            "trend_hours": json.dumps(trend_hours),
+
+            "resolved_total": in_window.count(),
         },
     )
 
