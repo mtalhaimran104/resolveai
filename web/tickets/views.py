@@ -493,6 +493,11 @@ def ticket_list(request):
         .order_by("-created_at")
     )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -505,6 +510,7 @@ def ticket_list(request):
             "tickets": page_obj,
             "page_obj": page_obj,
             "page_title": "My Tickets",
+            "categories": TicketCategory.objects.filter(is_active=True).order_by("name"),
         },
     )
 
@@ -893,6 +899,11 @@ def admin_ticket_list(request):
         tickets,
     )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1225,6 +1236,11 @@ def supervisor_ticket_list(request):
         base,
     )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1281,6 +1297,11 @@ def unassigned_ticket_list(request):
         else None
     )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1312,6 +1333,7 @@ def unassigned_ticket_list(request):
             ),
 
             "page_title": "Unassigned Tickets",
+            **_ticket_list_filter_context(request),
         },
     )
 
@@ -1351,34 +1373,45 @@ def assigned_ticket_list(request):
     # -----------------------------------------------------------------
 
     if is_privileged:
+        tickets = _filter_tickets(
+            request,
+            tickets,
+        )
+
         page_obj = _paginate(
             request,
             tickets,
         )
 
+        context = {
+            "tickets": page_obj,
+            "page_obj": page_obj,
+
+            "total_assigned": tickets.count(),
+
+            "open_among_assigned": (
+                tickets.filter(
+                    status__in=open_statuses
+                ).count()
+            ),
+
+            "critical_assigned": (
+                tickets.filter(
+                    priority=Ticket.Priority.CRITICAL
+                ).count()
+            ),
+
+            "page_title": "Assigned Tickets",
+        }
+
+        context.update(
+            _ticket_list_filter_context(request)
+        )
+
         return render(
             request,
             "queue/assigned-tickets.html",
-            {
-                "tickets": page_obj,
-                "page_obj": page_obj,
-
-                "total_assigned": tickets.count(),
-
-                "open_among_assigned": (
-                    tickets.filter(
-                        status__in=open_statuses
-                    ).count()
-                ),
-
-                "critical_assigned": (
-                    tickets.filter(
-                        priority=Ticket.Priority.CRITICAL
-                    ).count()
-                ),
-
-                "page_title": "Assigned Tickets",
-            },
+            context,
         )
 
     # -----------------------------------------------------------------
@@ -1387,6 +1420,11 @@ def assigned_ticket_list(request):
 
     tickets = tickets.filter(
         assigned_to=request.user
+    )
+
+    tickets = _filter_tickets(
+        request,
+        tickets,
     )
 
     page_obj = _paginate(
@@ -1416,6 +1454,7 @@ def assigned_ticket_list(request):
             ),
 
             "page_title": "Assigned to Me",
+            **_ticket_list_filter_context(request),
         },
     )
 
@@ -1670,6 +1709,11 @@ def agent_ticket_list(request):
         tickets,
     )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1765,7 +1809,7 @@ def ticket_history(request, pk):
             "events": events,
             "back_url_name": back_url_name,
             "page_title": (
-                f"History — "
+                f"History â€” "
                 f"{ticket.ticket_number}"
             ),
         },
@@ -1828,6 +1872,11 @@ def department_queue_list(request):
             assigned_to=request.user
         )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1879,6 +1928,11 @@ def critical_ticket_list(request):
             assigned_to=request.user
         )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1923,6 +1977,11 @@ def waiting_for_user_list(request):
         tickets = tickets.filter(
             assigned_to=request.user
         )
+
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
 
     page_obj = _paginate(
         request,
@@ -1972,6 +2031,11 @@ def resolved_ticket_list(request):
             assigned_to=request.user
         )
 
+    tickets = _filter_tickets(
+        request,
+        tickets,
+    )
+
     page_obj = _paginate(
         request,
         tickets,
@@ -1986,3 +2050,5 @@ def resolved_ticket_list(request):
             "page_title": "Resolved / Closed Tickets",
         },
     )
+
+
