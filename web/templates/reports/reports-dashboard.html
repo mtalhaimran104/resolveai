@@ -150,8 +150,12 @@
             <div>
 
              <div class="ra-stat-value">
-    {{ satisfaction_score }}
-    <span class="fs-6 text-secondary">/ 5</span>
+    {% if satisfaction_score %}
+      {{ satisfaction_score }}
+      <span class="fs-6 text-secondary">/ 5</span>
+    {% else %}
+      <span class="text-secondary fs-6">Not tracked yet</span>
+    {% endif %}
 </div>
 
               <div class="ra-stat-label">

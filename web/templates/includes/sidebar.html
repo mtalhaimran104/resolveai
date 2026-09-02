@@ -12,11 +12,10 @@
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false">
 
         {% url 'dashboard' as dashboard_url %}
-        {% with current=request.resolver_match.url_name %}
 
         <li class="nav-header">MAIN</li>
         <li class="nav-item">
-          <a href="{{ dashboard_url }}" class="nav-link {% if current == 'dashboard' %}active{% endif %}">
+          <a href="{{ dashboard_url }}" class="nav-link {% if current == 'dashboard' and not current_namespace %}active{% endif %}">
             <i class="nav-icon bi bi-speedometer2"></i><p>Dashboard</p>
           </a>
         </li>
@@ -40,7 +39,7 @@
          
           <li class="nav-item">
     <a href="{% url 'tickets:admin_ticket_list' %}"
-       class="nav-link {% if current == 'admin_ticket_list' %}active{% endif %}">
+       class="nav-link {% if current == 'admin_ticket_list' or current == 'ticket_detail' or current == 'ticket_history' %}active{% endif %}">
         <i class="nav-icon bi bi-ticket-detailed"></i>
         <p>All Tickets</p>
     </a>
@@ -98,12 +97,12 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'department_list' %}" class="nav-link {% if current == 'department_list' or current == 'department_detail' %}active{% endif %}">
+            <a href="{% url 'department_list' %}" class="nav-link {% if current == 'department_list' or current == 'department_detail' or current == 'department_create' or current == 'department_edit' %}active{% endif %}">
               <i class="nav-icon bi bi-building"></i><p>Departments</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'category_list' %}" class="nav-link {% if current == 'category_list' or current == 'category_detail' %}active{% endif %}">
+            <a href="{% url 'category_list' %}" class="nav-link {% if current == 'category_list' or current == 'category_detail' or current == 'category_create' or current == 'category_edit' %}active{% endif %}">
               <i class="nav-icon bi bi-tags"></i><p>Categories</p>
             </a>
           </li>
@@ -115,66 +114,66 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'knowledge_article_list' %}" class="nav-link {% if current == 'demo_kb_article_list' %}active{% endif %}">
+            <a href="{% url 'knowledge_article_list' %}" class="nav-link {% if current == 'knowledge_article_list' or current == 'knowledge_article_detail' or current == 'knowledge_article_edit' or current == 'knowledge_article_versions' %}active{% endif %}">
               <i class="nav-icon bi bi-journal-text"></i><p>Articles</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'knowledge_article_create' %}" class="nav-link {% if current == 'demo_kb_article_create' %}active{% endif %}">
+            <a href="{% url 'knowledge_article_create' %}" class="nav-link {% if current == 'knowledge_article_create' %}active{% endif %}">
               <i class="nav-icon bi bi-file-earmark-plus"></i><p>Create Article</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'demo_kb_public' %}active{% endif %}">
+            <a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'public_knowledge_base' %}active{% endif %}">
               <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
             </a>
           </li>
 <li class="nav-header">REPORTS</li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:dashboard' %}" class="nav-link">
+  <a href="{% url 'reports:dashboard' %}" class="nav-link {% if current_namespace == 'reports' and current == 'dashboard' %}active{% endif %}">
     <i class="nav-icon bi bi-bar-chart-line"></i>
     <p>Reports Dashboard</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:ticket_volume' %}" class="nav-link">
+  <a href="{% url 'reports:ticket_volume' %}" class="nav-link {% if current_namespace == 'reports' and current == 'ticket_volume' %}active{% endif %}">
     <i class="nav-icon bi bi-graph-up"></i>
     <p>Ticket Volume</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:resolution_time' %}" class="nav-link">
+  <a href="{% url 'reports:resolution_time' %}" class="nav-link {% if current_namespace == 'reports' and current == 'resolution_time' %}active{% endif %}">
     <i class="nav-icon bi bi-stopwatch"></i>
     <p>Resolution Time</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:agent_performance' %}" class="nav-link">
+  <a href="{% url 'reports:agent_performance' %}" class="nav-link {% if current_namespace == 'reports' and current == 'agent_performance' %}active{% endif %}">
     <i class="nav-icon bi bi-person-lines-fill"></i>
     <p>Agent Performance</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:department' %}" class="nav-link">
+  <a href="{% url 'reports:department' %}" class="nav-link {% if current_namespace == 'reports' and current == 'department' %}active{% endif %}">
     <i class="nav-icon bi bi-building-check"></i>
     <p>Department Report</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:category' %}" class="nav-link">
+  <a href="{% url 'reports:category' %}" class="nav-link {% if current_namespace == 'reports' and current == 'category' %}active{% endif %}">
     <i class="nav-icon bi bi-pie-chart"></i>
     <p>Category Report</p>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="{% url 'reports:ai_accuracy' %}" class="nav-link">
+  <a href="{% url 'reports:ai_accuracy' %}" class="nav-link {% if current_namespace == 'reports' and current == 'ai_accuracy' %}active{% endif %}">
     <i class="nav-icon bi bi-check2-circle"></i>
     <p>AI Accuracy</p>
   </a>
@@ -224,7 +223,7 @@
           </li> {% endcomment %}
           <li class="nav-item">
     <a href="{% url 'tickets:supervisor_ticket_list' %}"
-       class="nav-link {% if current == 'supervisor_ticket_list' %}active{% endif %}">
+       class="nav-link {% if current == 'supervisor_ticket_list' or current == 'ticket_detail' or current == 'ticket_history' %}active{% endif %}">
         <i class="nav-icon bi bi-ticket-detailed"></i>
         <p>All Tickets</p>
     </a>
@@ -277,7 +276,7 @@
           <li class="nav-item">
             <li class="nav-item">
     <a href="{% url 'tickets:agent_ticket_list' %}"
-       class="nav-link {% if current == 'agent_ticket_list' %}active{% endif %}">
+       class="nav-link {% if current == 'agent_ticket_list' or current == 'ticket_detail' or current == 'ticket_history' %}active{% endif %}">
         <i class="nav-icon bi bi-ticket-detailed"></i>
         <p>All Tickets</p>
     </a>
@@ -367,14 +366,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'tickets:my_tickets' %}" class="nav-link {% if current == 'my_tickets' %}active{% endif %}">
+            <a href="{% url 'tickets:my_tickets' %}" class="nav-link {% if current == 'my_tickets' or current == 'ticket_detail' or current == 'ticket_history' %}active{% endif %}">
               <i class="nav-icon bi bi-ticket-detailed"></i><p>My Tickets</p>
             </a>
           </li>
 
         {% endif %}
 
-        {% endwith %}
 
         <li class="nav-item mt-auto">
 <form action="{% url 'accounts:logout' %}" method="post" class="px-3">            {% csrf_token %}

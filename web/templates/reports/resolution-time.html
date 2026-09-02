@@ -56,7 +56,7 @@
         </span>
 
         <div>
-          <div class="ra-stat-value">24m</div>
+          <div class="ra-stat-value">{{ average_first_response_display|default:"—" }}</div>
           <div class="ra-stat-label">
             Avg. First Response Time
           </div>
@@ -76,7 +76,7 @@
         </span>
 
         <div>
-          <div class="ra-stat-value">18h 40m</div>
+          <div class="ra-stat-value">{{ average_resolution_display|default:"—" }}</div>
           <div class="ra-stat-label">
             Avg. Resolution Time
           </div>
@@ -96,7 +96,7 @@
         </span>
 
         <div>
-          <div class="ra-stat-value text-danger">7</div>
+          <div class="ra-stat-value text-danger">{{ sla_breaches|default:"0" }}</div>
           <div class="ra-stat-label">
             SLA Breaches (Last 30 Days)
           </div>
@@ -116,7 +116,7 @@
         </span>
 
         <div>
-          <div class="ra-stat-value text-success">&minus;6%</div>
+          <div class="ra-stat-value {% if resolution_change and resolution_change > 0 %}text-danger{% else %}text-success{% endif %}">{% if resolution_change %}{% if resolution_change > 0 %}+{% endif %}{{ resolution_change }}%{% else %}—{% endif %}</div>
           <div class="ra-stat-label">
             Resolution Time Trend vs Last Month
           </div>
@@ -223,54 +223,25 @@
 
         <tbody>
 
+          {% for row in priority_rows %}
           <tr>
             <td>
-              <span class="badge badge-priority-critical">
-                Critical
+              <span class="badge badge-priority-{{ row.priority_code|lower }}">
+                {{ row.priority }}
               </span>
             </td>
-            <td class="text-end">6m</td>
-            <td class="text-end">3h 30m</td>
-            <td class="text-end">15</td>
-            <td class="text-end">4h</td>
+            <td class="text-end">{{ row.first_response }}</td>
+            <td class="text-end">{{ row.resolution }}</td>
+            <td class="text-end">{{ row.resolved_count }}</td>
+            <td class="text-end">{{ row.sla_target }}</td>
           </tr>
-
+          {% empty %}
           <tr>
-            <td>
-              <span class="badge badge-priority-high">
-                High
-              </span>
+            <td colspan="5" class="text-center text-muted py-4">
+              No resolved tickets yet.
             </td>
-            <td class="text-end">14m</td>
-            <td class="text-end">9h 00m</td>
-            <td class="text-end">45</td>
-            <td class="text-end">12h</td>
           </tr>
-
-          <tr>
-            <td>
-              <span class="badge badge-priority-medium">
-                Medium
-              </span>
-            </td>
-            <td class="text-end">28m</td>
-            <td class="text-end">18h 00m</td>
-            <td class="text-end">140</td>
-            <td class="text-end">24h</td>
-          </tr>
-
-          <tr>
-            <td>
-              <span class="badge badge-priority-low">
-                Low
-              </span>
-            </td>
-            <td class="text-end">52m</td>
-            <td class="text-end">28h 00m</td>
-            <td class="text-end">28h 00m</td>
-            <td class="text-end">120</td>
-            <td class="text-end">48h</td>
-          </tr>
+          {% endfor %}
 
         </tbody>
 
@@ -322,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       series: [{
         name: "Avg. Hours to Resolve",
-        data: [28, 18, 9, 3.5]
+        data: {{ priority_hours|default:"[]"|safe }}
       }],
 
       chart: {
@@ -362,12 +333,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
 
       xaxis: {
-        categories: [
-          "Low",
-          "Medium",
-          "High",
-          "Critical"
-        ],
+        categories: {{ priority_labels|default:"[]"|safe }},
 
         labels: {
           style: {
@@ -409,7 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       series: [{
         name: "Avg. Hours to Resolve",
-        data: [16.5, 21, 19, 24]
+        data: {{ department_hours|default:"[]"|safe }}
       }],
 
       chart: {
@@ -449,12 +415,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
 
       xaxis: {
-        categories: [
-          "IT Support",
-          "Finance",
-          "Admissions",
-          "Examination"
-        ],
+        categories: {{ department_labels|default:"[]"|safe }},
 
         labels: {
           style: {
@@ -496,16 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       series: [{
         name: "Avg. Resolution Time (hrs)",
-        data: [
-          22.4,
-          21.1,
-          20.3,
-          19.6,
-          19.0,
-          18.9,
-          18.3,
-          18.7
-        ]
+        data: {{ trend_hours|default:"[]"|safe }}
       }],
 
       chart: {
@@ -537,16 +489,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
 
       xaxis: {
-        categories: [
-          "Jun 8",
-          "Jun 15",
-          "Jun 22",
-          "Jun 29",
-          "Jul 6",
-          "Jul 13",
-          "Jul 20",
-          "Jul 27"
-        ],
+        categories: {{ trend_labels|default:"[]"|safe }},
 
         labels: {
           style: {
