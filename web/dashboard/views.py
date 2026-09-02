@@ -168,6 +168,31 @@ def _admin_dashboard(request):
     if undepartmented:
         department_labels.append("Unassigned")
         department_ticket_data.append(undepartmented)
+            # Agent performance: tickets assigned to each agent
+    agent_rows = (
+        tickets
+        .filter(assigned_to__isnull=False)
+        .values(
+            "assigned_to__first_name",
+            "assigned_to__last_name",
+            "assigned_to__username",
+        )
+        .annotate(total=Count("id"))
+        .order_by("-total")
+    )
+
+    agent_labels = [
+        (
+            f"{row['assigned_to__first_name']} {row['assigned_to__last_name']}"
+        ).strip()
+        or row["assigned_to__username"]
+        for row in agent_rows
+    ]
+
+    agent_values = [
+        row["total"]
+        for row in agent_rows
+    ]
 
     # ---------------------------------------------------------------
     # EXISTING TICKET STATISTICS
@@ -294,6 +319,9 @@ def _admin_dashboard(request):
         # Department donut chart
         "department_labels": json.dumps(department_labels),
         "department_ticket_data": json.dumps(department_ticket_data),
+                # Agent Performance chart
+        "agent_labels": json.dumps(agent_labels),
+        "agent_values": json.dumps(agent_values),
 
         # Timeline
         "activities": activities,
@@ -308,7 +336,42 @@ def _supervisor_dashboard(request):
         status=Ticket.Status.RESOLVED,
         updated_at__date=timezone.now().date(),
     ).count()
+    # Department workload chart
+    department_data = (
+        tickets
+        .filter(department__isnull=False)
+        .values("department__name")
+        .annotate(ticket_count=Count("id"))
+        .order_by("department__name")
+    )
 
+    department_labels = [
+        item["department__name"]
+        for item in department_data
+    ]
+
+    department_values = [
+        item["ticket_count"]
+        for item in department_data
+    ]
+      # Ticket volume trend chart
+    volume_data = (
+        tickets
+        .values("created_at__date")
+        .annotate(ticket_count=Count("id"))
+        .order_by("created_at__date")
+    )
+
+    volume_labels = [
+        item["created_at__date"].strftime("%Y-%m-%d")
+        for item in volume_data
+    ]
+
+    volume_values = [
+        item["ticket_count"]
+        for item in volume_data
+    ]
+       
     recent_history = (
         TicketHistory.objects.select_related("ticket", "actor")
         .order_by("-created_at")[:8]
@@ -325,6 +388,10 @@ def _supervisor_dashboard(request):
         "resolved_today": resolved_today,
         "unassigned_tickets": unassigned[:8],
         "recent_history": recent_history,
+         "department_labels": department_labels,
+        "department_values": department_values,
+          "volume_labels": volume_labels,
+        "volume_values": volume_values,
     })
 
 

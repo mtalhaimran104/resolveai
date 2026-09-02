@@ -1929,9 +1929,16 @@ def critical_ticket_list(request):
         )
 
     tickets = _filter_tickets(
+    request,
+    tickets,
+)
+
+
+    tickets = _filter_tickets(
         request,
         tickets,
     )
+
 
     page_obj = _paginate(
         request,
