@@ -37,7 +37,7 @@ services:
     build:
       context: ./ai_service
     ports:
-      - "8001:8000"
+      - "8002:8000"
     volumes:
       - ./ai_service/app/models:/app/app/models
       - ./data:/data:ro

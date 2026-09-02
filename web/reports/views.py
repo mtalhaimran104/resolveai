@@ -1384,14 +1384,21 @@ def category_report(request):
 # ---------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------
+# AI ACCURACY REPORT
+# ---------------------------------------------------------------------
+
+
 @admin_required
 def ai_accuracy_report(request):
 
     """
     AI Accuracy report.
 
-    Classification accuracy is represented by the average AI confidence
-    available for each ticket category. This uses real Ticket data.
+    Uses real average AI confidence when available.
+
+    If no AI confidence has been recorded yet, demo values are used
+    so the dashboard/report does not appear empty.
     """
 
     category_rows = (
@@ -1465,6 +1472,50 @@ def ai_accuracy_report(request):
             )
         )
 
+    # -------------------------------------------------------------
+    # DEMO FALLBACK
+    #
+    # If there is currently no AI confidence data in the database,
+    # use the existing ticket categories with realistic demo accuracy.
+    # -------------------------------------------------------------
+
+    classification_accuracy_is_demo = False
+
+    if not classification_labels:
+
+        categories = (
+            TicketCategory.objects
+            .filter(is_active=True)
+            .order_by("name")
+        )
+
+        demo_accuracy_values = [
+            94.0,
+            91.0,
+            89.0,
+            87.0,
+            85.0,
+            92.0,
+            88.0,
+            90.0,
+            86.0,
+            93.0,
+        ]
+
+        for index, category in enumerate(categories):
+
+            classification_labels.append(
+                category.name
+            )
+
+            classification_accuracy.append(
+                demo_accuracy_values[
+                    index % len(demo_accuracy_values)
+                ]
+            )
+
+        classification_accuracy_is_demo = True
+
     context = {
         "page_title": "AI Accuracy",
 
@@ -1476,8 +1527,9 @@ def ai_accuracy_report(request):
             classification_accuracy
         ),
 
-        # This is not ground-truth classification accuracy.
-        "classification_accuracy_is_demo": False,
+        "classification_accuracy_is_demo": (
+            classification_accuracy_is_demo
+        ),
     }
 
     return render(
@@ -1485,7 +1537,6 @@ def ai_accuracy_report(request):
         "reports/ai-accuracy-report.html",
         context,
     )
-
 
 # ---------------------------------------------------------------------
 # CUSTOMER SATISFACTION REPORT
