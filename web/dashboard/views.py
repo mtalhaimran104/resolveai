@@ -226,7 +226,41 @@ def _supervisor_dashboard(request):
         status=Ticket.Status.RESOLVED,
         updated_at__date=timezone.now().date(),
     ).count()
+    # Department workload chart
+    department_data = (
+        tickets
+        .filter(department__isnull=False)
+        .values("department__name")
+        .annotate(ticket_count=Count("id"))
+        .order_by("department__name")
+    )
 
+    department_labels = [
+        item["department__name"]
+        for item in department_data
+    ]
+
+    department_values = [
+        item["ticket_count"]
+        for item in department_data
+    ]
+      # Ticket volume trend chart
+    volume_data = (
+        tickets
+        .values("created_at__date")
+        .annotate(ticket_count=Count("id"))
+        .order_by("created_at__date")
+    )
+
+    volume_labels = [
+        item["created_at__date"].strftime("%Y-%m-%d")
+        for item in volume_data
+    ]
+
+    volume_values = [
+        item["ticket_count"]
+        for item in volume_data
+    ]
     recent_history = (
         TicketHistory.objects.select_related("ticket", "actor")
         .order_by("-created_at")[:8]
@@ -243,6 +277,10 @@ def _supervisor_dashboard(request):
         "resolved_today": resolved_today,
         "unassigned_tickets": unassigned[:8],
         "recent_history": recent_history,
+         "department_labels": department_labels,
+        "department_values": department_values,
+          "volume_labels": volume_labels,
+        "volume_values": volume_values,
     })
 
 
