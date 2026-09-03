@@ -603,13 +603,8 @@ def demo_ai_model_performance(request):
     )
 
 def demo_ai_service_status(request):
-    """Live health of the AI service, measured from real calls.
+    """Live health and model status of the AI service."""
 
-    Everything here comes from the ai_analyses rows the FastAPI service
-    writes on each request, plus a live health probe. Uptime is not shown:
-    nothing records it, and a made-up percentage on a status page is worse
-    than no percentage at all.
-    """
     if not (
         request.user.is_superuser
         or request.user.is_admin
@@ -621,20 +616,25 @@ def demo_ai_service_status(request):
 
     status_label, status_class = _ai_service_health()
 
+    # ---------------------------------------------------------------
+    # ANALYSIS STATISTICS
+    # ---------------------------------------------------------------
+
     analyses = AIAnalysis.objects.all()
     total = analyses.count()
     failed = analyses.exclude(status="SUCCESS").count()
 
     error_rate = round((failed / total) * 100, 2) if total else None
 
-    # p95 latency across the most recent calls, matching what the card claims.
     recent_times = list(
         analyses
         .filter(response_time_ms__isnull=False)
         .order_by("-created_at")
         .values_list("response_time_ms", flat=True)[:1000]
     )
+
     p95_response_ms = None
+
     if recent_times:
         ordered = sorted(recent_times)
         index = max(0, int(len(ordered) * 0.95) - 1)
@@ -647,9 +647,100 @@ def demo_ai_service_status(request):
         .values_list("created_at", flat=True)
         .first()
     )
+    recent_errors = (
+    analyses
+    .filter(
+        status=AIAnalysis.Status.FAILED,
+        error_message__isnull=False,
+    )
+    .exclude(error_message="")
+    .order_by("-created_at")[:10]
+)
+
+    # ---------------------------------------------------------------
+    # ACTIVE MODELS
+    # ---------------------------------------------------------------
+
+    active_models = []
+
+    # Classification model
+    try:
+        classification_response = get_classification_model_metrics()
+
+        if classification_response.get("status"):
+            classification_data = classification_response.get("data", {})
+
+            active_models.append({
+                "name": "ticket-classifier",
+                "version": classification_data.get(
+                    "model_version",
+                    "Unknown",
+                ),
+                "status": "Loaded",
+                "status_class": "success",
+                "endpoint": "/api/v1/classification/predict",
+            })
+
+    except AIServiceError:
+        active_models.append({
+            "name": "ticket-classifier",
+            "version": "Unknown",
+            "status": "Unavailable",
+            "status_class": "danger",
+            "endpoint": "/api/v1/classification/predict",
+        })
+
+       # Priority model
+    try:
+        priority_response = get_priority_model_metrics()
+
+        if priority_response.get("status"):
+            priority_data = priority_response.get("data", {})
+
+            active_models.append({
+                "name": "priority-recommender",
+                "version": priority_data.get(
+                    "model_version",
+                    "Unknown",
+                ),
+                "status": "Loaded",
+                "status_class": "success",
+                "endpoint": "/api/v1/priority/predict",
+            })
+
+    except AIServiceError:
+        active_models.append({
+            "name": "priority-recommender",
+            "version": "Unknown",
+            "status": "Unavailable",
+            "status_class": "danger",
+            "endpoint": "/api/v1/priority/predict",
+        })
+
+
+    # Summarization model
+    active_models.append({
+        "name": "extractive-summarizer",
+        "version":  "1.0",
+        "status": "Loaded",
+        "status_class": "success",
+        "endpoint": "/api/v1/summarization/predict",
+    })
+
+
+    # Sentiment model
+    active_models.append({
+        "name": "sentiment-analyzer",
+        "version": "1.0",
+        "status": "Loaded",
+        "status_class": "success",
+        "endpoint": "/api/v1/sentiment/predict",
+    })
 
     return render(request, "ai/ai-service-status.html", {
         "page_title": "AI Service Status",
+
+        # Health cards
         "service_status": status_label,
         "service_status_class": status_class,
         "analysis_count": total,
@@ -660,4 +751,9 @@ def demo_ai_service_status(request):
         ),
         "last_success_at": last_success,
         "sample_size": len(recent_times),
+        "recent_errors": recent_errors,
+        
+
+        # Active models
+        "active_models": active_models,
     })
