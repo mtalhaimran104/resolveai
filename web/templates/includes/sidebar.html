@@ -129,6 +129,17 @@
               <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
             </a>
           </li>
+
+          <!-- ===================================================== -->
+          <!-- MY KNOWLEDGE BASE CONVERSATION (ADDED)               -->
+          <!-- ===================================================== -->
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_conversation' %}" class="nav-link {% if current == 'public_knowledge_conversation' %}active{% endif %}">
+              <i class="nav-icon bi bi-chat-dots"></i>
+              <p>Knowledge Conversation</p>
+            </a>
+          </li>
+
 <li class="nav-header">REPORTS</li>
 
 <li class="nav-item">
@@ -267,6 +278,21 @@
             </a>
           </li>
           
+          <!-- ===================================================== -->
+          <!-- MY KNOWLEDGE BASE CONVERSATION (ADDED - SUPERVISOR)  -->
+          <!-- ===================================================== -->
+          <li class="nav-header">KNOWLEDGE BASE</li>
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'public_knowledge_base' %}active{% endif %}">
+              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_conversation' %}" class="nav-link {% if current == 'public_knowledge_conversation' %}active{% endif %}">
+              <i class="nav-icon bi bi-chat-dots"></i>
+              <p>Knowledge Conversation</p>
+            </a>
+          </li>
 
         {% elif user.has_role_agent %}
 
@@ -327,6 +353,16 @@
             </a>
           </li>
 
+          <!-- ===================================================== -->
+          <!-- MY KNOWLEDGE BASE CONVERSATION (ADDED - AGENT)       -->
+          <!-- ===================================================== -->
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_conversation' %}" class="nav-link {% if current == 'public_knowledge_conversation' %}active{% endif %}">
+              <i class="nav-icon bi bi-chat-dots"></i>
+              <p>Knowledge Conversation</p>
+            </a>
+          </li>
+
           <li class="nav-header">AI &amp; AUTOMATION</li>
           <li class="nav-item">
             <a href="{% url 'demo_ai_overview' %}" class="nav-link {% if current == 'demo_ai_overview' %}active{% endif %}">
@@ -372,6 +408,22 @@
             </a>
           </li>
 
+          <!-- ===================================================== -->
+          <!-- MY KNOWLEDGE BASE CONVERSATION (ADDED - REQUESTER)   -->
+          <!-- ===================================================== -->
+          <li class="nav-header">KNOWLEDGE BASE</li>
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_base' %}" class="nav-link {% if current == 'public_knowledge_base' %}active{% endif %}">
+              <i class="nav-icon bi bi-globe2"></i><p>Public Knowledge Base</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'public_knowledge_conversation' %}" class="nav-link {% if current == 'public_knowledge_conversation' %}active{% endif %}">
+              <i class="nav-icon bi bi-chat-dots"></i>
+              <p>Knowledge Conversation</p>
+            </a>
+          </li>
+
         {% endif %}
 
         {% endwith %}
@@ -390,6 +442,3 @@
   </div>
 </aside>
 <!--end::Sidebar-->
-
-
-

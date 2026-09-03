@@ -1,6 +1,5 @@
-﻿# app/main.py
-
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import (
     classification,
@@ -8,6 +7,7 @@ from app.api.routers import (
     faq,
     sentiment,
     summarization,
+    student_query,
 )
 
 
@@ -26,33 +26,31 @@ app = FastAPI(
 
 
 # ============================================================
+# CORS CONFIGURATION
+# ============================================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ============================================================
 # AI ENDPOINTS
 # ============================================================
 
-app.include_router(
-    classification.router
-)
-app.include_router(
-    priority_prediction.router
-)
-
-app.include_router(
-    faq.router
-)
-app.include_router(
-    classification.router
-)
-app.include_router(
-    priority_prediction.router
-)
-
-app.include_router(
-    sentiment.router
-)
-
-app.include_router(
-    summarization.router
-)
+app.include_router(classification.router)
+app.include_router(priority_prediction.router)
+app.include_router(faq.router)
+app.include_router(sentiment.router)
+app.include_router(summarization.router)
+app.include_router(student_query.router)
 
 
 # ============================================================
@@ -76,5 +74,3 @@ def hello():
     return {
         "message": "Hello World"
     }
-
-

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import views_conversation
 
 
 urlpatterns = [
@@ -46,9 +47,17 @@ urlpatterns = [
         views.public_article_detail,
         name="public_article_detail",
     ),
+
+    # My Knowledge Base Conversation
     path(
-    "knowledge/<int:pk>/versions/",
-    views.article_versions,
-    name="knowledge_article_versions",
+        "conversation/",
+        views_conversation.public_knowledge_conversation,
+        name="public_knowledge_conversation",
+    ),
+
+    path(
+        "knowledge/<int:pk>/versions/",
+        views.article_versions,
+        name="knowledge_article_versions",
     ),
 ]

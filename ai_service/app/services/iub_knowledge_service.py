@@ -990,6 +990,39 @@ def out_of_domain_answer():
 
 
 # ============================================================
+# PROGRAM-SPECIFIC QUERY DETECTION
+# ============================================================
+
+def is_program_specific_query(query):
+
+    q = normalize_query(query)
+
+    program_signals = [
+        "bs",
+        "ms",
+        "mphil",
+        "m phil",
+        "phd",
+        "ph d",
+        "bachelor",
+        "bachelors",
+        "master",
+        "masters",
+        "undergraduate program",
+        "undergraduate programs",
+        "graduate program",
+        "graduate programs",
+        "degree program",
+        "degree programs",
+    ]
+
+    return any(
+        contains_keyword(q, [signal])
+        for signal in program_signals
+    )
+
+
+# ============================================================
 # BROAD PROGRAM QUERY DETECTION
 # ============================================================
 
@@ -1244,9 +1277,10 @@ def search_iub_programs(query: str):
     # QUERY TYPE
     # ========================================================
 
-    query_type = detect_query_type(
-        query
-    )
+    if is_program_specific_query(query):
+        query_type = "program"
+    else:
+        query_type = detect_query_type(query)
 
     # ========================================================
     # DIRECT ANSWERS

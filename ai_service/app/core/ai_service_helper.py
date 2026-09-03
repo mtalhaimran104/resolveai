@@ -35,6 +35,37 @@ class AIServiceHelper:
         return ticket
 
     @staticmethod
+    def getKnowledgeBaseArticles():
+        """
+        Return published Knowledge Base articles enabled
+        for AI FAQ retrieval.
+        """
+        knowledge_query = text(
+            """
+            SELECT
+                id,
+                title,
+                slug,
+                content,
+                excerpt,
+                category_id,
+                status,
+                is_public,
+                include_in_ai_knowledge_base
+            FROM knowledge_articles
+            WHERE status = 'PUBLISHED'
+              AND is_public = 1
+              AND include_in_ai_knowledge_base = 1
+            ORDER BY updated_at DESC
+            """
+        )
+
+        with engine.connect() as connection:
+            return connection.execute(
+                knowledge_query
+            ).mappings().all()
+
+    @staticmethod
     def getTicketTextById(ticket_id):
         ticket = AIServiceHelper.getTicketDetailsById(ticket_id)
 

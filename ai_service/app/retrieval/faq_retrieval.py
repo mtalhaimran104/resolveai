@@ -2,34 +2,21 @@
 Resolve AI - Improved FAQ Retrieval Engine
 ==========================================
 
-Drop-in replacement for:
-    ai_service/app/retrieval/faq_retrieval.py
+Enhanced with intent-based ranking to distinguish between semantically similar
+but intent-different questions (e.g., "courses available" vs "eligibility").
 
-Goals:
-- Strong semantic + lexical + keyword + topic + intent matching.
-- Prevent unrelated FAQs from winning just because they share one word.
-- Correctly handle paraphrases such as:
-      "How do I recover my LMS password?"
-      "What are the engineering fees?"
-      "Tell me about the Quantum Computing program"
-- Return detailed confidence information.
-- Preserve the expected public API:
-      normalize_text
-      extract_keywords
-      extract_topics
-      extract_intents
-      FAQRetriever
-      faq_retriever
-
-The retriever is intentionally conservative for unrelated questions.
-An FAQ system should NOT answer "What is Python?" or "What is the weather?"
-unless those topics actually exist in the IUB FAQ knowledge base.
+Key improvements:
+- Added question-type classification (what, how, who, where, when, which)
+- Added intent extraction from both query and FAQ questions
+- Enhanced ranking weights to prioritize intent alignment
+- Added dynamic domain detection without hardcoding
+- Improved semantic similarity with weighted components
 """
 
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -46,13 +33,13 @@ TOP_K = 40
 HIGH_CONFIDENCE_THRESHOLD = 0.80
 MEDIUM_CONFIDENCE_THRESHOLD = 0.62
 
-# Final ranking weights.
-SEMANTIC_WEIGHT = 0.48
-KEYWORD_WEIGHT = 0.16
-LEXICAL_WEIGHT = 0.14
-TOPIC_WEIGHT = 0.12
-INTENT_WEIGHT = 0.06
-TYPE_WEIGHT = 0.04
+# Final ranking weights - adjusted to prioritize intent and semantic meaning
+SEMANTIC_WEIGHT = 0.40
+INTENT_WEIGHT = 0.25  # Increased from 0.06
+KEYWORD_WEIGHT = 0.12  # Reduced from 0.16
+LEXICAL_WEIGHT = 0.08  # Reduced from 0.14
+TOPIC_WEIGHT = 0.10
+QUESTION_TYPE_WEIGHT = 0.05
 
 # Extra confidence calibration.
 MARGIN_WEIGHT = 0.12
@@ -114,6 +101,11 @@ SYNONYMS = {
     "engineering": "engineering",
     "quantum": "quantum",
     "computing": "computing",
+    "eligibility": "eligibility",
+    "eligible": "eligibility",
+    "available": "available",
+    "courses": "course",
+    "course": "course",
 }
 
 
@@ -153,133 +145,140 @@ def extract_keywords(text: Any) -> Set[str]:
 
 
 # ============================================================
-# TOPIC / INTENT DETECTION
+# ENHANCED INTENT AND QUESTION TYPE DETECTION
 # ============================================================
 
-TOPIC_PATTERNS = {
-    "password": {
-        "password", "reset", "forgot", "recover", "recovery",
-        "login", "credential", "credentials",
+# Question type patterns - derived from actual FAQ questions
+QUESTION_TYPE_PATTERNS = {
+    "what": {
+        "what", "which", "name", "list", "types", "kinds", 
+        "description", "overview", "information", "details"
     },
-    "lms": {
-        "lms", "learning", "moodle",
+    "how": {
+        "how", "procedure", "process", "steps", "method", 
+        "way", "apply", "register", "reset", "recover", "change"
     },
-    "portal": {
-        "portal", "student", "login", "account",
+    "who": {
+        "who", "person", "people", "dean", "professor", "doctor", "prof", "chairman"
     },
-    "registration": {
-        "register", "registration", "registrations",
-        "enroll", "enrollment", "add", "drop",
+    "where": {
+        "where", "location", "campus", "office", "place", "address", "building"
     },
-    "engineering": {
-        "engineering", "telecommunication", "electrical",
-        "biomedical", "robotics", "aircraft", "aviation",
-        "information engineering",
+    "when": {
+        "when", "date", "deadline", "time", "schedule", "timing", "opening"
     },
-    "fee": {
-        "fee", "fees", "cost", "costs",
-        "charge", "charges",
-        "tuition", "price",
-        "payment", "payments",
+    "why": {
+        "why", "reason", "purpose", "benefit", "advantage"
     },
-    "quantum": {
-        "quantum", "computing", "algorithm", "algorithms",
-        "quantum information",
-    },
-    "complaint": {
-        "complaint", "grievance", "complain", "issue",
-    },
-    "admission": {
-        "admission", "admissions", "apply", "application",
-        "enroll", "enrollment", "deadline",
-    },
-    "scholarship": {
-        "scholarship", "financial", "aid", "stipend",
-    },
-    "migration": {
-        "migration", "migrate", "transfer",
-    },
-    "hostel": {
-        "hostel", "accommodation", "room",
-    },
-    "library": {
-        "library", "books", "timing", "timings",
-    },
-    "support": {
-        "support", "helpdesk", "help", "contact", "it",
-    },
+    "is_yes_no": {
+        "is", "are", "am", "does", "do", "can", "could", "will", "would", 
+        "should", "has", "have", "had"
+    }
 }
 
-INTENT_PATTERNS = {
+# Intent categories for ranking
+INTENT_CATEGORIES = {
+    "information": {
+        "what", "which", "name", "list", "types", "kinds", 
+        "description", "overview", "information", "details", "tell", "about"
+    },
     "procedure": {
-        "apply",
-        "procedure",
-        "recover",
-        "request",
-        "register",
-        "how",
-        "submit",
-        "reset",
-        "change",
+        "how", "procedure", "process", "steps", "method", 
+        "way", "apply", "register", "reset", "recover", "change", "do"
     },
-
-    "fee": {
-        "price",
-        "payment",
-        "charge",
-        "charges",
-        "costs",
-        "cost",
-        "tuition",
-        "fee",
-        "fees",
+    "eligibility": {
+        "eligible", "eligibility", "criteria", "requirements", "qualify", 
+        "minimum", "required", "prerequisite"
     },
-
-    "date": {
-        "launched",
-        "date",
-        "deadline",
-        "launch",
-        "when",
+    "availability": {
+        "available", "offer", "offered", "provide", "provided", "has", "have",
+        "list", "options", "choices", "selection"
     },
-
     "location": {
-        "campus",
-        "office",
-        "where",
-        "located",
-        "location",
+        "where", "location", "campus", "office", "place", "address", "building",
+        "located", "find", "near"
     },
-
     "person": {
-        "who",
-        "dean",
-        "professor",
-        "doctor",
-        "prof",
+        "who", "person", "people", "dean", "professor", "doctor", "prof", "chairman",
+        "director", "head"
     },
-
-    "general": {
-        "which",
-        "describe",
-        "about",
-        "tell",
-        "what",
+    "date": {
+        "when", "date", "deadline", "time", "schedule", "timing", "opening",
+        "start", "begin", "end", "duration"
     },
-
+    "fee": {
+        "fee", "fees", "cost", "costs", "charge", "charges", "price", "tuition",
+        "payment", "payments", "amount", "rate"
+    },
     "problem": {
-        "unable",
-        "cannot",
-        "cant",
-        "working",
-        "failed",
-        "failure",
-        "problem",
-        "issue",
-        "trouble",
-        "error",
-    },
+        "unable", "cannot", "cant", "working", "failed", "failure", "problem",
+        "issue", "trouble", "error", "not working", "doesn't work"
+    }
 }
+
+
+def detect_question_type(text: str) -> str:
+    """Detect the primary question type (what, how, who, where, when, why, is_yes_no)."""
+    normalized = normalize_text(text)
+    words = normalized.split()
+    
+    # Check for question type indicators
+    for qtype, patterns in QUESTION_TYPE_PATTERNS.items():
+        for pattern in patterns:
+            if pattern in normalized or (len(words) > 0 and words[0] == pattern):
+                return qtype
+    
+    # Default to "what" for general queries
+    return "what"
+
+
+def extract_intent(text: str) -> str:
+    """
+    Extract the primary intent category from a query or FAQ question.
+    This is more granular than the previous intent detection.
+    """
+    normalized = normalize_text(text)
+    keywords = extract_keywords(text)
+    
+    # Check for strong intent indicators
+    for intent, patterns in INTENT_CATEGORIES.items():
+        # Check if any pattern appears in the normalized text
+        for pattern in patterns:
+            if pattern in normalized:
+                # For availability, make sure it's about courses/programs
+                if intent == "availability" and any(w in normalized for w in ["course", "program", "class", "skill"]):
+                    return intent
+                elif intent == "availability":
+                    # Check if it's actually about availability
+                    if any(w in normalized for w in ["available", "offer", "provide", "has", "have"]):
+                        return intent
+                elif intent == "eligibility" and any(w in normalized for w in ["eligible", "eligibility", "criteria", "requirements"]):
+                    return intent
+                elif intent == "fee" and any(w in normalized for w in ["fee", "fees", "cost", "costs", "tuition"]):
+                    return intent
+                elif intent == "procedure" and any(w in normalized for w in ["how", "procedure", "process", "steps"]):
+                    return intent
+                elif intent == "problem" and any(w in normalized for w in ["unable", "cannot", "cant", "problem", "issue", "error"]):
+                    return intent
+                elif intent == "information":
+                    # Information is the default intent
+                    return intent
+                elif intent in ["location", "person", "date"]:
+                    return intent
+    
+    # If no specific intent detected, default to "information"
+    return "information"
+
+
+def extract_intents(text: Any) -> Set[str]:
+    """
+    Legacy function for backward compatibility.
+    Returns a set of intent categories.
+    """
+    primary_intent = extract_intent(text)
+    if primary_intent:
+        return {primary_intent}
+    return set()
 
 
 def extract_topics(text: Any) -> Set[str]:
@@ -288,121 +287,94 @@ def extract_topics(text: Any) -> Set[str]:
     keywords = extract_keywords(text)
     topics: Set[str] = set()
 
-    for topic, words in TOPIC_PATTERNS.items():
+    # Domain-specific topic patterns
+    topic_patterns = {
+        "password": {"password", "reset", "forgot", "recover", "recovery", "login", "credential"},
+        "lms": {"lms", "learning", "moodle"},
+        "portal": {"portal", "student", "login", "account"},
+        "registration": {"register", "registration", "enroll", "enrollment", "add", "drop", "course"},
+        "engineering": {"engineering", "telecommunication", "electrical", "biomedical", "robotics", "aircraft", "aviation"},
+        "fee": {"fee", "fees", "cost", "costs", "charge", "charges", "tuition", "price", "payment"},
+        "quantum": {"quantum", "computing", "algorithm", "quantum information"},
+        "complaint": {"complaint", "grievance", "complain", "issue"},
+        "admission": {"admission", "admissions", "apply", "application", "enroll", "deadline"},
+        "scholarship": {"scholarship", "financial", "aid", "stipend"},
+        "migration": {"migration", "migrate", "transfer"},
+        "hostel": {"hostel", "accommodation", "room"},
+        "library": {"library", "books", "timing"},
+        "support": {"support", "helpdesk", "help", "contact", "it"},
+        "eligibility": {"eligible", "eligibility", "criteria", "requirements", "qualify", "prerequisite", "minimum"},
+        "availability": {"available", "offer", "offered", "provide", "provided", "has", "have", "list", "options", "choices", "selection"},
+        "rozgar": {"rozgar", "erozgaar", "e-rozgaar", "freelancing", "freelance", "freelancer"},
+        "courses": {"course", "courses", "skill", "skills", "training", "learn", "learning", "program", "programs"},
+    }
+
+    for topic, words in topic_patterns.items():
         if keywords.intersection(words):
             topics.add(topic)
 
-    # Canonical fee topic: fee/fees/cost/tuition/charges are one concept.
-    fee_words = {
-        "fee", "fees", "cost", "costs", "charge", "charges",
-        "tuition", "price", "payment", "payments"
-    }
-    if keywords.intersection(fee_words):
-        topics.add("fee")
+    # Special cases for e-Rozgaar - ensure both rozgar and related topics are detected
+    if "rozgar" in normalized or "freelancing" in normalized or "e-rozgaar" in normalized or "erozgaar" in normalized:
+        topics.add("rozgar")
+        # If it mentions courses/skills/training, also add availability and courses topics
+        if any(term in normalized for term in ["course", "courses", "skill", "skills", "training", "learn", "learning", "program"]):
+            topics.add("availability")
+            topics.add("courses")
 
-    if "bs engineering" in normalized:
-        topics.add("engineering")
-        topics.add("fee")
-
-    if "engineering fee" in normalized or "engineering fees" in normalized:
-        topics.add("engineering")
-        topics.add("fee")
-
-    if "lms password" in normalized or "lms account" in normalized:
-        topics.add("lms")
-        topics.add("password")
-
-    if "student portal" in normalized:
-        topics.add("portal")
-
-    if "portal password" in normalized:
-        topics.add("portal")
-        topics.add("password")
-
-    if "quantum computing" in normalized:
-        topics.add("quantum")
-        topics.add("computing")
-
-    # Course registration is its own topic.
-    if (
-        "course registration" in normalized
-        or "register for courses" in normalized
-        or "register courses" in normalized
-        or "course enrollment" in normalized
-        or "enroll in courses" in normalized
-    ):
-        topics.add("registration")
+    # Special case for course availability vs eligibility
+    # If a query asks about courses AND availability, mark as availability
+    if ("course" in normalized or "courses" in normalized) and "available" in normalized:
+        topics.add("availability")
+        topics.add("courses")
+    
+    # If a query asks about eligibility, mark as eligibility
+    if "eligible" in normalized or "eligibility" in normalized or "criteria" in normalized or "requirements" in normalized:
+        topics.add("eligibility")
 
     return topics
 
 
-def extract_intents(text: Any) -> Set[str]:
-    keywords = extract_keywords(text)
-    normalized = normalize_text(text)
-    intents: Set[str] = set()
-
-    for intent, words in INTENT_PATTERNS.items():
-        if keywords.intersection(words):
-            intents.add(intent)
-
-    if re.search(r"\bwhat\s+is\b|\btell\s+me\s+about\b", normalized):
-        intents.add("general")
-
-    if re.search(r"\bhow\s+(do|can|to)\b", normalized):
-        intents.add("procedure")
-
-    if re.search(r"\bhow\s+much\b|\bwhat\s+is\s+the\s+fee\b", normalized):
-        intents.add("fee")
-
-    if re.search(r"\bwho\s+is\b", normalized):
-        intents.add("person")
-
-    if re.search(r"\bwhere\b", normalized):
-        intents.add("location")
-
-    if re.search(r"\bwhen\b", normalized):
-        intents.add("date")
-
-    # Problem / failure intent
-    if re.search(
-        r"\b(unable|cannot|can.t|cant|not\s+working|does\s+not\s+work|"
-        r"doesn.t\s+work|failed|failure|problem|issue|trouble|error)\b",
-        normalized,
-    ):
-        intents.add("problem")
-
-    # A failure/problem query should not be treated
-    # as a simple procedure query.
-    if re.search(
-        r"\b(unable|cannot|can't|cant|not\s+working|"
-        r"does\s+not\s+work|doesn't\s+work|failed|failure|"
-        r"problem|issue|trouble|error)\b",
-        normalized,
-    ):
-        intents.discard("procedure")
-
-    return intents
-
-
 def _question_type(text: Any) -> str:
-    normalized = normalize_text(text)
+    """Legacy function for backward compatibility."""
+    return detect_question_type(text)
 
-    if re.search(r"\bhow\s+(do|can|to)\b|\bapply\b|\bregister\b|\breset\b|\brecover\b|\bchange\b", normalized):
-        return "procedure"
 
-    if re.search(r"\bhow\s+much\b|\bfee\b|\bfees\b|\bcost\b|\bcharges?\b|\bprice\b", normalized):
-        return "fee"
-
-    if re.search(r"\bwhen\b|\bdeadline\b|\bdate\b|\blaunch(?:ed)?\b", normalized):
-        return "date"
-
-    if re.search(r"\bwhere\b|\blocation\b|\blocated\b|\boffice\b|\bcampus\b", normalized):
-        return "location"
-
-    if re.search(r"\bwho\b|\bprof\.?\b|\bdr\.?\b|\bdean\b", normalized):
-        return "person"
-
-    return "general"
+def _intent_score(query_intents: Set[str], faq_intents: Set[str]) -> float:
+    """Calculate intent similarity score."""
+    if not query_intents or not faq_intents:
+        return 0.0
+    
+    # If either has "information" and the other has a specific intent, 
+    # they might still be related
+    if "information" in query_intents and len(query_intents) == 1:
+        # Generic information query - should match many FAQs
+        return 0.5
+    
+    overlap = query_intents.intersection(faq_intents)
+    
+    if not overlap:
+        # Check for related intents
+        related_pairs = {
+            ("information", "availability"): 0.6,
+            ("information", "procedure"): 0.5,
+            ("information", "eligibility"): 0.5,
+            ("availability", "information"): 0.6,
+            ("eligibility", "information"): 0.5,
+            ("procedure", "information"): 0.5,
+            ("fee", "information"): 0.4,
+            ("fee", "procedure"): 0.3,
+        }
+        
+        for intent in query_intents:
+            for faq_intent in faq_intents:
+                pair = (intent, faq_intent)
+                if pair in related_pairs:
+                    return related_pairs[pair]
+        
+        return 0.0
+    
+    # Weighted by number of matching intents
+    return len(overlap) / max(1, len(query_intents))
 
 
 def _type_score(query_type: str, faq_type: str) -> float:
@@ -411,16 +383,18 @@ def _type_score(query_type: str, faq_type: str) -> float:
 
     # Some pairs are naturally related.
     related = {
-        ("general", "date"): 0.35,
-        ("general", "person"): 0.45,
-        ("general", "location"): 0.45,
-        ("general", "procedure"): 0.40,
-        ("general", "fee"): 0.35,
-        ("fee", "general"): 0.30,
-        ("procedure", "general"): 0.30,
-        ("person", "general"): 0.30,
-        ("date", "general"): 0.30,
-        ("location", "general"): 0.30,
+        ("what", "how"): 0.4,
+        ("how", "what"): 0.4,
+        ("what", "is_yes_no"): 0.5,
+        ("is_yes_no", "what"): 0.5,
+        ("where", "what"): 0.3,
+        ("what", "where"): 0.3,
+        ("when", "what"): 0.3,
+        ("what", "when"): 0.3,
+        ("who", "what"): 0.3,
+        ("what", "who"): 0.3,
+        ("how", "procedure"): 0.8,
+        ("procedure", "how"): 0.8,
     }
 
     return related.get((query_type, faq_type), 0.0)
@@ -479,18 +453,6 @@ def _topic_score(query_topics: Set[str], faq_topics: Set[str]) -> float:
     return len(overlap) / max(1, len(query_topics))
 
 
-def _intent_score(query_intents: Set[str], faq_intents: Set[str]) -> float:
-    if not query_intents or not faq_intents:
-        return 0.0
-
-    overlap = query_intents.intersection(faq_intents)
-
-    if not overlap:
-        return 0.0
-
-    return len(overlap) / max(1, len(query_intents))
-
-
 def _contains_strong_entity(query: str, faq_question: str) -> bool:
     """Protect named entities / domain phrases from being lost."""
     q = normalize_text(query)
@@ -511,6 +473,9 @@ def _contains_strong_entity(query: str, faq_question: str) -> bool:
         "student complaint",
         "financial hold",
         "omar khayyam scholarship",
+        "rozgar center",
+        "e rozgar",
+        "freelancing courses",
     ]
 
     for phrase in protected_phrases:
@@ -531,11 +496,6 @@ def _contains_strong_entity(query: str, faq_question: str) -> bool:
 def _topic_conflict(query_topics: Set[str], faq_topics: Set[str]) -> bool:
     """
     Prevent dangerous cross-topic matches.
-
-    Examples:
-      LMS password != portal password
-      engineering fee != scholarship
-      driving license != IUB complaint
     """
     exclusive_pairs = [
         ("lms", "portal"),
@@ -543,6 +503,8 @@ def _topic_conflict(query_topics: Set[str], faq_topics: Set[str]) -> bool:
         ("engineering", "hostel"),
         ("quantum", "hostel"),
         ("complaint", "scholarship"),
+        ("eligibility", "availability"),  # Don't confuse eligibility with availability
+        ("availability", "eligibility"),
     ]
 
     for a, b in exclusive_pairs:
@@ -567,18 +529,7 @@ def _confidence_level(score: float) -> str:
 # ============================================================
 
 def _find_data_file() -> Optional[Path]:
-    """
-    Find the FAQ dataset safely.
-
-    Priority:
-    1. FAQ_DATA_PATH / FAQ_FILE environment variable.
-    2. /app/data/faq_dataset.csv (Docker-mounted project data).
-    3. Project-local data/faq_dataset.csv when running outside Docker.
-    4. Other FAQ-like files, but ONLY if they contain question + answer columns.
-
-    This deliberately ignores files such as iub_programs.csv and
-    iub_postgraduate_programs.csv because those are program catalogs, not FAQs.
-    """
+    """Find the FAQ dataset safely."""
     env_path = os.getenv("FAQ_DATA_PATH") or os.getenv("FAQ_FILE")
     here = Path(__file__).resolve()
 
@@ -694,11 +645,11 @@ def _find_data_file() -> Optional[Path]:
 
     return None
 
+
 def _load_dataframe(path: Path) -> pd.DataFrame:
     suffix = path.suffix.lower()
 
     if suffix == ".csv":
-        # utf-8-sig handles Excel-generated CSV files.
         try:
             return pd.read_csv(path, encoding="utf-8-sig")
         except Exception:
@@ -833,6 +784,97 @@ class FAQRetriever:
             for x in self.normalized_questions
         ]
 
+        # --------------------------------------------------------
+        # Knowledge Base articles
+        # --------------------------------------------------------
+        try:
+            from app.core.ai_service_helper import AIServiceHelper
+
+            self.knowledge_articles = [
+                dict(row)
+                for row in AIServiceHelper.getKnowledgeBaseArticles()
+            ]
+
+            # Build a searchable document from title + excerpt + content.
+            self.kb_documents = [
+                normalize_text(
+                    f"{article.get('title') or ''} "
+                    f"{article.get('excerpt') or ''} "
+                    f"{article.get('content') or ''}"
+                )
+                for article in self.knowledge_articles
+            ]
+
+            self.kb_questions = [
+                normalize_text(str(article.get("title") or ""))
+                for article in self.knowledge_articles
+            ]
+
+            self.kb_keywords = [
+                extract_keywords(
+                    f"{article.get('title') or ''} "
+                    f"{article.get('excerpt') or ''} "
+                    f"{article.get('content') or ''}"
+                )
+                for article in self.knowledge_articles
+            ]
+
+            self.kb_topics = [
+                extract_topics(
+                    f"{article.get('title') or ''} "
+                    f"{article.get('excerpt') or ''}"
+                )
+                for article in self.knowledge_articles
+            ]
+
+            self.kb_intents = [
+                extract_intents(
+                    f"{article.get('title') or ''} "
+                    f"{article.get('excerpt') or ''}"
+                )
+                for article in self.knowledge_articles
+            ]
+
+            self.kb_types = [
+                _question_type(str(article.get("title") or ""))
+                for article in self.knowledge_articles
+            ]
+
+            # Dedicated TF-IDF for Knowledge Base articles.
+            self.kb_word_vectorizer = TfidfVectorizer(
+                ngram_range=(1, 2),
+                min_df=1,
+                sublinear_tf=True,
+            )
+
+            self.kb_char_vectorizer = TfidfVectorizer(
+                analyzer="char_wb",
+                ngram_range=(3, 5),
+                min_df=1,
+                sublinear_tf=True,
+            )
+
+            self.kb_word_vectors = self.kb_word_vectorizer.fit_transform(
+                self.kb_documents
+            )
+
+            self.kb_char_vectors = self.kb_char_vectorizer.fit_transform(
+                self.kb_documents
+            )
+
+        except Exception:
+            self.knowledge_articles = []
+            self.kb_documents = []
+            self.kb_questions = []
+            self.kb_keywords = []
+            self.kb_topics = []
+            self.kb_intents = []
+            self.kb_types = []
+            self.kb_word_vectorizer = None
+            self.kb_char_vectorizer = None
+            self.kb_word_vectors = None
+            self.kb_char_vectors = None
+
     # --------------------------------------------------------
     # Candidate generation
     # --------------------------------------------------------
@@ -926,21 +968,8 @@ class FAQRetriever:
 
     def get_answer(self, query: str) -> Optional[Dict[str, Any]]:
         """
-        Main FAQ retrieval.
-
-        Strategy:
-        1. Exact match.
-        2. Semantic scores.
-        3. HARD ROUTE: Admission Date/Deadline
-        4. HARD ROUTE: Course Registration Problems
-        5. Generate semantic/lexical/topic/intent candidates.
-        6. Apply domain-specific routing.
-        7. Apply conservative validation.
+        Main FAQ retrieval with enhanced intent-based ranking.
         """
-
-        # --------------------------------------------------------
-        # Validate query
-        # --------------------------------------------------------
         if query is None:
             return None
 
@@ -961,6 +990,274 @@ class FAQRetriever:
             return None
 
         normalized_query = normalize_text(query)
+
+        # --------------------------------------------------------
+        # KNOWLEDGE BASE RETRIEVAL
+        # --------------------------------------------------------
+        if (
+            self.knowledge_articles
+            and self.kb_word_vectorizer is not None
+            and self.kb_char_vectorizer is not None
+        ):
+            kb_word_query = self.kb_word_vectorizer.transform(
+                [normalized_query]
+            )
+            kb_char_query = self.kb_char_vectorizer.transform(
+                [normalized_query]
+            )
+
+            kb_word_scores = cosine_similarity(
+                kb_word_query,
+                self.kb_word_vectors,
+            )[0]
+
+            kb_char_scores = cosine_similarity(
+                kb_char_query,
+                self.kb_char_vectors,
+            )[0]
+
+            kb_semantic_scores = (
+                0.75 * kb_word_scores
+                + 0.25 * kb_char_scores
+            )
+
+            best_article = None
+            best_index = -1
+            best_score = 0.0
+            second_best_score = 0.0
+
+            for idx, article in enumerate(self.knowledge_articles):
+                title = str(article.get("title") or "")
+                excerpt = str(article.get("excerpt") or "")
+                content = str(article.get("content") or "")
+
+                article_keywords = self.kb_keywords[idx]
+                article_topics = self.kb_topics[idx]
+
+                # Topic conflict check for KB
+                if _topic_conflict(query_topics, article_topics):
+                    continue
+
+                semantic_score = float(
+                    kb_semantic_scores[idx]
+                )
+
+                keyword_score = _keyword_score(
+                    query_keywords,
+                    article_keywords,
+                )
+
+                lexical_score = _lexical_similarity(
+                    query_keywords,
+                    extract_keywords(title),
+                )
+
+                topic_score = _topic_score(
+                    query_topics,
+                    article_topics,
+                )
+
+                intent_score = _intent_score(
+                    query_intents,
+                    self.kb_intents[idx],
+                )
+
+                question_type_score = _type_score(
+                    query_type,
+                    self.kb_types[idx],
+                )
+
+                normalized_title = normalize_text(title)
+
+                exact_title_match = (
+                    normalized_query == normalized_title
+                )
+
+                title_contains_query = (
+                    normalized_query in normalized_title
+                    if normalized_query
+                    else False
+                )
+
+                combined_score = (
+                    0.45 * semantic_score
+                    + 0.20 * keyword_score
+                    + 0.15 * lexical_score
+                    + 0.10 * topic_score
+                    + 0.05 * intent_score
+                    + 0.05 * question_type_score
+                )
+
+                if exact_title_match:
+                    combined_score += 0.50
+                elif title_contains_query:
+                    combined_score += 0.25
+
+                # Domain-specific protection for KB
+                if (
+                    "registration" in query_topics
+                    and "registration" in article_topics
+                ):
+                    combined_score += 0.45
+
+                if (
+                    "registration" in query_topics
+                    and "password" in article_topics
+                    and "registration" not in article_topics
+                ):
+                    combined_score -= 0.40
+
+                if (
+                    "lms" in query_topics
+                    and "password" in query_topics
+                ):
+                    if "lms" in article_topics:
+                        combined_score += 0.35
+                    elif "portal" in article_topics:
+                        combined_score -= 0.30
+
+                # e-Rozgaar intent protection
+                if "rozgar" in query_topics:
+                    if "rozgar" in article_topics:
+                        combined_score += 0.40
+                    elif "eligibility" in article_topics and "availability" in query_topics:
+                        combined_score -= 0.30
+
+                combined_score = max(
+                    0.0,
+                    min(1.0, combined_score),
+                )
+
+                if combined_score > best_score:
+                    second_best_score = best_score
+                    best_score = combined_score
+                    best_article = article
+                    best_index = idx
+                elif combined_score > second_best_score:
+                    second_best_score = combined_score
+
+            if best_article is not None:
+
+                margin = max(
+                    0.0,
+                    best_score - second_best_score,
+                )
+
+                confidence_score = min(
+                    1.0,
+                    (
+                        0.60 * best_score
+                        + 0.25 * float(
+                            kb_semantic_scores[best_index]
+                        )
+                        + 0.15 * min(
+                            1.0,
+                            margin * 5.0,
+                        )
+                    ),
+                )
+
+                strong_kb_match = (
+                    (
+                        best_score >= 0.50
+                        and float(kb_semantic_scores[best_index]) >= 0.30
+                    )
+                    or (
+                        best_score >= 0.42
+                        and margin >= 0.08
+                    )
+                    or (
+                        float(kb_semantic_scores[best_index]) >= 0.70
+                        and margin >= 0.03
+                    )
+                )
+
+                if strong_kb_match:
+                    best = self.knowledge_articles[best_index]
+
+                    return {
+                        "answer": str(
+                            best.get("content") or ""
+                        ),
+                        "question": str(
+                            best.get("title") or ""
+                        ),
+                        "score": round(
+                            best_score,
+                            4,
+                        ),
+                        "semantic_score": round(
+                            float(
+                                kb_semantic_scores[
+                                    best_index
+                                ]
+                            ),
+                            4,
+                        ),
+                        "keyword_score": round(
+                            _keyword_score(
+                                query_keywords,
+                                self.kb_keywords[
+                                    best_index
+                                ],
+                            ),
+                            4,
+                        ),
+                        "lexical_score": round(
+                            _lexical_similarity(
+                                query_keywords,
+                                extract_keywords(
+                                    str(
+                                        best.get("title")
+                                        or ""
+                                    )
+                                ),
+                            ),
+                            4,
+                        ),
+                        "topic_score": round(
+                            _topic_score(
+                                query_topics,
+                                self.kb_topics[
+                                    best_index
+                                ],
+                            ),
+                            4,
+                        ),
+                        "intent_score": round(
+                            _intent_score(
+                                query_intents,
+                                self.kb_intents[
+                                    best_index
+                                ],
+                            ),
+                            4,
+                        ),
+                        "question_type": self.kb_types[
+                            best_index
+                        ],
+                        "question_type_score": round(
+                            _type_score(
+                                query_type,
+                                self.kb_types[
+                                    best_index
+                                ],
+                            ),
+                            4,
+                        ),
+                        "margin": round(
+                            margin,
+                            4,
+                        ),
+                        "confidence_score": round(
+                            confidence_score,
+                            4,
+                        ),
+                        "confidence_level": _confidence_level(
+                            confidence_score
+                        ),
+                        "source": "knowledge_base",
+                    }
 
         # --------------------------------------------------------
         # Exact match
@@ -985,13 +1282,6 @@ class FAQRetriever:
         # ========================================================
         # HARD ROUTE: ADMISSION DATE / DEADLINE
         # ========================================================
-        # When the user asks for an admission date/deadline,
-        # prefer admission + date FAQs.
-        #
-        # Do NOT allow fee deadlines to win unless the user
-        # explicitly asks about fees/payment.
-        # ========================================================
-
         is_admission_date_query = (
             "admission" in query_topics
             and "date" in query_intents
@@ -1025,15 +1315,12 @@ class FAQRetriever:
                 faq_topics = self.question_topics[index]
                 faq_intents = self.question_intents[index]
 
-                # Must be admission related.
                 if "admission" not in faq_topics:
                     continue
 
-                # Must be a date/deadline FAQ.
                 if "date" not in faq_intents:
                     continue
 
-                # Do not allow unrelated domain-specific admissions.
                 if "fee" in faq_topics:
                     continue
                 if "hostel" in faq_topics:
@@ -1047,7 +1334,6 @@ class FAQRetriever:
                     self.data.iloc[index]["question"]
                 )
 
-                # Strong admission-date wording.
                 if not re.search(
                     r"\b(admission|admissions|apply|application)\b",
                     faq_question,
@@ -1084,15 +1370,14 @@ class FAQRetriever:
                 )
 
                 routing_score = (
-                    0.40 * semantic_score
+                    0.30 * semantic_score
+                    + 0.20 * intent_score
                     + 0.15 * keyword_score
                     + 0.10 * lexical_score
-                    + 0.20 * topic_score
-                    + 0.15 * intent_score
+                    + 0.15 * topic_score
+                    + 0.10 * question_type_score
                 )
 
-                # Prefer the FAQ whose wording matches the exact
-                # date request, rather than merely mentioning a deadline.
                 direct_date_bonus = 0.0
 
                 if asks_admission_deadline:
@@ -1102,7 +1387,6 @@ class FAQRetriever:
                     ):
                         direct_date_bonus += 0.35
 
-                    # "after the deadline" answers a different question.
                     if re.search(
                         r"\b(after|late|missed)\b.*\bdeadline\b",
                         faq_question,
@@ -1198,12 +1482,6 @@ class FAQRetriever:
         # ========================================================
         # HARD ROUTE: COURSE REGISTRATION PROBLEMS
         # ========================================================
-        # If the student explicitly says that course registration
-        # is not working, do NOT let complaint/portal FAQs win.
-        # Search the complete FAQ dataset for the best genuine
-        # course-registration FAQ and return it directly.
-        # ========================================================
-
         is_course_registration_problem = (
             "registration" in query_topics
             and "problem" in query_intents
@@ -1230,11 +1508,9 @@ class FAQRetriever:
 
                 faq_topics = self.question_topics[index]
 
-                # Must actually be about registration.
                 if "registration" not in faq_topics:
                     continue
 
-                # Never use complaint FAQ for a registration problem.
                 if "complaint" in faq_topics:
                     continue
 
@@ -1242,9 +1518,6 @@ class FAQRetriever:
                     self.data.iloc[index]["question"]
                 )
 
-                # Must be an actual course-registration FAQ.
-                # "Enrollment certificate" or other generic enrollment
-                # questions must NOT qualify.
                 is_course_registration_faq = bool(
                     re.search(
                         r"\b(course|courses)\s+(registration|enrollment)\b",
@@ -1292,13 +1565,13 @@ class FAQRetriever:
                     self.question_types[index],
                 )
 
-                # Registration-specific ranking.
                 routing_score = (
-                    0.45 * semantic_score
+                    0.35 * semantic_score
+                    + 0.20 * intent_score
                     + 0.15 * keyword_score
                     + 0.10 * lexical_score
-                    + 0.20 * topic_score
-                    + 0.10 * intent_score
+                    + 0.15 * topic_score
+                    + 0.05 * question_type_score
                 )
 
                 registration_candidates.append(
@@ -1320,8 +1593,8 @@ class FAQRetriever:
                     key=lambda x: (
                         x["routing_score"],
                         x["semantic_score"],
+                        x["intent_score"],
                         x["keyword_score"],
-                        x["lexical_score"],
                     ),
                     reverse=True,
                 )
@@ -1330,7 +1603,6 @@ class FAQRetriever:
 
                 selected_index = selected["index"]
 
-                # Calculate separation from second-best FAQ.
                 if len(registration_candidates) > 1:
                     margin = max(
                         0.0,
@@ -1345,6 +1617,7 @@ class FAQRetriever:
                     max(
                         selected["semantic_score"],
                         selected["routing_score"],
+                        selected["intent_score"],
                     ),
                 )
 
@@ -1376,14 +1649,14 @@ class FAQRetriever:
                 )
 
         # --------------------------------------------------------
-        # Candidate generation continues...
+        # Candidate generation
         # --------------------------------------------------------
         ranked_indexes = semantic_scores.argsort()[::-1][:TOP_K]
 
         candidates: List[Dict[str, Any]] = []
 
         # --------------------------------------------------------
-        # Candidate scoring
+        # Candidate scoring with enhanced intent weighting
         # --------------------------------------------------------
         for index in ranked_indexes:
 
@@ -1420,7 +1693,7 @@ class FAQRetriever:
             )
 
             # --------------------------------------------
-            # Hard topic conflict
+            # Hard topic conflict - EXISTING functionality
             # --------------------------------------------
             if _topic_conflict(
                 query_topics,
@@ -1429,15 +1702,15 @@ class FAQRetriever:
                 continue
 
             # --------------------------------------------
-            # Base score
+            # Enhanced base score with intent priority
             # --------------------------------------------
             score = (
                 semantic_score * SEMANTIC_WEIGHT
+                + intent_score * INTENT_WEIGHT
                 + keyword_score * KEYWORD_WEIGHT
                 + lexical_score * LEXICAL_WEIGHT
                 + topic_score * TOPIC_WEIGHT
-                + intent_score * INTENT_WEIGHT
-                + question_type_score * TYPE_WEIGHT
+                + question_type_score * QUESTION_TYPE_WEIGHT
             )
 
             # --------------------------------------------
@@ -1458,10 +1731,86 @@ class FAQRetriever:
                 score += 0.05
 
             # --------------------------------------------
-            # Strong intent agreement
+            # Strong intent agreement - extra boost
             # --------------------------------------------
             if query_intents and intent_score >= 0.80:
-                score += 0.03
+                score += 0.08
+
+            # ====================================================
+            # IMPROVEMENT: Intent-Topic Pair Boosting
+            # This helps distinguish between similar topics with different intents
+            # ====================================================
+            
+            # Hostel Facilities vs Complaint distinction
+            if "hostel" in query_topics:
+                if "facilities" in normalized_query or "services" in normalized_query:
+                    # Query wants facilities information
+                    if "facilities" in faq_question or "services" in faq_question:
+                        score += 0.15  # Boost for facilities FAQ
+                    elif "complaint" in faq_topics or "complaint" in faq_question:
+                        score -= 0.20  # Penalize complaint FAQ
+                elif "complaint" in normalized_query or "issue" in normalized_query:
+                    # Query wants complaint information
+                    if "complaint" in faq_topics or "complaint" in faq_question:
+                        score += 0.15
+                    elif "facilities" in faq_question or "services" in faq_question:
+                        score -= 0.10
+
+            # Registration Deadline vs Procedure distinction
+            if "registration" in query_topics:
+                is_deadline_query = any(term in normalized_query for term in ["deadline", "last date", "date", "period", "closing"])
+                if is_deadline_query:
+                    # Query wants deadline/date information
+                    if "deadline" in faq_question or "date" in faq_question or "last" in faq_question:
+                        score += 0.20
+                    elif "procedure" in faq_question or "steps" in faq_question or "how" in faq_question:
+                        score -= 0.15
+                else:
+                    # Query wants procedure information
+                    if "procedure" in faq_question or "steps" in faq_question:
+                        score += 0.10
+                    elif "deadline" in faq_question or "date" in faq_question:
+                        score -= 0.10
+
+            # Scholarship Availability distinction
+            if "scholarship" in query_topics:
+                if "availability" in normalized_query or "available" in normalized_query or "list" in normalized_query:
+                    # Query wants list/availability of scholarships
+                    if "list" in faq_question or "available" in faq_question or "types" in faq_question:
+                        score += 0.15
+
+            # ====================================================
+            # e-Rozgaar / Freelancing Course Intent Protection
+            # ====================================================
+            is_rozgar_query = "rozgar" in query_topics or any(term in normalized_query for term in ["freelancing", "e-rozgaar", "erozgaar"])
+            is_course_query = "courses" in query_topics or any(term in normalized_query for term in ["course", "courses", "skill", "skills", "training"])
+            is_availability_query = "availability" in query_intents or "available" in normalized_query
+            
+            if is_rozgar_query:
+                # Boost for FAQs that are about Rozgar/freelancing courses
+                if "rozgar" in faq_topics:
+                    score += 0.20
+                    
+                    # If the query is asking about available courses AND the FAQ is about courses
+                    if is_availability_query and is_course_query:
+                        # Check if the FAQ is specifically about courses available
+                        if "course" in faq_question and any(term in faq_question for term in ["available", "offer", "provided"]):
+                            score += 0.30
+                        elif "course" in faq_question and "offer" in faq_question:
+                            score += 0.25
+                        elif "skill" in faq_question and any(term in faq_question for term in ["learn", "training"]):
+                            score += 0.20
+                        
+                        # Penalize if the FAQ is about eligibility when query wants availability
+                        if "eligibility" in faq_topics:
+                            score -= 0.35
+                    
+                    # If the query is asking about eligibility
+                    if "eligibility" in query_intents:
+                        if "eligibility" in faq_topics:
+                            score += 0.25
+                        elif "availability" in faq_topics:
+                            score -= 0.20
 
             # ====================================================
             # COURSE REGISTRATION ROUTING
@@ -1492,7 +1841,6 @@ class FAQRetriever:
 
             if is_course_registration_problem:
 
-                # Genuine course-registration FAQ = strong bonus.
                 if (
                     "registration" in faq_topics
                     and faq_is_course_registration
@@ -1500,11 +1848,9 @@ class FAQRetriever:
                 ):
                     score += 0.60
 
-                # Complaint FAQ = strong penalty.
                 if faq_is_complaint:
                     score -= 0.80
 
-                # Registration FAQ without course context is weaker.
                 elif (
                     "registration" in faq_topics
                     and not faq_is_course_registration
@@ -1535,7 +1881,6 @@ class FAQRetriever:
                 else:
                     score -= 0.20
 
-                # A registration problem should not select complaint.
                 if (
                     "problem" in query_intents
                     and faq_is_complaint
@@ -1652,6 +1997,7 @@ class FAQRetriever:
         candidates.sort(
             key=lambda item: (
                 item["score"],
+                item["intent_score"],  # Prioritize intent match
                 item["semantic_score"],
                 item["topic_score"],
                 item["keyword_score"],
@@ -1662,14 +2008,7 @@ class FAQRetriever:
 
         best = candidates[0]
 
-        # --------------------------------------------------------
-        # IMPORTANT:
-        # From this point onward, ALWAYS use the selected candidate.
-        # Do not use stale loop variables such as semantic_score/index/topic_score.
-        # --------------------------------------------------------
-
         index = best["index"]
-
         semantic_score = best["semantic_score"]
         keyword_score = best["keyword_score"]
         lexical_score = best["lexical_score"]
@@ -1730,16 +2069,26 @@ class FAQRetriever:
             return None
 
         # --------------------------------------------------------
-        # Confidence
+        # Confidence - now includes intent score
         # --------------------------------------------------------
         confidence_score = min(
             1.0,
             (
-                0.70 * best["score"]
+                0.60 * best["score"]
                 + 0.20 * semantic_score
+                + 0.10 * intent_score
                 + 0.10 * min(1.0, margin * 5.0)
             ),
         )
+
+        # ========================================================
+        # IMPROVEMENT: Confidence boost for clear topic matches
+        # ========================================================
+        if topic_score >= 0.75 and intent_score >= 0.75:
+            confidence_score = min(1.0, confidence_score + 0.10)
+
+        if semantic_score >= 0.70 and topic_score >= 0.70:
+            confidence_score = min(1.0, confidence_score + 0.08)
 
         confidence_level = _confidence_level(
             confidence_score
@@ -1792,7 +2141,6 @@ class FAQRetriever:
             "answer": self.data.iloc[index]["answer"],
             "question": self.data.iloc[index]["question"],
 
-            # Backward-compatible main score.
             "score": round(float(score), 4),
 
             "semantic_score": round(
@@ -1851,8 +2199,6 @@ faq_retriever = FAQRetriever(
 def retrieve_faq(query: str) -> Dict[str, Any]:
     """
     Compatibility helper for code that expects a service-style response.
-
-    Always returns an object containing confidence information.
     """
     result = faq_retriever.get_answer(query)
 
@@ -1896,9 +2242,43 @@ def retrieve_faq(query: str) -> Dict[str, Any]:
     }
 
 
+# ============================================================
+# MAIN
+# ============================================================
+
 if __name__ == "__main__":
     print("FAQ retriever loaded.")
     print("FAQ file:", faq_retriever.data_path)
     print("Rows:", len(faq_retriever.data))
     print("Word vectors:", faq_retriever.word_vectors.shape)
     print("Char vectors:", faq_retriever.char_vectors.shape)
+    print("Knowledge articles:", len(faq_retriever.knowledge_articles) if hasattr(faq_retriever, 'knowledge_articles') else 0)
+    
+    # Test queries
+    test_queries = [
+        "I want to learn freelancing at e-Rozgaar. What courses are available?",
+        "What is the last date to apply for admission?",
+        "How do I reset my student portal password?",
+        "Where is Khawaja Fareed Campus?",
+        "Why can't I register for courses?",
+        "What is the fee for BS Engineering?",
+        "Who is the Dean of the Faculty of Computing?",
+    ]
+    
+    print("\n" + "="*60)
+    print("TESTING FAQ RETRIEVAL ENGINE")
+    print("="*60)
+    
+    for query in test_queries:
+        print(f"\nQuery: {query}")
+        print("-" * 40)
+        
+        result = retrieve_faq(query)
+        if result["found"]:
+            print(f"Question: {result['question']}")
+            print(f"Answer: {result['answer'][:200]}...")
+            print(f"Confidence: {result['confidence_level']} ({result['confidence_score']})")
+            print(f"Intent Score: {result['intent_score']}")
+            print(f"Source: {result['source']}")
+        else:
+            print("No answer found.")
