@@ -1,3 +1,4 @@
+from ai.models import AIAnalysis
 from time import perf_counter
 import hashlib
 import json

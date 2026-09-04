@@ -177,3 +177,27 @@ class KnowledgeArticleVersion(models.Model):
 
 #     def __str__(self):
 #         return f"{self.article.title} v{self.version_number}"
+
+
+# ============================================================
+# AI GENERATED FAQ FOR KNOWLEDGE ARTICLES - NEW ADDITION
+# ============================================================
+
+class KnowledgeArticleFAQ(TimeStampedModel):
+    article = models.ForeignKey(
+        KnowledgeArticle,
+        on_delete=models.CASCADE,
+        related_name="ai_faqs",
+    )
+    question = models.TextField()
+    answer = models.TextField()
+    confidence_score = models.FloatField(null=True, blank=True)
+    model_name = models.CharField(max_length=100, blank=True)
+    model_version = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        db_table = "knowledge_article_faqs"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"FAQ for {self.article.title}"

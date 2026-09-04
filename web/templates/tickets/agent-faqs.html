@@ -3,15 +3,537 @@
 {% block page_title %}Suggested FAQs{% endblock %}
 
 {% block content %}
+
+<!-- ============================================================
+     STYLES - ADDED
+============================================================ -->
+<style>
+  .suggested-faq-header {
+    background: linear-gradient(135deg, #f8f9fa, #eef2f7);
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .suggested-faq-header h4 {
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .suggested-faq-header p {
+    margin-bottom: 0;
+    color: #6c757d;
+  }
+
+  .suggested-faq-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    overflow: hidden;
+  }
+
+  .suggested-faq-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .suggested-faq-icon {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #e9f3ff;
+    color: #0d6efd;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .suggested-faq-answer {
+    color: #495057;
+    line-height: 1.7;
+  }
+
+  .suggested-faq-meta {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  /* ============================================================
+     NEW: Beautiful Welcome Banner
+  ============================================================ */
+  .faq-welcome-banner {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border-radius: 16px;
+    padding: 30px 35px;
+    color: white;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(13, 110, 253, 0.25);
+  }
+
+  .faq-welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 50%;
+    height: 200%;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    transform: rotate(-15deg);
+    pointer-events: none;
+  }
+
+  .faq-welcome-banner h3 {
+    font-weight: 700;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .faq-welcome-banner p {
+    opacity: 0.85;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .faq-welcome-banner .badge-count {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============================================================
+     NEW: Quick Tips Section
+  ============================================================ */
+  .quick-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .quick-tip-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .quick-tip-item:hover {
+    background: white;
+    border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .quick-tip-item .tip-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #e9f3ff;
+    color: #0d6efd;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .quick-tip-item .tip-text {
+    font-size: 13px;
+    color: #495057;
+    line-height: 1.4;
+  }
+
+  .quick-tip-item .tip-text strong {
+    color: #212529;
+  }
+
+  /* ============================================================
+     NEW: FAQ Stats Cards
+  ============================================================ */
+  .faq-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .faq-stat-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .faq-stat-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.06);
+  }
+
+  .faq-stat-card .stat-number {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0d6efd;
+    display: block;
+  }
+
+  .faq-stat-card .stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 2px;
+  }
+
+  /* ============================================================
+     NEW: Empty State Enhancement
+  ============================================================ */
+  .faq-empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    border: 2px dashed #dee2e6;
+    margin-top: 10px;
+  }
+
+  .faq-empty-state .empty-icon {
+    font-size: 48px;
+    color: #adb5bd;
+    margin-bottom: 16px;
+  }
+
+  .faq-empty-state h5 {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 6px;
+  }
+
+  .faq-empty-state p {
+    color: #6c757d;
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 14px;
+  }
+
+  /* ============================================================
+     NEW: FAQ Card Enhancements
+  ============================================================ */
+  .faq-card-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e9f3ff;
+    color: #0d6efd;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .faq-card-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 50px;
+  }
+
+  .faq-source-badge {
+    background: #f1f3f5;
+    color: #495057;
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid #e9ecef;
+  }
+
+  .faq-meta-divider {
+    color: #dee2e6;
+    margin: 0 8px;
+  }
+
+  /* ============================================================
+     NEW: Responsive Adjustments
+  ============================================================ */
+  @media (max-width: 576px) {
+    .faq-welcome-banner {
+      padding: 20px;
+    }
+
+    .faq-welcome-banner h3 {
+      font-size: 18px;
+    }
+
+    .quick-tips-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .faq-stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .suggested-faq-header {
+      padding: 16px;
+    }
+  }
+</style>
+
+<!-- ============================================================
+     NEW: WELCOME BANNER
+============================================================ -->
+<div class="faq-welcome-banner">
+  <h3>
+    <i class="bi bi-lightbulb me-2"></i>
+    Welcome to Suggested FAQs
+  </h3>
+  <p>
+    Get instant answers from our AI-powered Knowledge Base.
+    Below are the most relevant FAQs for your support needs.
+  </p>
+  <div class="badge-count">
+    <i class="bi bi-robot me-1"></i>
+    {{ faqs|length }} AI-curated FAQ{{ faqs|length|pluralize }}
+  </div>
+</div>
+
+<!-- ============================================================
+     NEW: QUICK TIPS
+============================================================ -->
+<div class="quick-tips-grid">
+  <div class="quick-tip-item">
+    <div class="tip-icon">
+      <i class="bi bi-search"></i>
+    </div>
+    <div class="tip-text">
+      <strong>Search first</strong><br>
+      Find answers instantly
+    </div>
+  </div>
+  <div class="quick-tip-item">
+    <div class="tip-icon">
+      <i class="bi bi-chat-dots"></i>
+    </div>
+    <div class="tip-text">
+      <strong>Ask AI</strong><br>
+      Get personalized responses
+    </div>
+  </div>
+  <div class="quick-tip-item">
+    <div class="tip-icon">
+      <i class="bi bi-clock-history"></i>
+    </div>
+    <div class="tip-text">
+      <strong>24/7 Support</strong><br>
+      Always available to help
+    </div>
+  </div>
+  <div class="quick-tip-item">
+    <div class="tip-icon">
+      <i class="bi bi-book"></i>
+    </div>
+    <div class="tip-text">
+      <strong>Verified Sources</strong><br>
+      From official Knowledge Base
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     NEW: STATS CARDS
+============================================================ -->
+{% if faqs %}
+<div class="faq-stats-row">
+  <div class="faq-stat-card">
+    <span class="stat-number">{{ faqs|length }}</span>
+    <span class="stat-label">Total FAQs</span>
+  </div>
+  <div class="faq-stat-card">
+    <span class="stat-number">
+      {% with published=faqs|dictsort:"status" %}
+        {{ faqs|length }}
+      {% endwith %}
+    </span>
+    <span class="stat-label">Published</span>
+  </div>
+  <div class="faq-stat-card">
+    <span class="stat-number">
+      {% with categories=faqs|dictsort:"category" %}
+        {{ categories|length }}
+      {% endwith %}
+    </span>
+    <span class="stat-label">Categories</span>
+  </div>
+  <div class="faq-stat-card">
+    <span class="stat-number">
+      <i class="bi bi-check-circle-fill" style="color: #198754; font-size: 22px;"></i>
+    </span>
+    <span class="stat-label">AI Verified</span>
+  </div>
+</div>
+{% endif %}
+
+<!-- ============================================================
+     HEADER - ADDED
+============================================================ -->
+<div class="suggested-faq-header">
+  <div class="d-flex align-items-center gap-3">
+    <div class="suggested-faq-icon">
+      <i class="bi bi-robot"></i>
+    </div>
+
+    <div>
+      <h4>Suggested FAQs</h4>
+      <p>
+        AI-enabled answers from the Knowledge Base.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     EXISTING ALERT - KEPT AS IS
+============================================================ -->
 <div class="alert alert-info">
   AI-suggested FAQ answers will appear here once the AI integration is connected.
 </div>
+
+<!-- ============================================================
+     COUNT CARD - ADDED
+============================================================ -->
+{% if faqs %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="mb-1">Available Suggestions</h5>
+      <p class="text-secondary mb-0">
+        {{ faqs|length }} Knowledge Base FAQ{{ faqs|length|pluralize }}
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+<!-- ============================================================
+     FAQ CARDS - ENHANCED
+============================================================ -->
 {% for faq in faqs %}
-  <div class="card mb-2">
+  <div class="card mb-2 suggested-faq-card">
     <div class="card-body">
-      <h6>{{ faq.question }}</h6>
-      <p class="mb-0 text-secondary">{{ faq.suggested_answer }}</p>
+
+      <!-- HEADER ROW - ENHANCED -->
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="faq-card-number">{{ forloop.counter }}</span>
+
+          <span class="badge bg-success-subtle text-success faq-card-tag">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            AI Suggested
+          </span>
+        </div>
+
+        <span class="faq-source-badge">
+          <i class="bi bi-book me-1"></i>
+          {{ faq.source }}
+        </span>
+      </div>
+
+      <!-- QUESTION - EXISTING -->
+      <h6 class="fw-bold mb-2">{{ faq.question }}</h6>
+
+      <!-- CATEGORY - ADDED -->
+      {% if faq.category %}
+        <div class="mb-2">
+          <span class="badge bg-secondary-subtle text-secondary faq-card-tag">
+            <i class="bi bi-tag me-1"></i>
+            {{ faq.category }}
+          </span>
+        </div>
+      {% endif %}
+
+      <!-- ANSWER - EXISTING -->
+      <p class="mb-0 text-secondary suggested-faq-answer">{{ faq.suggested_answer }}</p>
+
+      <!-- META FOOTER - ENHANCED -->
+      <div class="mt-3 pt-3 border-top suggested-faq-meta">
+        <span>
+          <i class="bi bi-check-circle me-1 text-success"></i>
+          {{ faq.status }}
+        </span>
+
+        {% if faq.updated_at %}
+          <span class="ms-3">
+            <i class="bi bi-clock me-1"></i>
+            Updated {{ faq.updated_at|date:"M d, Y" }}
+          </span>
+        {% endif %}
+
+        <span class="ms-3">
+          <i class="bi bi-info-circle me-1"></i>
+          Source: Knowledge Base
+        </span>
+      </div>
+
+    </div>
+  </div>
+{% empty %}
+  <!-- ============================================================
+       ENHANCED EMPTY STATE
+  ============================================================ -->
+  <div class="faq-empty-state">
+    <div class="empty-icon">
+      <i class="bi bi-inbox"></i>
+    </div>
+    <h5>No FAQ Suggestions Available</h5>
+    <p>
+      AI-suggested FAQ answers will appear here once the
+      Knowledge Base integration is connected.
+    </p>
+    <div class="mt-3">
+      <span class="badge bg-light text-secondary border">
+        <i class="bi bi-clock me-1"></i>
+        Check back soon
+      </span>
     </div>
   </div>
 {% endfor %}
+
+<!-- ============================================================
+     NEW: FOOTER NOTE
+============================================================ -->
+{% if faqs %}
+<div class="mt-4 text-center">
+  <p class="text-secondary small">
+    <i class="bi bi-shield-check me-1"></i>
+    All answers are sourced from the official IUB Knowledge Base
+    and verified by the ResolveAI system.
+  </p>
+  <p class="text-secondary small">
+    <i class="bi bi-question-circle me-1"></i>
+    Need more help?
+    <a href="#" class="text-decoration-none">Contact Support</a>
+    or
+    <a href="#" class="text-decoration-none">Submit a Ticket</a>
+  </p>
+</div>
+{% endif %}
+
 {% endblock %}

@@ -1,0 +1,1659 @@
+{% extends "base.html" %}
+
+{% block title %}
+    ResolveAI - Knowledge Base
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ============================================================
+       ROOT VARIABLES
+    ============================================================ */
+    :root {
+        --ra-primary: #1a56db;
+        --ra-primary-dark: #0f3a8a;
+        --ra-primary-light: #e8eeff;
+        --ra-accent: #7c3aed;
+        --ra-accent-light: #ede9fe;
+        --ra-success: #059669;
+        --ra-success-light: #ecfdf5;
+        --ra-gradient: linear-gradient(135deg, #1a56db 0%, #7c3aed 100%);
+        --ra-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+        --ra-shadow: 0 4px 20px rgba(26, 86, 219, 0.12);
+        --ra-shadow-lg: 0 10px 40px rgba(26, 86, 219, 0.16);
+        --ra-radius: 16px;
+        --ra-radius-sm: 10px;
+        --ra-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    .ra-kb-navbar {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .ra-kb-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .ra-kb-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--ra-gradient);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3);
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-logo:hover {
+        transform: scale(1.05) rotate(-3deg);
+    }
+
+    .ra-kb-brand-text {
+        background: var(--ra-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .ra-kb-nav-link {
+        color: #4b5563 !important;
+        font-weight: 500;
+        padding: 8px 16px !important;
+        border-radius: var(--ra-radius-sm);
+        transition: var(--ra-transition);
+        position: relative;
+    }
+
+    .ra-kb-nav-link:hover {
+        background: var(--ra-primary-light);
+        color: var(--ra-primary) !important;
+    }
+
+    .ra-kb-nav-link.active {
+        background: var(--ra-primary-light);
+        color: var(--ra-primary) !important;
+        font-weight: 600;
+    }
+
+    .ra-kb-nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background: var(--ra-gradient);
+        border-radius: 4px;
+    }
+
+    .ra-btn-primary {
+        background: var(--ra-gradient);
+        border: none;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: var(--ra-radius-sm);
+        font-weight: 600;
+        transition: var(--ra-transition);
+        box-shadow: 0 2px 8px rgba(26, 86, 219, 0.25);
+    }
+
+    .ra-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(26, 86, 219, 0.35);
+        color: #fff;
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .ra-kb-hero {
+        background: var(--ra-gradient);
+        color: white;
+        text-align: center;
+        padding: 80px 20px 90px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ra-kb-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 60%;
+        height: 200%;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+
+    .ra-kb-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -40%;
+        left: -10%;
+        width: 40%;
+        height: 150%;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+        transform: rotate(10deg);
+        pointer-events: none;
+    }
+
+    .ra-kb-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .ra-kb-hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+    }
+
+    .ra-kb-hero h1 span {
+        background: rgba(255,255,255,0.2);
+        padding: 0 16px;
+        border-radius: 12px;
+        display: inline-block;
+    }
+
+    .ra-kb-hero p {
+        font-size: 19px;
+        opacity: 0.9;
+        margin-bottom: 32px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .ra-kb-hero .badge-featured {
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .ra-kb-search {
+        max-width: 680px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ra-kb-search .input-group {
+        background: white;
+        border-radius: var(--ra-radius);
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-search .input-group:focus-within {
+        box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+        transform: scale(1.01);
+    }
+
+    .ra-kb-search .input-group-text {
+        background: white;
+        border: none;
+        color: #9ca3af;
+        padding-left: 20px;
+        font-size: 1.1rem;
+    }
+
+    .ra-kb-search .form-control {
+        border: none;
+        padding: 16px 20px;
+        font-size: 1rem;
+        background: white;
+        color: #1f2937;
+    }
+
+    .ra-kb-search .form-control:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .ra-kb-search .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .ra-kb-search .btn-search {
+        background: var(--ra-gradient);
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        font-weight: 600;
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-search .btn-search:hover {
+        background: linear-gradient(135deg, #0f3a8a 0%, #6d28d9 100%);
+        transform: scale(1.02);
+    }
+
+    /* ============================================================
+       STATS BAR
+    ============================================================ */
+    .ra-stats-bar {
+        background: white;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        padding: 20px 0;
+    }
+
+    .ra-stats-item {
+        text-align: center;
+    }
+
+    .ra-stats-number {
+        font-size: 28px;
+        font-weight: 800;
+        background: var(--ra-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+    }
+
+    .ra-stats-label {
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+
+    /* ============================================================
+       CATEGORY CARDS
+    ============================================================ */
+    .ra-kb-category-card {
+        border: none;
+        border-radius: var(--ra-radius);
+        padding: 24px;
+        transition: var(--ra-transition);
+        background: white;
+        box-shadow: var(--ra-shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .ra-kb-category-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--ra-shadow-lg);
+        border-color: var(--ra-primary);
+    }
+
+    .ra-kb-category-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: var(--ra-primary-light);
+        color: var(--ra-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-category-card:hover .ra-kb-category-icon {
+        background: var(--ra-gradient);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .ra-kb-category-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .ra-kb-category-count {
+        font-size: 13px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .ra-kb-category-count i {
+        font-size: 12px;
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-category-card:hover .ra-kb-category-count i {
+        transform: translateX(4px);
+    }
+
+    /* ============================================================
+       SECTION HEADERS
+    ============================================================ */
+    .ra-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .ra-section-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ra-section-header h2 i {
+        color: var(--ra-primary);
+    }
+
+    .ra-section-header .see-all {
+        color: var(--ra-primary);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+        transition: var(--ra-transition);
+    }
+
+    .ra-section-header .see-all:hover {
+        color: var(--ra-primary-dark);
+        transform: translateX(4px);
+    }
+
+    /* ============================================================
+       ARTICLE LIST CARDS
+    ============================================================ */
+    .ra-article-list-card {
+        border: none;
+        border-radius: var(--ra-radius);
+        box-shadow: var(--ra-shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        overflow: hidden;
+        height: 100%;
+        transition: var(--ra-transition);
+    }
+
+    .ra-article-list-card:hover {
+        box-shadow: var(--ra-shadow);
+    }
+
+    .ra-article-list-card .card-header {
+        background: white;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        padding: 18px 24px;
+    }
+
+    .ra-article-list-card .card-header h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ra-article-list-card .card-header h3 i {
+        font-size: 18px;
+    }
+
+    .ra-article-list-card .list-group-item {
+        border: none;
+        padding: 14px 24px;
+        transition: var(--ra-transition);
+        background: transparent;
+    }
+
+    .ra-article-list-card .list-group-item:hover {
+        background: var(--ra-primary-light);
+    }
+
+    .ra-article-list-card .list-group-item a {
+        text-decoration: none;
+        color: #1f2937;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ra-article-list-card .list-group-item a .title {
+        font-weight: 500;
+        font-size: 14px;
+        transition: var(--ra-transition);
+    }
+
+    .ra-article-list-card .list-group-item:hover a .title {
+        color: var(--ra-primary);
+    }
+
+    .ra-article-list-card .list-group-item .badge-category {
+        background: var(--ra-primary-light);
+        color: var(--ra-primary);
+        font-weight: 600;
+        font-size: 11px;
+        padding: 4px 12px;
+        border-radius: 50px;
+        white-space: nowrap;
+    }
+
+    .ra-article-list-card .list-group-item .date-tag {
+        color: #9ca3af;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* ============================================================
+       FAQ CARDS
+    ============================================================ */
+    .ra-kb-faq-card {
+        border-radius: var(--ra-radius);
+        overflow: hidden;
+        margin-bottom: 20px;
+        background: white;
+        box-shadow: var(--ra-shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-faq-card:hover {
+        box-shadow: var(--ra-shadow);
+        border-color: var(--ra-primary-light);
+    }
+
+    .ra-kb-faq-grid {
+        display: grid;
+        grid-template-columns: 38% 62%;
+    }
+
+    .ra-kb-question {
+        background: #fafbff;
+        padding: 28px 32px;
+        border-right: 1px solid #f0f1f5;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ra-kb-response {
+        padding: 28px 32px;
+        background: white;
+    }
+
+    .ra-kb-faq-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--ra-primary-light);
+        color: var(--ra-primary);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        width: fit-content;
+    }
+
+    .ra-kb-faq-label i {
+        font-size: 14px;
+    }
+
+    .ra-kb-question h4 {
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 12px;
+        color: #1f2937;
+        flex: 1;
+    }
+
+    .ra-kb-question .meta-info {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .ra-kb-question .meta-info strong {
+        color: #374151;
+        font-weight: 600;
+    }
+
+    .ra-kb-response-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ra-kb-response-label {
+        color: var(--ra-success);
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ra-kb-response-label i {
+        font-size: 18px;
+    }
+
+    .ra-kb-confidence {
+        background: var(--ra-success-light);
+        color: var(--ra-success);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ra-kb-confidence i {
+        font-size: 12px;
+    }
+
+    .ra-kb-response-text {
+        color: #4b5563;
+        line-height: 1.8;
+        font-size: 15px;
+    }
+
+    .ra-kb-response-text p {
+        margin-bottom: 12px;
+    }
+
+    .ra-kb-response-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    .ra-kb-source {
+        border-top: 1px solid #f0f1f5;
+        padding-top: 16px;
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 24px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .ra-kb-source strong {
+        color: #374151;
+    }
+
+    /* ============================================================
+       CONVERSATION
+    ============================================================ */
+    .ra-kb-conversation {
+        border-radius: var(--ra-radius);
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.06);
+        background: white;
+        box-shadow: var(--ra-shadow-sm);
+    }
+
+    .ra-kb-conversation-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid #f0f1f5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fafbff;
+    }
+
+    .ra-kb-conversation-header .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 15px;
+        color: #1f2937;
+    }
+
+    .ra-kb-conversation-header .brand i {
+        color: var(--ra-primary);
+        font-size: 20px;
+    }
+
+    .ra-kb-ready {
+        background: var(--ra-success-light);
+        color: var(--ra-success);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ra-kb-ready .dot {
+        width: 8px;
+        height: 8px;
+        background: var(--ra-success);
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .ra-kb-messages {
+        background: #f9fafb;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-height: 520px;
+        overflow-y: auto;
+    }
+
+    .ra-kb-messages::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .ra-kb-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .ra-kb-messages::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+
+    .ra-kb-message {
+        display: flex;
+        width: 100%;
+        animation: fadeInUp 0.4s ease;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ra-kb-message.student {
+        justify-content: flex-end;
+    }
+
+    .ra-kb-message.ai {
+        justify-content: flex-start;
+    }
+
+    .ra-kb-message-content {
+        max-width: 82%;
+    }
+
+    .ra-kb-sender {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ra-kb-message.ai .ra-kb-sender {
+        justify-content: flex-start;
+    }
+
+    .ra-kb-message.student .ra-kb-sender {
+        justify-content: flex-end;
+    }
+
+    .ra-kb-sender .avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .ra-kb-sender .avatar-student {
+        background: var(--ra-gradient);
+    }
+
+    .ra-kb-sender .avatar-ai {
+        background: #6b7280;
+    }
+
+    .ra-kb-bubble {
+        padding: 14px 20px;
+        line-height: 1.7;
+        border-radius: 16px;
+        font-size: 15px;
+        word-wrap: break-word;
+    }
+
+    .ra-kb-message.student .ra-kb-bubble {
+        background: var(--ra-gradient);
+        color: white;
+        border-radius: 20px 20px 4px 20px;
+        box-shadow: 0 2px 12px rgba(26, 86, 219, 0.25);
+    }
+
+    .ra-kb-message.ai .ra-kb-bubble {
+        background: white;
+        color: #1f2937;
+        border-radius: 20px 20px 20px 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .ra-kb-message-source {
+        background: #f9fafb;
+        border: 1px solid #f0f1f5;
+        border-radius: var(--ra-radius-sm);
+        padding: 14px 18px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #6b7280;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 20px;
+    }
+
+    .ra-kb-message-source strong {
+        color: #374151;
+    }
+
+    .ra-kb-message-source .source-title {
+        grid-column: 1 / -1;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .ra-kb-composer {
+        padding: 16px 24px;
+        background: white;
+        border-top: 1px solid #f0f1f5;
+    }
+
+    .ra-kb-composer .input-group {
+        border-radius: var(--ra-radius-sm);
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+        transition: var(--ra-transition);
+        background: white;
+    }
+
+    .ra-kb-composer .input-group:focus-within {
+        border-color: var(--ra-primary);
+        box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.08);
+    }
+
+    .ra-kb-composer .form-control {
+        border: none;
+        padding: 12px 18px;
+        font-size: 15px;
+        background: transparent;
+    }
+
+    .ra-kb-composer .form-control:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .ra-kb-composer .btn-send {
+        background: var(--ra-gradient);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: var(--ra-transition);
+    }
+
+    .ra-kb-composer .btn-send:hover {
+        background: linear-gradient(135deg, #0f3a8a 0%, #6d28d9 100%);
+        transform: scale(1.02);
+    }
+
+    .ra-kb-composer .btn-send:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ============================================================
+       HELP CTA
+    ============================================================ */
+    .ra-help-cta {
+        background: var(--ra-gradient);
+        border: none;
+        border-radius: var(--ra-radius);
+        padding: 48px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ra-help-cta::before {
+        content: '';
+        position: absolute;
+        top: -60%;
+        right: -20%;
+        width: 60%;
+        height: 200%;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+        transform: rotate(-10deg);
+        pointer-events: none;
+    }
+
+    .ra-help-cta::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 40%;
+        height: 150%;
+        background: rgba(255,255,255,0.03);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .ra-help-cta .content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .ra-help-cta h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .ra-help-cta p {
+        opacity: 0.85;
+        margin-bottom: 24px;
+        font-size: 17px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .ra-help-cta .btn-light {
+        background: white;
+        color: var(--ra-primary);
+        border: none;
+        padding: 12px 32px;
+        font-weight: 700;
+        border-radius: var(--ra-radius-sm);
+        transition: var(--ra-transition);
+        font-size: 16px;
+    }
+
+    .ra-help-cta .btn-light:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        color: var(--ra-primary);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 992px) {
+        .ra-kb-faq-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ra-kb-question {
+            border-right: 0;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .ra-kb-hero h1 {
+            font-size: 36px;
+        }
+
+        .ra-kb-hero {
+            padding: 60px 20px 70px;
+        }
+
+        .ra-kb-source {
+            grid-template-columns: 1fr;
+        }
+
+        .ra-kb-message-source {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .ra-kb-hero h1 {
+            font-size: 28px;
+        }
+
+        .ra-kb-hero p {
+            font-size: 16px;
+        }
+
+        .ra-kb-search .input-group {
+            flex-wrap: nowrap;
+        }
+
+        .ra-kb-search .btn-search {
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+
+        .ra-kb-question {
+            padding: 20px;
+        }
+
+        .ra-kb-response {
+            padding: 20px;
+        }
+
+        .ra-kb-conversation-header {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .ra-stats-item {
+            padding: 8px 0;
+        }
+
+        .ra-help-cta {
+            padding: 32px 20px;
+        }
+
+        .ra-help-cta h2 {
+            font-size: 22px;
+        }
+
+        .ra-kb-messages {
+            padding: 16px;
+            max-height: 400px;
+        }
+
+        .ra-kb-message-content {
+            max-width: 92%;
+        }
+
+        .ra-kb-composer {
+            padding: 12px 16px;
+        }
+
+        .ra-kb-composer .btn-send {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .ra-kb-hero h1 {
+            font-size: 24px;
+        }
+
+        .ra-kb-hero .badge-featured {
+            font-size: 11px;
+            padding: 4px 12px;
+        }
+
+        .ra-kb-search .form-control {
+            font-size: 14px;
+            padding: 12px 16px;
+        }
+
+        .ra-kb-search .btn-search {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .ra-kb-question h4 {
+            font-size: 15px;
+        }
+
+        .ra-kb-response-text {
+            font-size: 14px;
+        }
+
+        .ra-kb-bubble {
+            font-size: 14px;
+            padding: 12px 16px;
+        }
+    }
+
+    /* ============================================================
+       UTILITY
+    ============================================================ */
+    .ra-text-gradient {
+        background: var(--ra-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .ra-bg-gradient {
+        background: var(--ra-gradient);
+    }
+
+    .ra-gap-1 { gap: 4px; }
+    .ra-gap-2 { gap: 8px; }
+    .ra-gap-3 { gap: 12px; }
+
+    .ra-fs-7 { font-size: 13px; }
+
+    .ra-mb-0 { margin-bottom: 0; }
+
+    .ra-text-secondary { color: #6b7280; }
+
+    .ra-border-none { border: none; }
+
+    .ra-shadow-hover {
+        transition: var(--ra-transition);
+    }
+
+    .ra-shadow-hover:hover {
+        box-shadow: var(--ra-shadow);
+    }
+
+    /* Scrollbar for messages container */
+    .ra-scrollbar-thin::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .ra-scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .ra-scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+</style>
+
+
+<!-- ============================================================
+   NAVBAR
+============================================================ -->
+<header class="ra-kb-navbar">
+    <nav class="navbar navbar-expand-md container-fluid px-3 px-lg-5 py-2">
+        <a href="{% url 'dashboard' %}" class="ra-kb-brand navbar-brand">
+            <span class="ra-kb-logo">
+                <i class="bi bi-headset"></i>
+            </span>
+            <span class="ra-kb-brand-text fw-bold">ResolveAI</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#raPublicNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="raPublicNav">
+            <ul class="navbar-nav ms-auto align-items-md-center gap-md-1">
+                <li class="nav-item">
+                    <a href="{% url 'dashboard' %}" class="nav-link ra-kb-nav-link">
+                        <i class="bi bi-house me-1"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'public_knowledge_base' %}" class="nav-link ra-kb-nav-link active">
+                        <i class="bi bi-book me-1"></i> Knowledge Base
+                    </a>
+                </li>
+                <li class="nav-item ms-md-2">
+                    <a href="{% url 'accounts:login' %}" class="btn ra-btn-primary btn-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<!-- ============================================================
+   HERO
+============================================================ -->
+<section class="ra-kb-hero">
+    <div class="ra-kb-hero-content container">
+        <div class="badge-featured">
+            <i class="bi bi-star-fill me-1"></i> AI-Powered Knowledge Base
+        </div>
+        <h1>How can we <span>help</span> you today?</h1>
+        <p>Search the Knowledge Base and find answers to common university questions instantly.</p>
+
+        <form method="get" action="{% url 'public_knowledge_base' %}" class="ra-kb-search">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ request.GET.q|default:'' }}"
+                    class="form-control"
+                    placeholder="Search for an FAQ or article..."
+                    autocomplete="off"
+                >
+                <button type="submit" class="btn btn-search">
+                    <i class="bi bi-arrow-right me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<!-- ============================================================
+   STATS BAR
+============================================================ -->
+<section class="ra-stats-bar">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3 ra-stats-item">
+                <span class="ra-stats-number">{{ articles|length }}</span>
+                <span class="ra-stats-label">Knowledge Articles</span>
+            </div>
+            <div class="col-6 col-md-3 ra-stats-item">
+                <span class="ra-stats-number">{{ articles|length|add:50 }}</span>
+                <span class="ra-stats-label">FAQ Answers</span>
+            </div>
+            <div class="col-6 col-md-3 ra-stats-item">
+                <span class="ra-stats-number">24/7</span>
+                <span class="ra-stats-label">AI Availability</span>
+            </div>
+            <div class="col-6 col-md-3 ra-stats-item">
+                <span class="ra-stats-number">100%</span>
+                <span class="ra-stats-label">Free Access</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+   MAIN CONTENT
+============================================================ -->
+<main class="py-5">
+    <div class="container">
+
+        <!-- =========================================================
+             CATEGORIES
+        ========================================================== -->
+        <section class="mb-5">
+            <div class="ra-section-header">
+                <h2>
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                    Browse by Category
+                </h2>
+            </div>
+
+            <div class="row g-3">
+                {% regroup articles by category as category_list %}
+                {% for category_group in category_list %}
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="#faq" class="ra-kb-category-card">
+                            <span class="ra-kb-category-icon">
+                                <i class="bi bi-folder"></i>
+                            </span>
+                            <div>
+                                <div class="ra-kb-category-name">
+                                    {% if category_group.grouper %}
+                                        {{ category_group.grouper.name }}
+                                    {% else %}
+                                        General
+                                    {% endif %}
+                                </div>
+                                <div class="ra-kb-category-count">
+                                    <span>{{ category_group.list|length }} articles</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-light border text-center py-4">
+                            <i class="bi bi-folder-x fs-3 d-block mb-2 text-secondary"></i>
+                            No Knowledge Base categories are available.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+
+        <!-- =========================================================
+             POPULAR & RECENT
+        ========================================================== -->
+        <div class="row g-4 mb-5">
+            <!-- Popular -->
+            <div class="col-md-6">
+                <div class="ra-article-list-card">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-fire text-danger"></i>
+                            Popular Articles
+                        </h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for article in articles|slice:":5" %}
+                                <div class="list-group-item">
+                                    <a href="{% url 'public_article_detail' slug=article.slug %}">
+                                        <span class="title">{{ article.title }}</span>
+                                        {% if article.category %}
+                                            <span class="badge-category">{{ article.category.name }}</span>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% empty %}
+                                <div class="list-group-item text-secondary text-center py-4">
+                                    No articles available.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent -->
+            <div class="col-md-6">
+                <div class="ra-article-list-card">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-clock-history text-primary"></i>
+                            Recently Updated
+                        </h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for article in articles|slice:":5" %}
+                                <div class="list-group-item">
+                                    <a href="{% url 'public_article_detail' slug=article.slug %}">
+                                        <span class="title">{{ article.title }}</span>
+                                        <span class="date-tag">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            {{ article.updated_at|date:"M d, Y" }}
+                                        </span>
+                                    </a>
+                                </div>
+                            {% empty %}
+                                <div class="list-group-item text-secondary text-center py-4">
+                                    No recently updated articles.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- =========================================================
+             FAQ SECTION
+        ========================================================== -->
+        <section id="faq" class="mb-5">
+            <div class="ra-section-header">
+                <h2>
+                    <i class="bi bi-question-circle-fill"></i>
+                    Frequently Asked Questions
+                </h2>
+                <span class="text-secondary ra-fs-7">
+                    {{ articles|length }} responses
+                </span>
+            </div>
+
+            <p class="text-secondary mb-4">
+                Each question is displayed with its Knowledge Base response and source information.
+            </p>
+
+            {% for faq in articles %}
+                {% if faq.include_in_ai_knowledge_base %}
+                    <article class="ra-kb-faq-card">
+                        <div class="ra-kb-faq-grid">
+                            <!-- Question -->
+                            <div class="ra-kb-question">
+                                <span class="ra-kb-faq-label">
+                                    <i class="bi bi-question-circle"></i>
+                                    FAQ
+                                </span>
+                                <h4>{{ faq.title }}</h4>
+                                <div class="meta-info">
+                                    <span><strong>Category:</strong>
+                                        {% if faq.category %}
+                                            {{ faq.category.name }}
+                                        {% else %}
+                                            General
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Response -->
+                            <div class="ra-kb-response">
+                                <div class="ra-kb-response-header">
+                                    <span class="ra-kb-response-label">
+                                        <i class="bi bi-robot"></i>
+                                        Response
+                                    </span>
+                                    <span class="ra-kb-confidence">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Knowledge Base
+                                    </span>
+                                </div>
+                                <div class="ra-kb-response-text">
+                                    {{ faq.content|safe }}
+                                </div>
+                                <div class="ra-kb-source">
+                                    <div>
+                                        <strong>Source:</strong> {{ faq.title }}
+                                    </div>
+                                    <div>
+                                        <strong>Source Type:</strong> Knowledge Base Article
+                                    </div>
+                                    <div>
+                                        <strong>Status:</strong> {{ faq.status }}
+                                    </div>
+                                    {% if faq.updated_at %}
+                                        <div>
+                                            <strong>Updated:</strong> {{ faq.updated_at|date:"M d, Y" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                {% endif %}
+            {% empty %}
+                <div class="alert alert-light border text-center py-5">
+                    <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                    No FAQ responses are currently available.
+                </div>
+            {% endfor %}
+        </section>
+
+
+        <!-- =========================================================
+             ASK RESOLVEAI
+        ========================================================== -->
+        <section class="mb-5">
+            <div class="ra-section-header">
+                <h2>
+                    <i class="bi bi-chat-dots-fill"></i>
+                    Ask ResolveAI
+                </h2>
+            </div>
+
+            <p class="text-secondary mb-4">
+                Ask a question and view the response together with its Knowledge Base source.
+            </p>
+
+            <div class="ra-kb-conversation">
+                <!-- Header -->
+                <div class="ra-kb-conversation-header">
+                    <div class="brand">
+                        <i class="bi bi-robot"></i>
+                        Knowledge Base Assistant
+                    </div>
+                    <div class="ra-kb-ready">
+                        <span class="dot"></span>
+                        Ready
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="ra-kb-messages ra-scrollbar-thin" id="raKbMessages">
+                    {% for faq in articles %}
+                        {% if faq.include_in_ai_knowledge_base %}
+                            <!-- Student Question -->
+                            <div class="ra-kb-message student">
+                                <div class="ra-kb-message-content">
+                                    <div class="ra-kb-sender">
+                                        <span class="avatar avatar-student">
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+                                        Student
+                                    </div>
+                                    <div class="ra-kb-bubble">{{ faq.title }}</div>
+                                </div>
+                            </div>
+
+                            <!-- AI Response -->
+                            <div class="ra-kb-message ai">
+                                <div class="ra-kb-message-content">
+                                    <div class="ra-kb-sender">
+                                        <span class="avatar avatar-ai">
+                                            <i class="bi bi-robot"></i>
+                                        </span>
+                                        ResolveAI
+                                    </div>
+                                    <div class="ra-kb-bubble">{{ faq.content|safe }}</div>
+                                    <div class="ra-kb-message-source">
+                                        <div class="source-title">
+                                            <i class="bi bi-book me-1"></i> Knowledge Base Source
+                                        </div>
+                                        <div><strong>Source:</strong> {{ faq.title }}</div>
+                                        <div><strong>Category:</strong>
+                                            {% if faq.category %}
+                                                {{ faq.category.name }}
+                                            {% else %}
+                                                General
+                                            {% endif %}
+                                        </div>
+                                        <div><strong>Status:</strong> {{ faq.status }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="text-center text-secondary py-5">
+                            <i class="bi bi-chat fs-1 d-block mb-3 opacity-50"></i>
+                            No FAQ conversations available.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Composer -->
+                <div class="ra-kb-composer">
+                    <form id="raStudentQueryForm">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                id="raStudentQuestion"
+                                class="form-control"
+                                placeholder="Type your question..."
+                                autocomplete="off"
+                                required
+                            >
+                            <button class="btn btn-send" type="submit" id="raAskButton">
+                                <i class="bi bi-send me-1"></i>
+                                Ask
+                            </button>
+                        </div>
+                        <div id="raStudentQueryStatus" class="small text-secondary mt-2 d-none"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================================
+             HELP CTA
+        ========================================================== -->
+        <section>
+            <div class="ra-help-cta">
+                <div class="content">
+                    <h2>
+                        <i class="bi bi-headset me-2"></i>
+                        Still need help?
+                    </h2>
+                    <p>
+                        Can't find the answer? Submit a support ticket and
+                        our support team will help you.
+                    </p>
+                    <a href="{% url 'tickets:ticket_create' %}" class="btn btn-light">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Submit a Ticket
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+
+<!-- ============================================================
+   JAVASCRIPT
+============================================================ -->
+<script>
+(function () {
+    const form = document.getElementById("raStudentQueryForm");
+    const input = document.getElementById("raStudentQuestion");
+    const button = document.getElementById("raAskButton");
+    const messages = document.getElementById("raKbMessages");
+    const status = document.getElementById("raStudentQueryStatus");
+
+    if (!form || !input || !button || !messages) return;
+
+    function addMessage(sender, text, isAI, sourceData) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "ra-kb-message " + (isAI ? "ai" : "student");
+
+        const content = document.createElement("div");
+        content.className = "ra-kb-message-content";
+
+        const senderEl = document.createElement("div");
+        senderEl.className = "ra-kb-sender";
+
+        const avatar = document.createElement("span");
+        avatar.className = "avatar " + (isAI ? "avatar-ai" : "avatar-student");
+        avatar.innerHTML = isAI ? '<i class="bi bi-robot"></i>' : '<i class="bi bi-person-fill"></i>';
+
+        const label = document.createTextNode(isAI ? " ResolveAI" : " Student");
+        senderEl.appendChild(avatar);
+        senderEl.appendChild(label);
+
+        const bubble = document.createElement("div");
+        bubble.className = "ra-kb-bubble";
+        bubble.innerHTML = text;
+
+        content.appendChild(senderEl);
+        content.appendChild(bubble);
+
+        if (isAI && sourceData) {
+            const source = document.createElement("div");
+            source.className = "ra-kb-message-source";
+            source.innerHTML = `
+                <div class="source-title"><i class="bi bi-book me-1"></i> Knowledge Base Source</div>
+                <div><strong>Source:</strong> ${sourceData.source || 'Knowledge Base'}</div>
+                <div><strong>Confidence:</strong> ${sourceData.confidence || 'Low'}</div>
+                <div><strong>Score:</strong> ${sourceData.score || '0.00'}</div>
+                <div><strong>Model:</strong> ${sourceData.model || 'resolveai-faq-retriever'}</div>
+            `;
+            content.appendChild(source);
+        }
+
+        wrapper.appendChild(content);
+        messages.appendChild(wrapper);
+        wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const question = input.value.trim();
+        if (!question) return;
+
+        addMessage("Student", question, false);
+        input.value = "";
+        input.disabled = true;
+        button.disabled = true;
+        status.textContent = "ResolveAI is finding the best answer...";
+        status.classList.remove("d-none");
+
+        try {
+            const response = await fetch("http://localhost:8001/student-query/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            });
+
+            if (!response.ok) {
+                throw new Error("AI service returned HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            const sourceData = {
+                source: data.question || 'Knowledge Base',
+                confidence: data.confidence_level || 'Low',
+                score: Number(data.confidence_score || 0).toFixed(2),
+                model: data.model_name || 'resolveai-faq-retriever'
+            };
+
+            addMessage("ResolveAI", data.answer || "No verified answer was found.", true, sourceData);
+
+        } catch (error) {
+            addMessage("ResolveAI", "Unable to connect to the AI service. Please try again.", true);
+            console.error(error);
+        } finally {
+            input.disabled = false;
+            button.disabled = false;
+            status.classList.add("d-none");
+            input.focus();
+        }
+    });
+
+    // Allow Enter key to submit
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            form.dispatchEvent(new Event("submit"));
+        }
+    });
+})();
+</script>
+
+{% endblock %}
