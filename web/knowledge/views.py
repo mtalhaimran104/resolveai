@@ -48,16 +48,54 @@ def _generate_article_faq(article):
 
 @agent_or_supervisor_required
 def article_list(request):
+    from django.db.models import Q
+    from core.pagination import paginate_queryset
+    from accounts.models import User
     articles = KnowledgeArticle.objects.select_related(
-        "author"
+        "author", "category"
     ).all()
-
+    search_query = request.GET.get("q", "").strip()
+    selected_category = request.GET.get("category", "").strip()
+    selected_status = request.GET.get("status", "").strip()
+    selected_author = request.GET.get("author", "").strip()
+    selected_updated = request.GET.get("updated", "").strip()
+    if search_query:
+        articles = articles.filter(
+            Q(title__icontains=search_query)
+            | Q(excerpt__icontains=search_query)
+            | Q(content__icontains=search_query)
+        )
+    if selected_category.isdigit():
+        articles = articles.filter(category_id=int(selected_category))
+    valid_statuses = {value for value, label in KnowledgeArticle.Status.choices}
+    if selected_status in valid_statuses:
+        articles = articles.filter(status=selected_status)
+    if selected_author.isdigit():
+        articles = articles.filter(author_id=int(selected_author))
+    if selected_updated:
+        articles = articles.filter(updated_at__date=selected_updated)
+    articles = articles.order_by("-updated_at")
+    page_obj = paginate_queryset(articles, request)
+    categories = TicketCategory.objects.filter(
+        is_active=True
+    ).order_by("name")
+    authors = User.objects.filter(
+        knowledge_articles__isnull=False
+    ).distinct().order_by("first_name", "last_name", "username")
     return render(
         request,
         "knowledge-base/article-list.html",
         {
-            "articles": articles,
-            "current": "knowledge_article_list",
+            "articles": page_obj,
+            "page_obj": page_obj,
+            "categories": categories,
+            "statuses": KnowledgeArticle.Status.choices,
+            "authors": authors,
+            "search_query": search_query,
+            "selected_category": selected_category,
+            "selected_status": selected_status,
+            "selected_author": selected_author,
+            "selected_updated": selected_updated,
         },
     )
 
@@ -136,7 +174,6 @@ def article_create(request):
         {
             "form": form,
             "categories": categories,
-            "current": "knowledge_article_create",
         },
     )
 
@@ -441,7 +478,6 @@ def article_detail(request, pk):
         "knowledge-base/article-detail.html",
         {
             "article": article,
-            "current": "knowledge_article_detail",
         },
     )
 
@@ -513,7 +549,6 @@ def article_edit(request, pk):
         "knowledge-base/article-edit.html",
         {
             "article": article,
-            "current": "knowledge_article_edit",
         },
     )
 
@@ -564,9 +599,8 @@ def article_publish(request, pk):
 
 @login_required
 def public_knowledge_base(request):
-    # ============================================================
-    # EXISTING QUERY - KEPT AS IS
-    # ============================================================
+
+    from django.db.models import Q
     articles = KnowledgeArticle.objects.filter(
         status=KnowledgeArticle.Status.PUBLISHED,
         is_public=True,
@@ -582,6 +616,14 @@ def public_knowledge_base(request):
         .order_by("-created_at")
     )
 
+    search_query = request.GET.get("q", "").strip()
+    if search_query:
+        articles = articles.filter(
+            Q(title__icontains=search_query)
+            | Q(excerpt__icontains=search_query)
+            | Q(content__icontains=search_query)
+        )
+
     return render(
         request,
         "knowledge-base/public-knowledge-base.html",
@@ -589,9 +631,9 @@ def public_knowledge_base(request):
             "articles": articles,
             "article_faqs": article_faqs,   # NEW ADDITION
             "current": "public_knowledge_base",
+            "search_query": search_query,
         },
     )
-
 
 @login_required
 def public_article_detail(request, slug):
@@ -607,7 +649,6 @@ def public_article_detail(request, slug):
         "knowledge/public-article-detail.html",
         {
             "article": article,
-            "current": "public_knowledge_base",
         },
     )
 
@@ -628,6 +669,7 @@ def article_versions(request, pk):
         {
             "article": article,
             "versions": versions,
-            "current": "knowledge_article_versions",
         },
     )
+
+

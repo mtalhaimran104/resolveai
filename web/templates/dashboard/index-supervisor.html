@@ -27,7 +27,7 @@
         <div class="row">
 
             <!-- Total Open Queue -->
-            <div class="col-xl-2 col-lg-4 col-6">
+            <div class="col-xl-3 col-lg-3 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-primary shadow-sm">
                         <i class="bi bi-inbox-fill"></i>
@@ -47,7 +47,7 @@
 
 
             <!-- Unassigned -->
-            <div class="col-xl-2 col-lg-4 col-6">
+            <div class="col-xl-3 col-lg-3 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-secondary shadow-sm">
                         <i class="bi bi-question-circle-fill"></i>
@@ -67,7 +67,7 @@
 
 
             <!-- Critical -->
-            <div class="col-xl-2 col-lg-4 col-6">
+            <div class="col-xl-3 col-lg-3 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-danger shadow-sm">
                         <i class="bi bi-exclamation-octagon-fill"></i>
@@ -87,7 +87,7 @@
 
 
             <!-- SLA Warning -->
-            <div class="col-xl-2 col-lg-4 col-6">
+            <div class="col-xl-3 col-lg-3 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-warning shadow-sm">
                         <i class="bi bi-clock-history"></i>
@@ -107,7 +107,7 @@
 
 
             <!-- Active Agents -->
-            <div class="col-xl-2 col-lg-4 col-6">
+            <div class="col-xl-3 col-lg-3 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-success shadow-sm">
                         <i class="bi bi-people-fill"></i>
@@ -126,7 +126,7 @@
             </div>
 
 
-            <!-- Average Resolution -->
+            {% comment %} <!-- Average Resolution -->
             <div class="col-xl-2 col-lg-4 col-6">
                 <div class="info-box">
                     <span class="info-box-icon text-bg-indigo shadow-sm">
@@ -145,7 +145,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> {% endcomment %}
 
 
         <!-- ========================================================= -->
@@ -211,10 +211,10 @@
                     Agent Workload
                 </h3>
 
-                <a href="{% url 'accounts:agent_performance' %}"
+                {% comment %} <a href="{% url 'accounts:agent_performance' %}"
                    class="fs-7">
                     Full Report
-                </a>
+                </a> {% endcomment %}
 
             </div>
 
@@ -490,6 +490,9 @@
 <!-- CHARTS -->
 <!-- ========================================================= -->
 
+{% endblock %}
+
+
 {% block extra_js %}
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"></script>
@@ -590,7 +593,5 @@
     }
 
 </script>
-
-{% endblock %}
 
 {% endblock %}

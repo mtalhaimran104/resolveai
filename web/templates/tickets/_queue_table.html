@@ -2,60 +2,57 @@
 <!--begin::Filter Row-->
 <div class="card mb-3">
   <div class="card-body">
-    <form class="row g-2 align-items-end" role="search" aria-label="Filter tickets">
+    <form class="row g-2 align-items-end" method="get" action="{{ request.path }}" role="search" aria-label="Filter tickets">
       <div class="col-md-3">
         <label class="form-label fs-7 mb-1" for="fltSearch">Search</label>
         <div class="input-group input-group-sm">
           <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="search" class="form-control" id="fltSearch" placeholder="Ticket #, subject, requester…" />
+          <input type="search" class="form-control" id="fltSearch" name="q" value="{{ search_query }}" placeholder="Ticket #, subject, requester..." />
         </div>
       </div>
       <div class="col-md-2">
         <label class="form-label fs-7 mb-1" for="fltStatus">Status</label>
-        <select class="form-select form-select-sm" id="fltStatus">
-          <option selected value="">All Statuses</option>
-          <option>Open</option>
-          <option>In Progress</option>
-          <option>Waiting for User</option>
-          <option>Resolved</option>
-          <option>Closed</option>
-        </select>
+        <select class="form-select form-select-sm" id="fltStatus" name="status">
+            <option value="">All Statuses</option>
+            {% for status_value, status_label in statuses %}
+              <option value="{{ status_value }}" {% if selected_status == status_value %}selected{% endif %}>{{ status_label }}</option>
+            {% endfor %}
+          </select>
       </div>
       <div class="col-md-2">
         {% if show_priority_filter %}
           <label class="form-label fs-7 mb-1" for="fltPriority">Priority</label>
-          <select class="form-select form-select-sm" id="fltPriority">
-            <option selected value="">All Priorities</option>
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Critical</option>
+          <select class="form-select form-select-sm" id="fltPriority" name="priority">
+            <option value="">All Priorities</option>
+            {% for priority_value, priority_label in priorities %}
+              <option value="{{ priority_value }}" {% if selected_priority == priority_value %}selected{% endif %}>{{ priority_label }}</option>
+            {% endfor %}
           </select>
         {% else %}
           <label class="form-label fs-7 mb-1" for="fltDept">Department</label>
-          <select class="form-select form-select-sm" id="fltDept">
-            <option selected value="">All Departments</option>
-            {% for department in all_departments %}
-              <option>{{ department.name }}</option>
+          <select class="form-select form-select-sm" id="fltDept" name="department">
+            <option value="">All Departments</option>
+            {% for department in filter_departments %}
+              <option value="{{ department.pk }}" {% if selected_department == department.pk|stringformat:"s" %}selected{% endif %}>{{ department.name }}</option>
             {% endfor %}
           </select>
         {% endif %}
       </div>
       <div class="col-md-2">
         <label class="form-label fs-7 mb-1" for="fltCategory">Category</label>
-        <select class="form-select form-select-sm" id="fltCategory">
-          <option selected value="">All Categories</option>
-          {% for category in all_categories %}
-            <option>{{ category.name }}</option>
-          {% endfor %}
-        </select>
+        <select class="form-select form-select-sm" id="fltCategory" name="category">
+            <option value="">All Categories</option>
+            {% for category in filter_categories %}
+              <option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+          </select>
       </div>
       <div class="col-md-3">
         <label class="form-label fs-7 mb-1" for="fltDateFrom">Created Between</label>
         <div class="input-group input-group-sm">
-          <input type="date" class="form-control" id="fltDateFrom" aria-label="From date" />
+          <input type="date" class="form-control" id="fltDateFrom" name="created_date" value="{{ selected_created_date }}" aria-label="From date" />
           <span class="input-group-text">to</span>
-          <input type="date" class="form-control" id="fltDateTo" aria-label="To date" />
+          <input type="date" class="form-control" id="fltDateTo" name="updated_date" value="{{ selected_updated_date }}" aria-label="To date" />
         </div>
       </div>
       <div class="col-12 d-flex gap-2 justify-content-end">

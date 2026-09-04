@@ -47,7 +47,7 @@
 <!--begin::Stat Cards-->
 <div class="row">
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-primary shadow-sm">
         <i class="bi bi-people-fill"></i>
@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-success shadow-sm">
         <i class="bi bi-headset"></i>
@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-indigo shadow-sm">
         <i class="bi bi-ticket-detailed-fill"></i>
@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-info shadow-sm">
         <i class="bi bi-envelope-open-fill"></i>
@@ -95,7 +95,7 @@
     </div>
   </div>
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-warning shadow-sm">
         <i class="bi bi-journal-text"></i>
@@ -107,7 +107,7 @@
     </div>
   </div>
 
-  <div class="col-xl-2 col-lg-4 col-6">
+  <div class="col-xl-3 col-lg-3 col-6">
     <div class="info-box">
       <span class="info-box-icon text-bg-secondary shadow-sm">
         <i class="bi bi-robot"></i>
@@ -128,7 +128,7 @@
 <div class="row">
 
   <!--begin::User Growth Chart-->
-  <div class="col-lg-4">
+  <div class="col-lg-6">
     <div class="card mb-4">
       <div class="card-header">
         <h3 class="card-title mb-0">
@@ -146,7 +146,7 @@
   <!--end::User Growth Chart-->
 
   <!--begin::Ticket Trend Chart-->
-  <div class="col-lg-4">
+  <div class="col-lg-6">
     <div class="card mb-4">
       <div class="card-header">
         <h3 class="card-title mb-0">
@@ -162,9 +162,20 @@
     </div>
   </div>
   <!--end::Ticket Trend Chart-->
-
+  <!--begin::Agent Performance Chart-->
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="card-title mb-0">Agent Performance</h3>
+      </div>
+      <div class="card-body">
+        <div id="agentPerformanceChart" style="height: 260px;"></div>
+      </div>
+    </div>
+  </div>
+  <!--end::Agent Performance Chart-->
   <!--begin::Tickets by Department Chart-->
-  <div class="col-lg-4">
+  <div class="col-lg-12">
     <div class="card mb-4">
       <div class="card-header">
         <h3 class="card-title mb-0">Tickets by Department</h3>
@@ -181,7 +192,7 @@
 <div class="row">
 
   <!--begin::System Activity Timeline-->
-  <div class="col-lg-7">
+  <div class="col-lg-12">
     <div class="card mb-4">
       <div class="card-header">
         <h3 class="card-title mb-0">System Activity Timeline</h3>
@@ -514,7 +525,8 @@
       labels:
         {{ department_labels|default:"[]"|safe }},
 
-      colors: ['#0b3d91', '#1b8a5a', '#d98c00', '#4b2ed1'],
+      colors: ['#0b3d91', '#1b8a5a', '#d98c00', '#4b2ed1',
+               '#c0392b', '#0e7490', '#7e22ce', '#64748b'],
 
       legend: {
         position: 'bottom',
@@ -528,6 +540,187 @@
     }).render();
 
   }
+
+
+ // =========================================================
+// AGENT PERFORMANCE
+// =========================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chartElement =
+        document.getElementById("agentPerformanceChart");
+
+    if (!chartElement) {
+        console.error(
+            "ResolveAI: agentPerformanceChart element not found."
+        );
+        return;
+    }
+
+    const agentLabels =
+        {{ agent_labels|default:"[]"|safe }};
+
+    const agentValues =
+        {{ agent_values|default:"[]"|safe }};
+
+    console.log(
+        "Agent Performance labels:",
+        agentLabels
+    );
+
+    console.log(
+        "Agent Performance values:",
+        agentValues
+    );
+
+    /*
+     * No agents at all.
+     */
+    if (
+        !Array.isArray(agentLabels) ||
+        agentLabels.length === 0
+    ) {
+        chartElement.innerHTML =
+            '<div class="text-center text-muted py-5">' +
+            'No agents available.' +
+            '</div>';
+
+        return;
+    }
+
+    /*
+     * Convert values to numbers.
+     */
+    const values = agentValues.map(function (value) {
+
+        const numberValue = Number(value);
+
+        return Number.isFinite(numberValue)
+            ? numberValue
+            : 0;
+    });
+
+    /*
+     * If every agent has zero assigned tickets,
+     * do not give ApexCharts a zero-length bar.
+     *
+     * Display a clean empty state instead.
+     */
+    const hasTickets =
+        values.some(function (value) {
+            return value > 0;
+        });
+
+    if (!hasTickets) {
+
+        let html =
+            '<div class="text-center py-4">' +
+                '<div class="text-muted mb-2">' +
+                    'No tickets assigned to agents yet.' +
+                '</div>' +
+                '<div class="small text-secondary">';
+
+        agentLabels.forEach(function (label) {
+
+            html +=
+                '<div class="mb-1">' +
+                    '<strong>' +
+                        label +
+                    '</strong>' +
+                    ' — 0 tickets' +
+                '</div>';
+
+        });
+
+        html +=
+                '</div>' +
+            '</div>';
+
+        chartElement.innerHTML = html;
+
+        console.log(
+            "ResolveAI: Agent Performance has no non-zero values; showing empty state."
+        );
+
+        return;
+    }
+
+    /*
+     * At least one agent has tickets.
+     * Render the actual chart.
+     */
+
+    const chart =
+        new ApexCharts(
+            chartElement,
+            {
+                chart: {
+                    type: "bar",
+                    height: 260,
+                    toolbar: {
+                        show: false
+                    }
+                },
+
+                series: [
+                    {
+                        name: "Assigned Tickets",
+                        data: values
+                    }
+                ],
+
+                xaxis: {
+                    categories: agentLabels
+                },
+
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 4,
+                        barHeight: "45%"
+                    }
+                },
+
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (value) {
+                        return value;
+                    }
+                },
+
+                tooltip: {
+                    y: {
+                        formatter: function (value) {
+                            return value + " tickets";
+                        }
+                    }
+                },
+
+                legend: {
+                    show: false
+                }
+            }
+        );
+
+    chart.render()
+        .then(function () {
+
+            console.log(
+                "ResolveAI: Agent Performance bar chart rendered successfully."
+            );
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "ResolveAI: Agent Performance chart failed:",
+                error
+            );
+
+        });
+
+});
 
 </script>
 

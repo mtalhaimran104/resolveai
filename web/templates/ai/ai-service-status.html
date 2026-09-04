@@ -49,12 +49,12 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            <span class="ra-health-dot up"></span>
-                            Operational
+                            <span class="ra-health-dot {{ service_status_class|default:'degraded' }}"></span>
+                            {{ service_status|default:'Unknown' }}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            Uptime 99.94% (30d)
+                            {{ analysis_count|default:'0' }} analyses recorded
                         </div>
                     </div>
                 </div>
@@ -69,11 +69,11 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            142 ms
+                            {% if p95_response_ms %}{{ p95_response_ms }} ms{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            p95 across last 1,000 calls
+                            p95 across last {{ sample_size|default:'0' }} calls
                         </div>
                     </div>
                 </div>
@@ -87,12 +87,12 @@
                             Error Rate
                         </div>
 
-                        <div class="ra-stat-value fs-5 text-success">
-                            0.4%
+                        <div class="ra-stat-value fs-5 {{ error_rate_class|default:'text-success' }}">
+                            {% if error_rate is not None %}{{ error_rate }}%{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            Last 24 hours
+                            Across all recorded analyses
                         </div>
                     </div>
                 </div>
@@ -107,11 +107,11 @@
                         </div>
 
                         <div class="ra-stat-value fs-5">
-                            09:52 AM
+                            {% if last_success_at %}{{ last_success_at|date:"h:i A" }}{% else %}&mdash;{% endif %}
                         </div>
 
                         <div class="fs-7 text-secondary mt-1">
-                            2026-07-30
+                            {% if last_success_at %}{{ last_success_at|date:"Y-m-d" }}{% else %}No successful calls yet{% endif %}
                         </div>
                     </div>
                 </div>
@@ -178,99 +178,31 @@
                             </tr>
                         </thead>
 
-                        <tbody>
+                       <tbody>
+    {% for model in active_models %}
+        <tr>
+            <td>{{ model.name }}</td>
 
-                            <tr>
-                                <td>ticket-classifier</td>
-                                <td>v2.3</td>
+            <td>{{ model.version }}</td>
 
-                                <td>
-                                    <span class="badge text-bg-success">
-                                        Loaded
-                                    </span>
-                                </td>
+            <td>
+                <span class="badge text-bg-{{ model.status_class }}">
+                    {{ model.status }}
+                </span>
+            </td>
 
-                                <td>
-                                    <code>
-                                        /models/ticket-classifier/predict
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>priority-recommender</td>
-                                <td>v1.8</td>
-
-                                <td>
-                                    <span class="badge text-bg-success">
-                                        Loaded
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <code>
-                                        /models/priority-recommender/predict
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>sentiment-analyzer</td>
-                                <td>v1.4</td>
-
-                                <td>
-                                    <span class="badge text-bg-success">
-                                        Loaded
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <code>
-                                        /models/sentiment-analyzer/predict
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>response-suggester</td>
-                                <td>v2.0</td>
-
-                                <td>
-                                    <span class="badge text-bg-success">
-                                        Loaded
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <code>
-                                        /models/response-suggester/predict
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>summarizer</td>
-                                <td>v1.2</td>
-
-                                <td>
-                                    <span class="badge text-bg-warning">
-                                        Loading
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <code>
-                                        /models/summarizer/predict
-                                    </code>
-                                </td>
-                            </tr>
-
-                        </tbody>
-
+            <td>
+                <code>{{ model.endpoint }}</code>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4" class="text-center text-secondary py-4">
+                No AI models available.
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
                     </table>
 
                 </div>
@@ -302,60 +234,29 @@
                             </tr>
                         </thead>
 
-                        <tbody>
+                       <tbody>
+    {% for error in recent_errors %}
+        <tr>
+            <td>
+                {{ error.created_at|date:"Y-m-d H:i" }}
+            </td>
 
-                            <tr>
-                                <td>
-                                    2026-07-29 23:41
-                                </td>
+            <td>
+                {{ error.model_name }}
+            </td>
 
-                                <td>
-                                    response-suggester-v2.0
-                                </td>
-
-                                <td>
-                                    <code>
-                                        Timeout waiting for model response after 8000ms
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>
-                                    2026-07-28 14:02
-                                </td>
-
-                                <td>
-                                    sentiment-analyzer-v1.4
-                                </td>
-
-                                <td>
-                                    <code>
-                                        Connection reset by peer while calling /predict
-                                    </code>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>
-                                    2026-07-27 03:15
-                                </td>
-
-                                <td>
-                                    ticket-classifier-v2.3
-                                </td>
-
-                                <td>
-                                    <code>
-                                        503 Service Unavailable from model host
-                                    </code>
-                                </td>
-                            </tr>
-
-                        </tbody>
-
+            <td>
+                <code>{{ error.error_message }}</code>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="3" class="text-center text-secondary py-4">
+                No recent errors.
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
                     </table>
 
                 </div>

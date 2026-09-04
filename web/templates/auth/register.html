@@ -31,7 +31,7 @@ Register | ResolveAI
           {% endif %}
 
           <!--begin::Register Form-->
-          <form action="{% url 'register' %}" method="post" novalidate data-ra-validate>
+          <form action="{% url 'accounts:register' %}" method="post" novalidate data-ra-validate>
             {% csrf_token %}
 
             <!--begin::Name Row-->
@@ -208,7 +208,7 @@ Register | ResolveAI
           <!--end::Register Form-->
 
           <p class="mb-0 mt-3">
-            <a href="{% url 'login' %}" class="text-center"> I already have an account </a>
+            <a href="{% url 'accounts:login' %}" class="text-center"> I already have an account </a>
           </p>
         </div>
         <!-- /.register-card-body -->
@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       debounceTimer = setTimeout(function () {
-        fetch("{% url 'check_username' %}?username=" + encodeURIComponent(value))
+        fetch("{% url 'accounts:check_username' %}?username=" + encodeURIComponent(value))
           .then((res) => res.json())
           .then((data) => {
             if (data.available) {
@@ -355,3 +355,5 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 {% endblock %}
+
+

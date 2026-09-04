@@ -35,7 +35,7 @@ urlpatterns = [
     path("ai/ai-analysis-detail.html", views.demo_ai_analysis_detail, name="demo_ai_analysis_detail"),
     path("ai/ai-suggestions.html", views.demo_ai_suggestions, name="demo_ai_suggestions"),
     path("ai/low-confidence-results.html", views.demo_ai_low_confidence, name="demo_ai_low_confidence"),
-    path("ai/model-performance.html", views.demo_ai_model_performance, name="demo_ai_model_performance"),
+    path("ai/model-performance/", views.demo_ai_model_performance, name="demo_ai_model_performance"),
     path("ai/ai-service-status.html", views.demo_ai_service_status, name="demo_ai_service_status"),
 ]
 
@@ -87,6 +87,6 @@ urlpatterns = [
 #     path("ai/ai-analysis-detail.html", views.demo_ai_analysis_detail, name="demo_ai_analysis_detail"),
 #     path("ai/ai-suggestions.html", views.demo_ai_suggestions, name="demo_ai_suggestions"),
 #     path("ai/low-confidence-results.html", views.demo_ai_low_confidence, name="demo_ai_low_confidence"),
-#     path("ai/model-performance.html", views.demo_ai_model_performance, name="demo_ai_model_performance"),
+#     path("ai/model-performance/", views.demo_ai_model_performance, name="demo_ai_model_performance"),
 #     path("ai/ai-service-status.html", views.demo_ai_service_status, name="demo_ai_service_status"),
 # ]
