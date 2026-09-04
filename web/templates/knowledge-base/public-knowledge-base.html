@@ -9,34 +9,860 @@
 
 {% block content %}
 
-            <div class="card mb-3">
-              <div class="card-body">
-                <form class="d-flex gap-2" method="get">
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" name="q" value="{{ search_query }}" placeholder="Search help articles…">
-                  </div>
-                  <button type="submit" class="btn btn-primary flex-shrink-0">Search</button>
-                </form>
-              </div>
-            </div>
+<!-- ============================================================
+     STYLES - ADDED
+============================================================ -->
+<style>
+  /* ============================================================
+     ROOT VARIABLES
+  ============================================================ */
+  :root {
+    --kb-primary: #1a56db;
+    --kb-primary-light: #e8eeff;
+    --kb-primary-dark: #0f3a8a;
+    --kb-accent: #7c3aed;
+    --kb-gradient: linear-gradient(135deg, #1a56db 0%, #7c3aed 100%);
+    --kb-shadow: 0 4px 20px rgba(26, 86, 219, 0.12);
+    --kb-shadow-lg: 0 10px 40px rgba(26, 86, 219, 0.16);
+    --kb-radius: 16px;
+    --kb-radius-sm: 10px;
+    --kb-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-            <div class="row">
-              {% for article in articles %}
-              <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <h3 class="fs-6"><a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="text-decoration-none">{{ article.title }}</a></h3>
-                    <p class="text-secondary fs-7 flex-grow-1">{{ article.summary }}</p>
-                    {% if article.category %}<span class="badge text-bg-secondary align-self-start">{{ article.category.name }}</span>{% endif %}
-                  </div>
-                </div>
-              </div>
-              {% empty %}
-              <div class="col-12">
-                <div class="card"><div class="card-body text-center text-secondary py-4">No articles found.</div></div>
-              </div>
-              {% endfor %}
+  /* ============================================================
+     HERO BANNER
+  ============================================================ */
+  .kb-hero-banner {
+    background: var(--kb-gradient);
+    border-radius: var(--kb-radius);
+    padding: 40px 45px;
+    color: white;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--kb-shadow-lg);
+  }
+
+  .kb-hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -15%;
+    width: 40%;
+    height: 200%;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    transform: rotate(-15deg);
+    pointer-events: none;
+  }
+
+  .kb-hero-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -10%;
+    width: 30%;
+    height: 150%;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .kb-hero-banner .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .kb-hero-banner h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .kb-hero-banner h2 .icon-wrapper {
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .kb-hero-banner p {
+    opacity: 0.85;
+    margin-bottom: 0;
+    font-size: 16px;
+    max-width: 600px;
+    margin-left: 66px;
+  }
+
+  .kb-hero-banner .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 18px;
+    margin-left: 66px;
+  }
+
+  .kb-hero-banner .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .kb-hero-banner .stat-item .number {
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .kb-hero-banner .stat-item .label {
+    font-size: 13px;
+    opacity: 0.75;
+  }
+
+  .kb-hero-banner .stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ============================================================
+     SEARCH CARD
+  ============================================================ */
+  .kb-search-card {
+    border: none;
+    border-radius: var(--kb-radius);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: var(--kb-transition);
+  }
+
+  .kb-search-card:hover {
+    box-shadow: var(--kb-shadow);
+  }
+
+  .kb-search-card .card-body {
+    padding: 20px 24px;
+  }
+
+  .kb-search-card .input-group {
+    border-radius: var(--kb-radius-sm);
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+    transition: var(--kb-transition);
+    background: white;
+  }
+
+  .kb-search-card .input-group:focus-within {
+    border-color: var(--kb-primary);
+    box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.08);
+  }
+
+  .kb-search-card .input-group-text {
+    background: white;
+    border: none;
+    color: #9ca3af;
+    padding: 0 0 0 18px;
+    font-size: 1.1rem;
+  }
+
+  .kb-search-card .form-control {
+    border: none;
+    padding: 14px 18px;
+    font-size: 15px;
+    background: transparent;
+    color: #1f2937;
+  }
+
+  .kb-search-card .form-control:focus {
+    box-shadow: none;
+    outline: none;
+  }
+
+  .kb-search-card .form-control::placeholder {
+    color: #9ca3af;
+  }
+
+  .kb-search-card .btn-search {
+    background: var(--kb-gradient);
+    border: none;
+    color: white;
+    padding: 14px 28px;
+    font-weight: 600;
+    transition: var(--kb-transition);
+  }
+
+  .kb-search-card .btn-search:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(26, 86, 219, 0.3);
+  }
+
+  /* ============================================================
+     ARTICLE CARDS
+  ============================================================ */
+  .kb-article-card {
+    border: none;
+    border-radius: var(--kb-radius);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transition: var(--kb-transition);
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.04);
+    background: white;
+    overflow: hidden;
+  }
+
+  .kb-article-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--kb-shadow-lg);
+    border-color: var(--kb-primary-light);
+  }
+
+  .kb-article-card .card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .kb-article-card .card-header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .kb-article-card .article-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--kb-primary-light);
+    color: var(--kb-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: var(--kb-transition);
+  }
+
+  .kb-article-card:hover .article-icon {
+    background: var(--kb-gradient);
+    color: white;
+    transform: scale(1.05) rotate(-3deg);
+  }
+
+  .kb-article-card .article-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .kb-article-card .article-badge.category {
+    background: var(--kb-primary-light);
+    color: var(--kb-primary);
+  }
+
+  .kb-article-card .article-badge.popular {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  .kb-article-card .article-badge.new {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+  .kb-article-card .article-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    color: #1f2937;
+  }
+
+  .kb-article-card .article-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--kb-transition);
+  }
+
+  .kb-article-card .article-title a:hover {
+    color: var(--kb-primary);
+  }
+
+  .kb-article-card .article-summary {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .kb-article-card .article-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+    margin-top: auto;
+  }
+
+  .kb-article-card .article-footer .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #9ca3af;
+    font-size: 12px;
+  }
+
+  .kb-article-card .article-footer .meta-item i {
+    font-size: 14px;
+  }
+
+  .kb-article-card .article-footer .read-link {
+    color: var(--kb-primary);
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--kb-transition);
+  }
+
+  .kb-article-card .article-footer .read-link:hover {
+    color: var(--kb-primary-dark);
+    gap: 10px;
+  }
+
+  /* ============================================================
+     AI FAQ SECTION
+  ============================================================ */
+  .kb-ai-faq-section {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .kb-ai-faq-section .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .kb-ai-faq-section .section-header .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--kb-primary-light);
+    color: var(--kb-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .kb-ai-faq-section .section-header h4 {
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #1f2937;
+  }
+
+  .kb-ai-faq-section .section-header small {
+    color: #6b7280;
+  }
+
+  .kb-ai-faq-card {
+    border: 1px solid #e5e7eb;
+    border-radius: var(--kb-radius);
+    transition: var(--kb-transition);
+    height: 100%;
+  }
+
+  .kb-ai-faq-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--kb-shadow);
+    border-color: var(--kb-primary-light);
+  }
+
+  .kb-ai-faq-card .card-body {
+    padding: 22px 24px;
+  }
+
+  .kb-ai-faq-card .faq-badge {
+    background: var(--kb-gradient);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .kb-ai-faq-card .faq-question {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .kb-ai-faq-card .faq-answer {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .kb-ai-faq-card .faq-footer {
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .kb-ai-faq-card .faq-footer .source-link {
+    color: var(--kb-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--kb-transition);
+  }
+
+  .kb-ai-faq-card .faq-footer .source-link:hover {
+    color: var(--kb-primary-dark);
+    text-decoration: underline;
+  }
+
+  .kb-ai-faq-card .faq-footer .confidence-badge {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 2px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     EMPTY STATE
+  ============================================================ */
+  .kb-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9fafb;
+    border-radius: var(--kb-radius);
+    border: 2px dashed #e5e7eb;
+  }
+
+  .kb-empty-state .empty-icon {
+    font-size: 56px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+  }
+
+  .kb-empty-state h4 {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+
+  .kb-empty-state p {
+    color: #6b7280;
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 15px;
+  }
+
+  /* ============================================================
+     QUICK HELP SECTION
+  ============================================================ */
+  .kb-quick-help {
+    margin-top: 30px;
+    padding: 28px 32px;
+    background: #f8fafc;
+    border-radius: var(--kb-radius);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .kb-quick-help .help-text {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .kb-quick-help .help-text .help-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--kb-primary-light);
+    color: var(--kb-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .kb-quick-help .help-text h6 {
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #1f2937;
+  }
+
+  .kb-quick-help .help-text p {
+    margin-bottom: 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .kb-quick-help .btn-ticket {
+    background: var(--kb-gradient);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    font-weight: 600;
+    border-radius: var(--kb-radius-sm);
+    transition: var(--kb-transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kb-quick-help .btn-ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26, 86, 219, 0.3);
+    color: white;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 992px) {
+    .kb-hero-banner {
+      padding: 30px;
+    }
+
+    .kb-hero-banner h2 {
+      font-size: 22px;
+    }
+
+    .kb-hero-banner p {
+      margin-left: 0;
+    }
+
+    .kb-hero-banner .stats-row {
+      margin-left: 0;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .kb-hero-banner h2 .icon-wrapper {
+      width: 42px;
+      height: 42px;
+      font-size: 18px;
+    }
+
+    .kb-hero-banner .stats-row .stat-divider {
+      display: none;
+    }
+
+    .kb-search-card .btn-search {
+      padding: 12px 18px;
+      font-size: 14px;
+    }
+
+    .kb-quick-help {
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .kb-quick-help .help-text {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .kb-article-card .card-body {
+      padding: 18px;
+    }
+
+    .kb-ai-faq-card .card-body {
+      padding: 18px;
+    }
+
+    .kb-ai-faq-card .faq-footer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .kb-hero-banner {
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .kb-hero-banner h2 {
+      font-size: 18px;
+      flex-wrap: wrap;
+    }
+
+    .kb-hero-banner h2 .icon-wrapper {
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
+
+    .kb-hero-banner .stat-item .number {
+      font-size: 18px;
+    }
+
+    .kb-hero-banner .stat-item .label {
+      font-size: 12px;
+    }
+
+    .kb-search-card .card-body {
+      padding: 14px 16px;
+    }
+
+    .kb-search-card .form-control {
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+
+    .kb-search-card .btn-search {
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    .kb-article-card .article-title {
+      font-size: 15px;
+    }
+
+    .kb-article-card .article-summary {
+      font-size: 13px;
+    }
+
+    .kb-ai-faq-card .faq-question {
+      font-size: 15px;
+    }
+  }
+</style>
+
+<!-- ============================================================
+     HERO BANNER
+============================================================ -->
+<div class="kb-hero-banner">
+  <div class="content">
+    <h2>
+      <span class="icon-wrapper">
+        <i class="bi bi-book"></i>
+      </span>
+      Knowledge Base
+    </h2>
+    <p>
+      Browse through our collection of help articles, guides, and FAQs to find answers to your questions.
+    </p>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="number">{{ articles|length }}</span>
+        <span class="label">Articles</span>
+      </div>
+      <span class="stat-divider"></span>
+      <div class="stat-item">
+        <span class="number">
+          {% with categories=articles|dictsort:"category" %}
+            {{ categories|length }}
+          {% endwith %}
+        </span>
+        <span class="label">Categories</span>
+      </div>
+      <span class="stat-divider"></span>
+      <div class="stat-item">
+        <span class="number">
+          <i class="bi bi-check-circle-fill" style="font-size: 20px;"></i>
+        </span>
+        <span class="label">Verified</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SEARCH CARD
+============================================================ -->
+<div class="kb-search-card">
+  <div class="card-body">
+    <form class="d-flex gap-2" method="get">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" name="q" value="{{ search_query }}" placeholder="Search help articles, guides, and FAQs...">
+        <button type="submit" class="btn btn-search">
+          <i class="bi bi-arrow-right me-1"></i> Search
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     ARTICLES GRID
+============================================================ -->
+<div class="row g-3">
+  {% for article in articles %}
+  <div class="col-md-6 col-lg-4">
+    <div class="kb-article-card">
+      <div class="card-body">
+        <div class="card-header-top">
+          <span class="article-icon">
+            <i class="bi bi-file-text"></i>
+          </span>
+          {% if article.category %}
+            <span class="article-badge category">{{ article.category.name }}</span>
+          {% else %}
+            <span class="article-badge category">General</span>
+          {% endif %}
+        </div>
+
+        <h3 class="article-title">
+          <a href="{% url 'knowledge_article_detail' pk=article.pk %}">{{ article.title }}</a>
+        </h3>
+
+        <p class="article-summary">{{ article.summary|default:article.content|truncatechars:120 }}</p>
+
+        <div class="article-footer">
+          <div class="meta-item">
+            <i class="bi bi-calendar3"></i>
+            <span>{{ article.created_at|date:"M d, Y" }}</span>
+          </div>
+          <a href="{% url 'knowledge_article_detail' pk=article.pk %}" class="read-link">
+            Read More
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="kb-empty-state">
+      <div class="empty-icon">
+        <i class="bi bi-inbox"></i>
+      </div>
+      <h4>No articles found</h4>
+      <p>
+        {% if search_query %}
+          No results found for "{{ search_query }}". Try adjusting your search terms.
+        {% else %}
+          No articles are currently available in the Knowledge Base.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ============================================================
+     AI GENERATED FAQS - NEW ADDITION
+============================================================ -->
+
+{% if article_faqs %}
+<div class="kb-ai-faq-section">
+  <div class="section-header">
+    <span class="icon-wrapper">
+      <i class="bi bi-robot"></i>
+    </span>
+    <div>
+      <h4>Frequently Asked Questions</h4>
+      <small>AI-generated answers from Knowledge Base articles</small>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    {% for faq in article_faqs %}
+    <div class="col-md-6">
+      <div class="kb-ai-faq-card">
+        <div class="card-body">
+          <span class="faq-badge">
+            <i class="bi bi-robot me-1"></i> AI FAQ
+          </span>
+
+          <h5 class="faq-question">{{ faq.question }}</h5>
+
+          <p class="faq-answer">{{ faq.answer }}</p>
+
+          <div class="faq-footer">
+            <div>
+              <i class="bi bi-file-text me-1"></i>
+              <span>Source:</span>
+              <a href="{% url 'knowledge_article_detail' pk=faq.article.pk %}" class="source-link">
+                {{ faq.article.title }}
+              </a>
             </div>
+            {% if faq.confidence_score %}
+              <span class="confidence-badge">
+                <i class="bi bi-check-circle me-1"></i>
+                Confidence: {{ faq.confidence_score|floatformat:2 }}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- ============================================================
+     QUICK HELP
+============================================================ -->
+<div class="kb-quick-help">
+  <div class="help-text">
+    <span class="help-icon">
+      <i class="bi bi-headset"></i>
+    </span>
+    <div>
+      <h6>Still need help?</h6>
+      <p>Can't find what you're looking for? Submit a ticket and our support team will assist you.</p>
+    </div>
+  </div>
+  <a href="{% url 'tickets:ticket_create' %}" class="btn-ticket">
+    <i class="bi bi-plus-circle"></i>
+    Submit a Ticket
+  </a>
+</div>
 
 {% endblock %}

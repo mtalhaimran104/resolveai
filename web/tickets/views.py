@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -27,6 +26,12 @@ from .forms import (
     TicketCommentForm,
     TicketAttachmentForm,
 )
+
+# =====================================================================
+# ADDED IMPORTS
+# =====================================================================
+from knowledge.models import KnowledgeArticle
+from ai.models import AIAnalysis
 
 
 User = get_user_model()
@@ -1779,6 +1784,95 @@ def ticket_history(request, pk):
 @agent_required
 def agent_faq_list(request):
     faqs = []
+
+    # ============================================================
+    # AI SUGGESTED FAQs - KNOWLEDGE BASE DATABASE
+    # ============================================================
+    # Load published Knowledge Base articles that are enabled
+    # for AI usage and expose them to the Suggested FAQs page.
+    # ============================================================
+
+    ai_faq_articles = (
+        KnowledgeArticle.objects
+        .filter(
+            include_in_ai_knowledge_base=True,
+            status=KnowledgeArticle.Status.PUBLISHED,
+        )
+        .select_related("category")
+        .order_by("-updated_at", "-created_at")
+    )
+
+    for article in ai_faq_articles:
+        faqs.append(
+            {
+                "question": article.title,
+                "suggested_answer": article.content,
+                "category": (
+                    article.category.name
+                    if article.category
+                    else "General"
+                ),
+                "status": article.get_status_display(),
+                "updated_at": article.updated_at,
+                "created_at": article.created_at,
+                "source": "Knowledge Base",
+            }
+        )
+
+    # ============================================================
+    # AI FAQ ANALYSES FROM TICKETS
+    # ============================================================
+    # Load AI analyses that were generated from tickets
+    # and expose them to the Suggested FAQs page.
+    # ============================================================
+
+    faq_analyses = (
+        AIAnalysis.objects
+        .filter(
+            analysis_type=AIAnalysis.AnalysisType.FAQ,
+            status=AIAnalysis.Status.SUCCESS,
+        )
+        .select_related("ticket")
+        .order_by("-created_at")
+    )
+
+    for analysis in faq_analyses:
+        result = analysis.result_json or {}
+
+        question = (
+            result.get("question")
+            or result.get("query")
+            or result.get("user_question")
+            or getattr(analysis.ticket, "description", "")
+            or getattr(analysis.ticket, "title", "")
+            or "FAQ Question"
+        )
+
+        answer = (
+            result.get("answer")
+            or result.get("suggested_answer")
+            or result.get("response")
+            or result.get("content")
+            or ""
+        )
+
+        if not answer:
+            continue
+
+        faqs.append({
+            "question": question,
+            "suggested_answer": answer,
+            "confidence_score": analysis.confidence_score,
+            "model_name": analysis.model_name,
+            "model_version": analysis.model_version,
+            "created_at": analysis.created_at,
+            "source": result.get("source", "AI FAQ"),
+            "ticket_number": getattr(
+                analysis.ticket,
+                "ticket_number",
+                "",
+            ),
+        })
 
     return render(
         request,

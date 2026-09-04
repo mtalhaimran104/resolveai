@@ -76,3 +76,23 @@ class AIServiceHelper:
             f"{ticket['subject']}\n\n"
             f"{ticket['description']}"
         ).strip()
+
+    @staticmethod
+    def getArticleFAQ(title, content):
+        """
+        Send a Knowledge Base article to the AI service
+        and return the FAQ response.
+        """
+        import requests
+
+        response = requests.post(
+            "http://ai_service:8000/article-faq/",
+            json={
+                "title": title,
+                "content": content,
+            },
+            timeout=60,
+        )
+
+        response.raise_for_status()
+        return response.json()

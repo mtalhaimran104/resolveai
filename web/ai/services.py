@@ -1,7 +1,9 @@
 import requests
 from django.conf import settings
+
 class AIServiceError(Exception):
     """Raised when the AI service cannot process a request."""
+
 def _post(url: str, payload: dict, timeout: int = 30) -> dict:
     try:
         response = requests.post(
@@ -15,6 +17,7 @@ def _post(url: str, payload: dict, timeout: int = 30) -> dict:
         raise AIServiceError(
             "AI service is unavailable."
         ) from exc
+
 def call_classification_service(ticket_id: int, text: str) -> dict:
     return _post(
         f"{settings.AI_SERVICE_URL}/api/v1/classification/predict",
@@ -23,6 +26,7 @@ def call_classification_service(ticket_id: int, text: str) -> dict:
             "text": text,
         },
     )
+
 def call_priority_service(ticket_id: int, text: str) -> dict:
     """Send ticket text to the priority prediction model service."""
     return _post(
@@ -32,6 +36,7 @@ def call_priority_service(ticket_id: int, text: str) -> dict:
             "text": text,
         },
     )
+
 def get_classification_model_metrics() -> dict:
     """Get classification model performance metrics from the AI service."""
     url = f"{settings.AI_SERVICE_URL}/api/v1/classification/metrics"
@@ -46,6 +51,7 @@ def get_classification_model_metrics() -> dict:
         raise AIServiceError(
             "Classification model metrics service is unavailable."
         ) from exc
+
 def get_priority_model_metrics() -> dict:
     try:
         response = requests.get(
@@ -58,6 +64,7 @@ def get_priority_model_metrics() -> dict:
         raise AIServiceError(
             "Priority model metrics service is unavailable."
         ) from exc
+
 def call_sentiment_service(ticket_id: int) -> dict:
     """Send ticket ID to the sentiment analysis service."""
     url = f"{settings.AI_SERVICE_URL}/api/v1/sentiment/predict"
@@ -75,6 +82,7 @@ def call_sentiment_service(ticket_id: int) -> dict:
         raise AIServiceError(
             "Sentiment analysis service is unavailable."
         ) from exc
+
 def call_summarization_service(text: str) -> dict:
     return _post(
         f"{settings.AI_SERVICE_URL}/summarization/",
@@ -83,6 +91,7 @@ def call_summarization_service(text: str) -> dict:
         },
         timeout=60,
     )
+
 def call_faq_service(question: str) -> dict:
     """Send a student question to the FAQ retrieval service."""
     return _post(
@@ -90,4 +99,15 @@ def call_faq_service(question: str) -> dict:
         {
             "question": question,
         },
+    )
+
+def call_article_faq_service(title: str, content: str) -> dict:
+    """Send a Knowledge Base article to the AI FAQ service."""
+    return _post(
+        f"{settings.AI_SERVICE_URL}/article-faq/",
+        {
+            "title": title,
+            "content": content,
+        },
+        timeout=60,
     )

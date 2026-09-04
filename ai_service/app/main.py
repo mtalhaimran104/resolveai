@@ -1,6 +1,6 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.routers import article_faq
 from app.api.routers import (
     classification,
     priority_prediction,
@@ -51,7 +51,7 @@ app.include_router(faq.router)
 app.include_router(sentiment.router)
 app.include_router(summarization.router)
 app.include_router(student_query.router)
-
+app.include_router(article_faq.router)
 
 # ============================================================
 # HEALTH CHECK

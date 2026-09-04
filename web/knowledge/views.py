@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import KnowledgeArticle, KnowledgeArticleVersion
+from .models import KnowledgeArticle, KnowledgeArticleVersion, KnowledgeArticleFAQ
 
 from .forms import KnowledgeArticleForm
 # Create your views here.
@@ -11,6 +11,39 @@ from django.utils.text import slugify
 from accounts.decorators import agent_or_supervisor_required
 
 from tickets.models import TicketCategory
+
+
+def _generate_article_faq(article):
+    """
+    Generate and store an AI FAQ response for a Knowledge Article.
+    """
+    from core.ai_service_helper import AiServiceHelper
+
+    result = AiServiceHelper.call_api(
+        endpoint="/article-faq/",
+        request_type="POST",
+        payload={
+            "title": article.title,
+            "content": article.content,
+        },
+    )
+
+    if not result["status"]:
+        return None
+
+    data = result["response"].json()
+
+    if not data.get("found") or not data.get("answer"):
+        return None
+
+    return KnowledgeArticleFAQ.objects.create(
+        article=article,
+        question=article.title,
+        answer=data["answer"],
+        confidence_score=data.get("confidence"),
+        model_name="faq_retrieval_model",
+        model_version="v1",
+    )
 
 
 @agent_or_supervisor_required
@@ -69,6 +102,8 @@ def article_create(request):
                 article.published_at = None
 
             article.save()
+
+            _generate_article_faq(article)
 
             # Create first version
             KnowledgeArticleVersion.objects.create(
@@ -529,16 +564,30 @@ def article_publish(request, pk):
 
 @login_required
 def public_knowledge_base(request):
+    # ============================================================
+    # EXISTING QUERY - KEPT AS IS
+    # ============================================================
     articles = KnowledgeArticle.objects.filter(
         status=KnowledgeArticle.Status.PUBLISHED,
         is_public=True,
     ).select_related("author")
+
+    # ============================================================
+    # AI FAQS FOR KNOWLEDGE ARTICLES - NEW ADDITION
+    # ============================================================
+
+    article_faqs = (
+        KnowledgeArticleFAQ.objects
+        .select_related("article")
+        .order_by("-created_at")
+    )
 
     return render(
         request,
         "knowledge-base/public-knowledge-base.html",
         {
             "articles": articles,
+            "article_faqs": article_faqs,   # NEW ADDITION
             "current": "public_knowledge_base",
         },
     )
